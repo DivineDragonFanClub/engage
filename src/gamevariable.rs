@@ -6,7 +6,7 @@ use crate::gameuserdata::*;
 
 #[repr(C)]
 #[unity::class("App", "GameVariable")]
-pub struct GameVariable;
+pub struct GameVariable { }
 
 #[unity::from_offset("App", "GameVariable", "GetBool")]
 pub fn get_bool(this: &Il2CppObject<GameVariable>, key: &Il2CppString, method_info: OptionalMethod) -> bool;

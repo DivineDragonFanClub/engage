@@ -4,11 +4,11 @@ use unity::prelude::*;
 
 #[repr(C)]
 #[unity::class("App", "TitleBar")]
-pub struct TitleBar;
+pub struct TitleBar { }
 
 impl TitleBar {
     fn get_instance() -> &'static Il2CppObject<TitleBar> {
-        TitleBar::get_class().get_static_fields::<&Il2CppObject<TitleBar>>()
+        TitleBar::class().get_static_fields::<&Il2CppObject<TitleBar>>()
     }
 
     pub fn open_header(title: impl AsRef<str>, help: impl AsRef<str>, key_help_id: impl AsRef<str>) -> bool {

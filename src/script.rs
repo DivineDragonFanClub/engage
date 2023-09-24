@@ -23,7 +23,7 @@ pub struct EventScript {
 }
 
 impl EventScript {
-    pub fn get_instance() -> &'static Il2CppObject<EventScript> {
+    pub fn get_instance() -> &'static EventScript {
         unsafe { eventscript_getinstance(None) }
     }
 }
@@ -68,7 +68,7 @@ pub struct EventScriptActionArgs<T: 'static> {
 
 impl<T> EventScriptActionArgs<T> {
     pub fn new(method: extern "C" fn(&Il2CppArray<DynValue<T>>, OptionalMethod)) -> Il2CppResult<&'static mut Il2CppObject<EventScriptActionArgs<T>>> {
-        let action_args_class = EventScript::get_class().get_nested_types()[1];
+        let action_args_class = EventScript::class().get_nested_types()[1];
 
         Il2CppObject::<EventScriptActionArgs<T>>::from_class(action_args_class).map(|args| {
             // This is until helper methods are made to generated MethodInfos from Rust methods.
@@ -86,7 +86,7 @@ impl<T> EventScriptActionArgs<T> {
 
 #[repr(C)]
 #[unity::class("System.IO", "MemoryStream")]
-pub struct MemoryStream;
+pub struct MemoryStream { }
 
 #[repr(C)]
 #[unity::class("MoonSharp.Interpreter", "DynValue")]
@@ -103,8 +103,8 @@ pub trait ScriptUtils {
     fn try_get_i32(&self, index: i32) -> i32;
 
     fn try_get_string(&self, index: i32) -> Option<&'static Il2CppString>;
-    fn try_get_unit(&self, index: i32) -> &'static Il2CppObject<Unit>;
-    fn try_get_item(&self, arg_index: i32) -> &'static Il2CppObject<ItemData>;
+    fn try_get_unit(&self, index: i32) -> &'static Unit;
+    fn try_get_item(&self, arg_index: i32) -> &'static ItemData;
 }
 
 impl<T> ScriptUtils for Il2CppArray<DynValue<T>> {
@@ -116,17 +116,17 @@ impl<T> ScriptUtils for Il2CppArray<DynValue<T>> {
         unsafe { scriptutil_trygetstring(self, arg_index, "Couldn't read the value".into(), None) }
     }
 
-    fn try_get_unit(&self, arg_index: i32) -> &'static Il2CppObject<Unit> {
+    fn try_get_unit(&self, arg_index: i32) -> &'static Unit {
         unsafe { scriptutil_trygetunit(self, arg_index, true, None) }
     }
 
-    fn try_get_item(&self, arg_index: i32) -> &'static Il2CppObject<ItemData> {
+    fn try_get_item(&self, arg_index: i32) -> &'static ItemData {
         unsafe { scriptutil_trygetitem(self, arg_index, true, None) }
     }
 }
 
 #[skyline::from_offset(0x3371160)]
-pub fn system_io_memorystream_ctor(this: &Il2CppObject<MemoryStream>, buffer: &'static mut Il2CppArray<u8>, method_info: OptionalMethod);
+pub fn system_io_memorystream_ctor(this: &MemoryStream, buffer: &'static mut Il2CppArray<u8>, method_info: OptionalMethod);
 
 #[skyline::from_offset(0x2196920)]
 fn scriptutil_trygetstring<T>(
@@ -140,7 +140,7 @@ fn scriptutil_trygetstring<T>(
 fn scriptutil_trygetint<T>(args: &Il2CppArray<DynValue<T>>, index: i32, nothing: i32, method_info: OptionalMethod) -> i32;
 
 #[skyline::from_offset(0x21961f0)]
-fn scriptutil_trygetunit<T>(args: &Il2CppArray<DynValue<T>>, index: i32, warning: bool, method_info: OptionalMethod) -> &'static Il2CppObject<Unit>;
+fn scriptutil_trygetunit<T>(args: &Il2CppArray<DynValue<T>>, index: i32, warning: bool, method_info: OptionalMethod) -> &'static Unit;
 
 #[skyline::from_offset(0x21a3740)]
 fn scriptutil_trygetitem<T>(
@@ -148,21 +148,21 @@ fn scriptutil_trygetitem<T>(
     index: i32,
     warning: bool,
     method_info: OptionalMethod,
-) -> &'static Il2CppObject<ItemData>;
+) -> &'static ItemData;
 
 #[skyline::from_offset(0x21994e0)]
 pub fn scriptutil_yield(method_info: OptionalMethod);
 
 #[unity::from_offset("App", "EventScript", "get_Instance")]
-fn eventscript_getinstance(method_info: OptionalMethod) -> &'static Il2CppObject<EventScript>;
+fn eventscript_getinstance(method_info: OptionalMethod) -> &'static EventScript;
 
 #[unity::from_offset("MoonSharp.Interpreter", "Table", "Get")]
-pub fn moonsharp_interpreter_table_get<T>(this: *const u8, name: &Il2CppString, method_info: OptionalMethod) -> &'static Il2CppObject<DynValue<T>>;
+pub fn moonsharp_interpreter_table_get<T>(this: *const u8, name: &Il2CppString, method_info: OptionalMethod) -> &'static DynValue<T>;
 
 #[unity::from_offset("MoonSharp.Interpreter", "Script", "DoStream")]
 pub fn moonsharp_interpreter_script_dostream(
-    this: &Il2CppObject<EventScript>,
-    stream: &Il2CppObject<MemoryStream>,
+    this: &EventScript,
+    stream: &MemoryStream,
     global_context: *const u8,
     code_friendly_name: *const u8,
     method_info: OptionalMethod,
@@ -170,16 +170,16 @@ pub fn moonsharp_interpreter_script_dostream(
 
 #[skyline::from_offset(0x24e2430)]
 pub fn eventscript_registaction<T>(
-    this: &Il2CppObject<EventScript>,
-    func: &Il2CppObject<EventScriptActionArgs<T>>,
+    this: &EventScript,
+    func: &EventScriptActionArgs<T>,
     name: &Il2CppString,
     method_info: OptionalMethod,
 );
 
 #[unity::from_offset("App", "EventScript", "RegistFunction")]
 pub fn eventscript_registfunction(
-    this: &Il2CppObject<EventScript>,
-    func: &Il2CppObject<EventScriptFunctionArgs>,
+    this: &EventScript,
+    func: &EventScriptFunctionArgs,
     name: &Il2CppString,
     method_info: OptionalMethod,
 );

@@ -53,7 +53,7 @@ pub fn character_get_side(this: &Il2CppObject<Character>, method_info: OptionalM
 
 #[repr(C)]
 #[unity::class("Combat", "CharacterSound")]
-pub struct CharacterSound;
+pub struct CharacterSound { }
 
 #[repr(C)]
 #[unity::class("Combat", "Phase")]
@@ -159,7 +159,7 @@ pub fn magicsignalprocessor_get_magic(
 
 #[repr(C)]
 #[unity::class("UnityEngine", "AnimationEvent")]
-pub struct AnimationEvent;
+pub struct AnimationEvent { }
 
 #[unity::from_offset("Combat", "Phase", "get_DamageEffectLevel")]
 pub fn phase_get_damage_effect_level(

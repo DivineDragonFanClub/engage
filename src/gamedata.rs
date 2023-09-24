@@ -6,7 +6,7 @@ pub mod unit;
 
 #[repr(C)]
 #[unity::class("App", "ItemData")]
-pub struct ItemData;
+pub struct ItemData { }
 
 #[repr(C)]
 #[unity::class("App", "JobData")]
@@ -27,10 +27,10 @@ pub struct PersonData {
 
 #[repr(C)]
 #[unity::class("App", "StructData`1")]
-pub struct StructDataGeneric;
+pub struct StructDataGeneric { }
 
 #[repr(C)]
-pub struct StructData;
+pub struct StructData { }
 
 // pub static_fields: &'static StructDataStaticFields<T>,
 

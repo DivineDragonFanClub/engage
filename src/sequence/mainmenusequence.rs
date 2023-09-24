@@ -1,11 +1,11 @@
 use unity::prelude::*;
 
-use crate::{proc::ProcInst, singleton::SingletonProcInst};
+use crate::{proc::ProcInstFields, singleton::SingletonProcInst};
 
 #[repr(C)]
 #[unity::class("App", "MainMenuSequence")]
 pub struct MainMenuSequence {
-    pub proc: ProcInst,
+    pub proc: ProcInstFields,
     is_resume: bool,
     is_loaded: bool,
     pub prev_sequence: i32,
@@ -40,14 +40,14 @@ impl MainMenuSequence {
     }
 }
 
-impl AsRef<ProcInst> for MainMenuSequence {
-    fn as_ref(&self) -> &ProcInst {
+impl AsRef<ProcInstFields> for MainMenuSequence {
+    fn as_ref(&self) -> &ProcInstFields {
         &self.proc
     }
 }
 
-impl AsMut<ProcInst> for MainMenuSequence {
-    fn as_mut(&mut self) -> &mut ProcInst {
+impl AsMut<ProcInstFields> for MainMenuSequence {
+    fn as_mut(&mut self) -> &mut ProcInstFields {
         &mut self.proc
     }
 }
