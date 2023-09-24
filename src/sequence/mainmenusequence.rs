@@ -14,21 +14,21 @@ pub struct MainMenuSequence {
 }
 
 impl MainMenuSequence {
-    pub fn get() -> &'static Il2CppObject<MainMenuSequence> {
+    pub fn get() -> &'static MainMenuSequence {
         let idk = get_generic_class!(SingletonProcInst<MainMenuSequence>).unwrap();
 
         let get_instance = unsafe {
-            std::mem::transmute::<_, extern "C" fn(OptionalMethod) -> &'static mut Il2CppObject<MainMenuSequence>>(idk.rgctx_data.get_instance.method_ptr)
+            std::mem::transmute::<_, extern "C" fn(OptionalMethod) -> &'static mut MainMenuSequence>(idk.rgctx_data.get_instance.method_ptr)
         };
 
         get_instance(Some(idk.rgctx_data.get_instance))
     }
 
-    pub fn get_mut() -> &'static mut Il2CppObject<MainMenuSequence> {
+    pub fn get_mut() -> &'static mut MainMenuSequence {
         let idk = get_generic_class!(SingletonProcInst<MainMenuSequence>).unwrap();
 
         let get_instance = unsafe {
-            std::mem::transmute::<_, extern "C" fn(OptionalMethod) -> &'static mut Il2CppObject<MainMenuSequence>>(idk.rgctx_data.get_instance.method_ptr)
+            std::mem::transmute::<_, extern "C" fn(OptionalMethod) -> &'static mut MainMenuSequence>(idk.rgctx_data.get_instance.method_ptr)
         };
 
         get_instance(Some(idk.rgctx_data.get_instance))
@@ -53,4 +53,4 @@ impl AsMut<ProcInstFields> for MainMenuSequence {
 }
 
 #[unity::from_offset("App", "MainMenuSequence", "JumpToNextSequence")]
-fn mainmenusequence_jumptonextsequence(this: &Il2CppObject<MainMenuSequence>);
+fn mainmenusequence_jumptonextsequence(this: &MainMenuSequence);

@@ -45,16 +45,16 @@ pub trait TwoChoiceDialogMethods {
 extern "C" fn yesnodialog_createbind<P: Bindable>(
     proc: &P,
     mess: &Il2CppString,
-    yes_item: &BasicDialogItem,
-    no_item: &BasicDialogItem,
+    yes_item: &BasicDialogItemYes,
+    no_item: &BasicDialogItemNo,
     method_info: OptionalMethod,
 );
 
 #[skyline::from_offset(0x2456430)]
-fn dialog_item_yes_ctor(proc: &BasicDialogItem, text: &Il2CppString, method_info: OptionalMethod);
+fn dialog_item_yes_ctor(proc: &BasicDialogItemYes, text: &Il2CppString, method_info: OptionalMethod);
 
 #[skyline::from_offset(0x24562a0)]
-fn dialog_item_no_ctor(proc: &BasicDialogItem, text: &Il2CppString, method_info: OptionalMethod);
+fn dialog_item_no_ctor(proc: &BasicDialogItemNo, text: &Il2CppString, method_info: OptionalMethod);
 
 #[repr(transparent)]
 #[unity::class("App", "BasicDialogItemYes")]
@@ -63,12 +63,13 @@ pub struct BasicDialogItemYes {
 }
 
 impl BasicDialogItemYes {
-    pub fn new(text: impl AsRef<str>) -> &'static mut BasicDialogItem {
-        let class = BasicDialogItemYes::class_mut();
-        let item = il2cpp::object::Il2CppObject::<BasicDialogItem>::from_class(class).unwrap();
+    pub fn new(text: impl AsRef<str>) -> &'static mut BasicDialogItemYes {
+        let item = BasicDialogItemYes::instantiate().unwrap();
+
         unsafe {
             dialog_item_yes_ctor(item, text.into(), None);
         }
+
         item
     }
 }
@@ -80,13 +81,13 @@ pub struct BasicDialogItemNo {
 }
 
 impl BasicDialogItemNo {
-    pub fn new(text: impl AsRef<str>) -> &'static mut BasicDialogItem {
-        let class = BasicDialogItemNo::class_mut();
-        let item = il2cpp::object::Il2CppObject::<BasicDialogItem>::from_class(class).unwrap();
+    pub fn new(text: impl AsRef<str>) -> &'static mut BasicDialogItemNo {
+        let item = BasicDialogItemNo::instantiate().unwrap();
 
         unsafe {
             dialog_item_no_ctor(item, text.into(), None);
         }
+
         item
     }
 }

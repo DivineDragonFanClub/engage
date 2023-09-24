@@ -18,10 +18,10 @@ pub mod content;
 #[repr(C)]
 #[unity::class("App", "BasicMenu")]
 pub struct BasicMenu<T: 'static> {
-    pub proc: ProcInst,
+    pub proc: ProcInstFields,
     pub menu_content: *const u8,
-    pub menu_item_list: &'static mut Il2CppObject<List<T>>,
-    pub full_menu_item_list: &'static mut Il2CppObject<List<T>>,
+    pub menu_item_list: &'static mut List<T>,
+    pub full_menu_item_list: &'static mut List<T>,
     pad: [u8; 0x30],
     pub reserved_show_row_num: i32,
     pub memory_display_index: i32,
@@ -88,20 +88,20 @@ fn basicmenu_createdefaultdesc<P: BasicMenuMethods + ?Sized>(
     method_info: OptionalMethod,
 ) -> &'static mut Il2CppArray<&'static mut ProcDesc>;
 
-impl<T> AsRef<ProcInst> for BasicMenuFields<T> {
-    fn as_ref(&self) -> &ProcInst {
+impl<T> AsRef<ProcInstFields> for BasicMenuFields<T> {
+    fn as_ref(&self) -> &ProcInstFields {
         &self.proc
     }
 }
 
-impl<T> AsMut<ProcInst> for BasicMenuFields<T> {
-    fn as_mut(&mut self) -> &mut ProcInst {
+impl<T> AsMut<ProcInstFields> for BasicMenuFields<T> {
+    fn as_mut(&mut self) -> &mut ProcInstFields {
         &mut self.proc
     }
 }
 
 impl<T> Deref for BasicMenuFields<T> {
-    type Target = ProcInst;
+    type Target = ProcInstFields;
 
     fn deref(&self) -> &Self::Target {
         self.as_ref()
@@ -118,8 +118,10 @@ pub trait MenuSequence {
     fn bind(parent: &impl Bindable) {
         let proc = ProcInst::instantiate().unwrap();
         let descs = Il2CppArray::new_from(ProcDesc::class(), Self::get_proc_desc(proc)).unwrap();
+        println!("CobaltMenuSequence before create_bind");
 
         proc.create_bind(parent, descs, Self::proc_name());
+        println!("CobaltMenuSequence after create_bind");
     }
 
     fn get_proc_desc(_this: &'static impl Bindable) -> Vec<&mut ProcDesc> {

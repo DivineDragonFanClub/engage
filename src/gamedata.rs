@@ -30,6 +30,7 @@ pub struct PersonData {
 pub struct StructDataGeneric { }
 
 #[repr(C)]
+#[unity::class("App", "StructData`1")]
 pub struct StructData { }
 
 // pub static_fields: &'static StructDataStaticFields<T>,
@@ -37,11 +38,12 @@ pub struct StructData { }
 #[repr(C)]
 #[derive(Clone, Copy)]
 pub struct StructDataStaticFields<T: 'static> {
-    pub s_list: &'static Il2CppObject<StructList<Il2CppObject<T>>>,
+    pub s_list: &'static StructList<T>,
     pub loaded: bool,
 }
 
 #[repr(C)]
+#[unity::class("App", "StructList<`1>")]
 pub struct StructList<T: 'static> {
     pub list: List<T>,
 }

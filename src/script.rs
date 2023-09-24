@@ -67,7 +67,7 @@ pub struct EventScriptActionArgs<T: 'static> {
 }
 
 impl<T> EventScriptActionArgs<T> {
-    pub fn new(method: extern "C" fn(&Il2CppArray<DynValue<T>>, OptionalMethod)) -> Il2CppResult<&'static mut Il2CppObject<EventScriptActionArgs<T>>> {
+    pub fn new(method: extern "C" fn(&Il2CppArray<DynValue<T>>, OptionalMethod)) -> Il2CppResult<&'static mut EventScriptActionArgs<T>> {
         let action_args_class = EventScript::class().get_nested_types()[1];
 
         Il2CppObject::<EventScriptActionArgs<T>>::from_class(action_args_class).map(|args| {
