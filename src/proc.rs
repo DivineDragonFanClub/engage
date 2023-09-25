@@ -1,5 +1,7 @@
 //! Methods and traits related to the [`ProcInst`] system.
 
+use std::borrow::Borrow;
+
 use unity::prelude::*;
 
 pub mod desc;
@@ -65,6 +67,12 @@ pub struct ProcInst {
     stack: &'static Il2CppObject<RawValueStack>,
 }
 
+impl Drop for ProcInst {
+    fn drop(&mut self) {
+        panic!("ProcInst dropped");
+    }
+}
+
 impl ProcInst {
     pub fn get_child(&self) -> &ProcInst {
         self.child
@@ -89,12 +97,14 @@ impl ProcInst {
 /// 
 /// A method expecting a `&impl Bindable` or `<P: Bindable>(parent: &P, ...)` will accept any type that inherits from [`ProcInst`].
 pub trait Bindable: AsRef<ProcInstFields> + Sized {
-    fn create_bind(&self, parent: &impl Bindable, descs: &'static mut Il2CppArray<&'static mut impl AsRef<ProcDescFields>>, name: impl AsRef<str>) {
+    fn create_bind(&self, parent: &impl Bindable, descs: &'static mut Il2CppArray<&'static mut ProcDesc>, name: impl AsRef<str>);
+}
+
+impl<T: AsRef<ProcInstFields>> Bindable for T {
+    fn create_bind(&self, parent: &impl Bindable, descs: &'static mut Il2CppArray<&'static mut ProcDesc>, name: impl AsRef<str>) {
         unsafe { procinst_createbind(self, parent, descs, name.as_ref().into(), None) }
     }
 }
-
-impl<T: AsRef<ProcInstFields>> Bindable for T { }
 
 #[unity::from_offset("App", "Proc", "WaitIsLoading")]
 fn proc_waitisloading(
@@ -142,16 +152,16 @@ fn proc_end(
 ) -> &'static mut ProcDesc;
 
 #[unity::from_offset("App", "ProcInst", "CreateBind")]
-fn procinst_createbind<T: Bindable + ?Sized, P: Bindable, DescFields: AsRef<ProcDescFields>>(
-    this: &T,
+pub fn procinst_createbind<T: AsRef<ProcInstFields>, P: AsRef<ProcInstFields>>(
+    this: T,
     parent: &P,
-    descs: &'static mut Il2CppArray<&'static mut DescFields>,
+    descs: &'static Il2CppArray<&'static mut ProcDesc>,
     name: &'static Il2CppString,
     method_info: OptionalMethod,
 );
 
 #[unity::from_offset("App", "ProcInst", "OnDispose")]
-pub fn procinst_ondispose(this: &Il2CppObject<ProcInst>, method_info: OptionalMethod);
+pub fn procinst_ondispose(this: &ProcInst, method_info: OptionalMethod);
 
 /// A structure representing a call to a method that returns nothing.
 #[repr(C)]
@@ -228,7 +238,7 @@ pub struct ProcVoidFunction<T: 'static> {
     method_ptr: extern "C" fn(&'static mut T, OptionalMethod),
     invoke_impl: *const u8,
     // Usually the ProcInst
-    target: &'static T,
+    target: Option<&'static T>,
     // MethodInfo
     method: *const MethodInfo,
     // ...
@@ -239,7 +249,7 @@ impl<T> ProcVoidFunction<T> {
     ///
     /// Do be aware that despite the target argument being immutable, the receiving method can, in fact, mutate to target.
     pub fn new(
-        target: &'static T,
+        target: Option<&'static T>,
         method: extern "C" fn(&'static mut T, OptionalMethod),
     ) -> Il2CppResult<&'static mut ProcVoidFunction<T>> {
         ProcVoidFunction::<T>::instantiate().map(|proc| {

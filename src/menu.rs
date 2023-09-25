@@ -5,7 +5,7 @@ use std::ops::{Deref, DerefMut};
 use modular_bitfield::{bitfield, specifiers::B2};
 use unity::{prelude::*, system::List};
 
-use crate::proc::{desc::ProcDesc, Bindable, ProcInst, ProcInstFields};
+use crate::proc::{desc::ProcDesc, Bindable, ProcInst, ProcInstFields, procinst_createbind};
 
 pub mod config;
 pub mod content;
@@ -88,32 +88,6 @@ fn basicmenu_createdefaultdesc<P: BasicMenuMethods + ?Sized>(
     method_info: OptionalMethod,
 ) -> &'static mut Il2CppArray<&'static mut ProcDesc>;
 
-impl<T> AsRef<ProcInstFields> for BasicMenuFields<T> {
-    fn as_ref(&self) -> &ProcInstFields {
-        &self.proc
-    }
-}
-
-impl<T> AsMut<ProcInstFields> for BasicMenuFields<T> {
-    fn as_mut(&mut self) -> &mut ProcInstFields {
-        &mut self.proc
-    }
-}
-
-impl<T> Deref for BasicMenuFields<T> {
-    type Target = ProcInstFields;
-
-    fn deref(&self) -> &Self::Target {
-        self.as_ref()
-    }
-}
-
-impl<T> DerefMut for BasicMenuFields<T> {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.proc
-    }
-}
-
 pub trait MenuSequence {
     fn bind(parent: &impl Bindable) {
         let proc = ProcInst::instantiate().unwrap();
@@ -121,6 +95,7 @@ pub trait MenuSequence {
         println!("CobaltMenuSequence before create_bind");
 
         proc.create_bind(parent, descs, Self::proc_name());
+        // unsafe { procinst_createbind(proc, parent, descs, Self::proc_name().into(), None) }
         println!("CobaltMenuSequence after create_bind");
     }
 
