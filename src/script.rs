@@ -40,7 +40,8 @@ impl EventScriptCommand for EventScript {
     }
 }
 
-#[repr(C)]
+#[unity::class("", "EventScript.FunctionArgs")]
+
 pub struct EventScriptFunctionArgs {
     pub method_ptr: extern "C" fn(*const u8, OptionalMethod),
     pub invoke_impl: *const u8,
@@ -53,7 +54,7 @@ pub struct EventScriptFunctionArgs {
     // ...
 }
 
-#[repr(C)]
+#[unity::class("", "EventScript.ActionArgs")]
 pub struct EventScriptActionArgs {
     pub method_ptr: extern "C" fn(&Il2CppArray<DynValue>, OptionalMethod),
     pub invoke_impl: *const u8,
@@ -170,8 +171,8 @@ pub fn moonsharp_interpreter_script_dostream(
 ) -> *const u8;
 
 #[skyline::from_offset(0x24e2430)]
-pub fn eventscript_registaction(
-    this: &EventScript,
+pub fn eventscript_registaction<T: EventScriptCommand>(
+    this: &T,
     func: &EventScriptActionArgs,
     name: &Il2CppString,
     method_info: OptionalMethod,
