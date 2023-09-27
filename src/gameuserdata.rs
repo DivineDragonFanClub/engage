@@ -8,7 +8,7 @@ use unity::{il2cpp::class::Il2CppRGCTXData, prelude::*};
 pub struct GameUserData { }
 
 #[unity::from_offset("App", "GameUserData", "get_Variable")]
-fn get_variable(this: &GameUserData, method_info: OptionalMethod) -> &'static mut Il2CppObject<GameVariable>;
+fn get_variable(this: &GameUserData, method_info: OptionalMethod) -> &'static mut GameVariable;
 
 #[unity::from_offset("App", "GameUserData", "SetGameMode")]
 fn set_game_mode(this: &GameUserData, game_mode: GameMode, method_info: OptionalMethod);

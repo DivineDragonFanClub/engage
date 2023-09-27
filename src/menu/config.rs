@@ -3,7 +3,6 @@ use unity::{prelude::*, system::List};
 use super::BasicMenuResult;
 use crate::proc::ProcInstFields;
 
-#[repr(C)]
 #[unity::class("", "ConfigBasicMenuItem")]
 pub struct ConfigBasicMenuItem {
     // Inlined BasicMenuItem here because C ABI dumb
