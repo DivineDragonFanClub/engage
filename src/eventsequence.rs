@@ -10,9 +10,9 @@ pub struct EventSequence { }
 
 impl EventSequence {
     /// Note: the arguments are currently Option until more is figure out. They serve no purpose at the moment.
-    pub fn try_create_bind<T>(
+    pub fn try_create_bind(
         proc: &ProcInst,
-        func: &'static DynValue<T>,
+        func: &'static DynValue,
         _pre_call: Option<()>,
         _post_call: Option<()>,
         _args: Option<()>,
@@ -28,9 +28,9 @@ impl EventSequence {
 fn eventsequence_mapopening(parent: &ProcInst, method_info: OptionalMethod);
 
 #[unity::from_offset("App", "EventSequence", "TryCreateBind")]
-fn eventsequence_trycreatebind<T>(
+fn eventsequence_trycreatebind(
     parent: &ProcInst,
-    func: &'static DynValue<T>,
+    func: &'static DynValue,
     pre_call: *const u8,
     post_call: *const u8,
     args: *const u8,
