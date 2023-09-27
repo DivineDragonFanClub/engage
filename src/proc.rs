@@ -1,8 +1,7 @@
 //! Methods and traits related to the [`ProcInst`] system.
 
-use std::borrow::Borrow;
-
 use unity::prelude::*;
+use std::borrow::Borrow;
 
 pub mod desc;
 use desc::*;
@@ -96,15 +95,14 @@ impl ProcInst {
 /// If the trait is in scope, it is automatically implemented for objects that implement `AsMut<ProcInst>`.
 /// 
 /// A method expecting a `&impl Bindable` or `<P: Bindable>(parent: &P, ...)` will accept any type that inherits from [`ProcInst`].
-pub trait Bindable: AsRef<ProcInstFields> + Sized {
-    fn create_bind(&self, parent: &impl Bindable, descs: &'static mut Il2CppArray<&'static mut ProcDesc>, name: impl AsRef<str>);
-}
-
-impl<T: AsRef<ProcInstFields>> Bindable for T {
+pub trait Bindable {
     fn create_bind(&self, parent: &impl Bindable, descs: &'static mut Il2CppArray<&'static mut ProcDesc>, name: impl AsRef<str>) {
         unsafe { procinst_createbind(self, parent, descs, name.as_ref().into(), None) }
     }
 }
+
+impl Bindable for ProcInst { }
+
 
 #[unity::from_offset("App", "Proc", "WaitIsLoading")]
 fn proc_waitisloading(
@@ -152,8 +150,8 @@ fn proc_end(
 ) -> &'static mut ProcDesc;
 
 #[unity::from_offset("App", "ProcInst", "CreateBind")]
-pub fn procinst_createbind<T: AsRef<ProcInstFields>, P: AsRef<ProcInstFields>>(
-    this: T,
+pub fn procinst_createbind<T: Bindable + ?Sized, P: Bindable>(
+    this: &T,
     parent: &P,
     descs: &'static Il2CppArray<&'static mut ProcDesc>,
     name: &'static Il2CppString,

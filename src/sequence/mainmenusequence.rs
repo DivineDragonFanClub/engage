@@ -1,6 +1,6 @@
 use unity::prelude::*;
 
-use crate::{proc::ProcInstFields, singleton::SingletonProcInst};
+use crate::{proc::{ProcInstFields, Bindable}, singleton::SingletonProcInst};
 
 #[repr(C)]
 #[unity::class("App", "MainMenuSequence")]
@@ -51,6 +51,8 @@ impl AsMut<ProcInstFields> for MainMenuSequence {
         &mut self.proc
     }
 }
+
+impl Bindable for MainMenuSequence {}
 
 #[unity::from_offset("App", "MainMenuSequence", "JumpToNextSequence")]
 fn mainmenusequence_jumptonextsequence(this: &MainMenuSequence);

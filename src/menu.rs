@@ -1,7 +1,5 @@
 //! Methods, type and traits related to menus. Deeply tied with [`ProcInst`](crate::proc::ProcInst).
 
-use std::ops::{Deref, DerefMut};
-
 use modular_bitfield::{bitfield, specifiers::B2};
 use unity::{prelude::*, system::List};
 
@@ -58,6 +56,7 @@ pub trait BasicMenuMethods {
     }
 }
 
+impl<T> Bindable for BasicMenu<T> {}
 impl<T> BasicMenuMethods for BasicMenu<T> {}
 
 impl<T> BasicMenu<T> {
