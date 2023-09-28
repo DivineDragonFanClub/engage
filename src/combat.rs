@@ -2,7 +2,6 @@
 
 use unity::prelude::*;
 
-#[repr(C)]
 #[unity::class("Combat", "Character")]
 pub struct Character {
     monobehaviour_fields: [u8; 0x8],
@@ -51,11 +50,9 @@ pub struct Character {
 #[unity::from_offset("Combat", "Character", "get_Side")]
 pub fn character_get_side(this: &Character, method_info: OptionalMethod) -> i32;
 
-#[repr(C)]
 #[unity::class("Combat", "CharacterSound")]
 pub struct CharacterSound { }
 
-#[repr(C)]
 #[unity::class("Combat", "Phase")]
 pub struct Phase {
     i_dont_care: [u8; 0x10],
@@ -135,7 +132,7 @@ pub enum ArrivalType {
     ConstantTime,
 }
 
-#[repr(C)]
+#[unity::class("Combat", "MagicBulletSettings")]
 pub struct MagicBulletSettings {
     home_node_name: &'static Il2CppString,
     target_node_name: &'static Il2CppString,
@@ -144,7 +141,7 @@ pub struct MagicBulletSettings {
     move_speed: f32,
 }
 
-#[repr(C)]
+#[unity::class("Combat", "Magic")]
 pub struct Magic<'a> {
     base: [u8; 0x28],
     pub magic_bullet_settings: &'a MagicBulletSettings,
@@ -157,7 +154,6 @@ pub fn magicsignalprocessor_get_magic(
     method_info: OptionalMethod,
 ) -> &Magic;
 
-#[repr(C)]
 #[unity::class("UnityEngine", "AnimationEvent")]
 pub struct AnimationEvent { }
 
