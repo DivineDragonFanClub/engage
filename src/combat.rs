@@ -147,6 +147,19 @@ pub struct Magic<'a> {
     pub magic_bullet_settings: &'a MagicBulletSettings,
 }
 
+#[unity::class("Combat", "MagicSignal")]
+pub struct MagicSignal {
+    pub level: i32,
+    pub frame: f32,
+    pub command: i32,
+    pub prefab: *const u8,
+    pub parent_name: Option<&'static Il2CppString>,
+    pub connect: i32,
+    pub int_parameter: i32,
+    pub float_parameter: f32,
+    pub string_parameter: Option<&'static Il2CppString>,
+}
+
 // Combat.MagicSignalProcessor$$get_Magic	7101bf31a0	Combat_Magic_o * Combat.MagicSignalProcessor$$get_Magic(Combat_MagicSignalProcessor_o * __this, MethodInfo * method)	8
 #[unity::from_offset("Combat", "MagicSignalProcessor", "get_Magic")]
 pub fn magicsignalprocessor_get_magic(
