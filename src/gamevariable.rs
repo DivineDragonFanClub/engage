@@ -64,4 +64,16 @@ impl GameVariableManager {
             set_bool(game_variable, key.into(), value, None);
         }
     }
+    pub fn set_number(key: &str, value: i32) {
+        let game_variable = GameUserData::get_variable();
+
+        unsafe {
+            set_number(game_variable, key.into(), value, None);
+        }   
+    }
+    pub fn get_number(key: &str, value: i32) -> i32 {
+        let game_variable = GameUserData::get_variable();
+        unsafe {get_number(game_variable, key.into(), value, None); }
+
+    }
 }
