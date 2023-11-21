@@ -24,7 +24,7 @@ pub fn entry(this: &GameVariable, key: &Il2CppString, num: i32, method_info: Opt
 pub fn entry_no_rewind(this: &GameVariable, key: &Il2CppString, num: i32, method_info: OptionalMethod) -> bool;
 
 #[unity::from_offset("App", "GameVariable", "GetNumber")]
-pub fn get_number(this: &GameVariable, key: &Il2CppString, num: i32, method_info: OptionalMethod) -> i32;
+pub fn get_number(this: &GameVariable, key: &Il2CppString, method_info: OptionalMethod) -> i32;
 
 #[skyline::from_offset(0x251efb0)]
 pub fn set_number(this: &GameVariable, key: &Il2CppString, num: i32, method_info: OptionalMethod);
@@ -73,7 +73,7 @@ impl GameVariableManager {
     }
     pub fn get_number(key: &str, value: i32) -> i32 {
         let game_variable = GameUserData::get_variable();
-        unsafe {get_number(game_variable, key.into(), value, None); }
+        unsafe {get_number(game_variable, key.into(), None) }
 
     }
 }
