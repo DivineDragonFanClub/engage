@@ -60,5 +60,5 @@ fn random_get_value(this: &Random, num: i32, method_info: OptionalMethod) -> i32
 #[skyline::from_offset(0x023751b0)]
 fn random_get_min_max(this: &Random, min: i32, max: i32, method_info: OptionalMethod) -> i32;
 
-#[unity::from_offset("App", "Random", "get_Spot")]
+#[unity::from_offset("App", "Random", "IsProbability100")]
 fn random_is_prob_100(this: &Random, percent: f32, method_info: OptionalMethod) -> bool;
