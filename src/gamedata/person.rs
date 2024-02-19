@@ -8,43 +8,43 @@ use std::ops::DerefMut;
 
 #[unity::class("App", "Capability")]
 pub struct Capability { 
-    pub m_data: &'static mut Array<u8>, 
+    pub data: &'static mut Array<u8>, 
 }
 impl Capability {
-    pub fn is_zero(&self) -> bool { unsafe { Capability_is_zero(self, None)} }
-    pub fn add(&self, index: i32, value: u8) { unsafe { Capability_add(self, index, value, None); }}
+    pub fn is_zero(&self) -> bool { unsafe { capability_is_zero(self, None)} }
+    pub fn add(&self, index: i32, value: u8) { unsafe { capability_add(self, index, value, None); }}
 }
 
 impl Deref for CapabilityFields {
     type Target = [u8];
     fn deref(&self) -> &Self::Target {
-        unsafe { std::slice::from_raw_parts(self.m_data.m_items.as_ptr(), self.m_data.max_length) }
+        unsafe { std::slice::from_raw_parts(self.data.m_items.as_ptr(), self.data.max_length) }
     }
 }
 impl DerefMut for CapabilityFields {
     fn deref_mut(&mut self) -> &mut [u8] {
-        unsafe { std::slice::from_raw_parts_mut(self.m_data.m_items.as_mut_ptr(), self.m_data.max_length) }
+        unsafe { std::slice::from_raw_parts_mut(self.data.m_items.as_mut_ptr(), self.data.max_length) }
     }
 }
 
 #[unity::class("App", "CapabilitySbyte")]
 pub struct CapabilitySbyte {
-     pub m_data: &'static mut Array<i8>, 
+     pub data: &'static mut Array<i8>, 
 }
 
 impl CapabilitySbyte {
-    pub fn is_zero(&self) -> bool { unsafe { CapabilitySbyte_is_zero(self, None)} }
-    pub fn add(&self, index: i32, value: i8) { unsafe { CapabilitySbyte_add(self, index, value, None); }}
+    pub fn is_zero(&self) -> bool { unsafe { capabilitysbyte_is_zero(self, None)} }
+    pub fn add(&self, index: i32, value: i8) { unsafe { capabilitysbyte_add(self, index, value, None); }}
 }
 impl Deref for CapabilitySbyteFields {
     type Target = [i8];
     fn deref(&self) -> &Self::Target {
-        unsafe { std::slice::from_raw_parts(self.m_data.m_items.as_ptr(), self.m_data.max_length) }
+        unsafe { std::slice::from_raw_parts(self.data.m_items.as_ptr(), self.data.max_length) }
     }
 }
 impl DerefMut for CapabilitySbyteFields {
     fn deref_mut(&mut self) -> &mut [i8] {
-        unsafe { std::slice::from_raw_parts_mut(self.m_data.m_items.as_mut_ptr(), self.m_data.max_length) }
+        unsafe { std::slice::from_raw_parts_mut(self.data.m_items.as_mut_ptr(), self.data.max_length) }
     }
 }
 
@@ -61,21 +61,21 @@ impl PersonData {
     pub fn get_asset_force(&self) -> i32 { unsafe { person_get_asset_force(self, None) }  }
     pub fn get_attrs(&self) -> i32 { unsafe { person_get_attrs(self, None)} }
     pub fn get_combat_bgm(&self) -> &Il2CppString { unsafe { person_get_combat_bgm(self, None)}}
-    pub fn get_common_skills(&self) -> &SkillArray { unsafe { person_get_CommonSkill(self, None) }  }
-    pub fn get_common_sids(&self) -> Option<&mut Array<&Il2CppString>> { unsafe { get_CommonSids(self, None)}}
+    pub fn get_common_skills(&self) -> &SkillArray { unsafe { person_get_commonskill(self, None) }  }
+    pub fn get_common_sids(&self) -> Option<&mut Array<&Il2CppString>> { unsafe { get_commonsids(self, None)}}
     pub fn get_flag(&self) -> &mut PersonDataFlag { unsafe { person_get_flag(self, None) }}
     pub fn get_gender(&self) -> i32 { unsafe { person_get_gender(self, None)}  }
     pub fn get_grow(&self) -> &mut Capability { unsafe { person_get_grow(self, None) } }
     pub fn get_help(&self) -> &Il2CppString { unsafe {person_get_help(self, None) }}
-    pub fn get_internal_level(&self) -> i8 { unsafe { person_get_InternalLevel(self, None)} }
+    pub fn get_internal_level(&self) -> i8 { unsafe { person_get_internallevel(self, None)} }
     pub fn get_job(&self) -> Option<&JobData> { unsafe { person_get_job(self, None) } }
     pub fn get_jid(&self) -> Option<&Il2CppString> { unsafe { person_get_jid(self, None) }}
     pub fn get_level(&self) -> u8 { unsafe { person_get_level(self, None) } }
     pub fn get_limit(&self) -> &mut CapabilitySbyte {  unsafe { person_get_limit(self, None) } }
     pub fn get_name(&self) -> Option<&Il2CppString> {  unsafe { person_get_name(self, None) } }
-    pub fn get_summon_color(&self) -> i32 { unsafe { get_SummonColor(self, None)}}
+    pub fn get_summon_color(&self) -> i32 { unsafe { person_get_summoncolor(self, None)}}
     pub fn get_summon_rank(&self) -> i32 { unsafe { person_get_summon_rank(self, None)}}
-    pub fn get_unit_icon_id(&self) -> &'static Il2CppString { unsafe { get_UnitIconID(self, None )}}
+    pub fn get_unit_icon_id(&self) -> &'static Il2CppString { unsafe { get_uniticonid(self, None )}}
 
     pub fn on_complete(&self) { unsafe { person_on_release(self, None); }}
 
@@ -84,7 +84,7 @@ impl PersonData {
     pub fn set_sub_aptitude(&self, mask: &WeaponMask) { unsafe { person_set_sub_apt(self, mask, None)}}
     pub fn set_ascii_name(&self, name: &Il2CppString) { unsafe { person_set_ascii_name(self, name, None); }}
     pub fn set_attrs(&self, attr: i32) { unsafe { person_set_attrs(self, attr, None); }}
-    pub fn set_common_skills(&self, skill: &SkillArray) { unsafe { set_CommonSkill(self, skill, None); }}
+    pub fn set_common_skills(&self, skill: &SkillArray) { unsafe { set_commonskill(self, skill, None); }}
     pub fn set_fid(&self, fid: &Il2CppString) {  unsafe { person_set_fid(self, fid, None);}}
     pub fn set_gender(&self, gender: i32) { unsafe { person_set_gender(self, gender, None); }}
     pub fn set_grow(&self, value: &Capability) { unsafe { person_set_grow(self, value, None); }}
@@ -96,7 +96,7 @@ impl PersonData {
     pub fn set_level(&self, level: u8) { unsafe { person_set_level(self, level, None); }}
     pub fn set_limit(&self, limits: &CapabilitySbyte) { unsafe { person_set_limit(self, limits, None); }}
     pub fn set_name(&self, name: &Il2CppString) { unsafe { person_set_name(self, name, None); }}
-    pub fn set_unit_icon_id(&self, icon_id: &Il2CppString) { unsafe { person_set_UnitIconID(self, icon_id, None ); }}
+    pub fn set_unit_icon_id(&self, icon_id: &Il2CppString) { unsafe { person_set_uniticonid(self, icon_id, None ); }}
 }
 
 
@@ -111,7 +111,7 @@ fn person_set_fid(this: &PersonData, fid: &Il2CppString, method_info: OptionalMe
 fn person_get_name(this: &PersonData, method_info: OptionalMethod) -> Option<&Il2CppString>;
 
 #[unity::from_offset("App", "PersonData", "get_UnitIconID")] //#[skyline::from_offset(0x1f25d20)]
-fn get_UnitIconID(this: &PersonData, method_info: OptionalMethod) -> &'static Il2CppString;
+fn get_uniticonid(this: &PersonData, method_info: OptionalMethod) -> &'static Il2CppString;
 
 #[unity::from_offset("App", "PersonData", "get_Gender")] //#[skyline::from_offset(0x1f25da0)]
 fn person_get_gender(this: &PersonData, method_info: OptionalMethod) -> i32;
@@ -123,10 +123,10 @@ fn person_get_grow(this: &PersonData, method_info: OptionalMethod) -> &mut Capab
 fn person_get_combat_bgm(this: &PersonData, method_info: OptionalMethod) -> &Il2CppString;
 
 #[unity::from_offset("App", "PersonData", "get_CommonSids")] //#[skyline::from_offset(0x1f26040)]
-fn get_CommonSids(this: &PersonData, method_info: OptionalMethod) -> Option<&mut Array<&Il2CppString>>;
+fn get_commonsids(this: &PersonData, method_info: OptionalMethod) -> Option<&mut Array<&Il2CppString>>;
 
 #[skyline::from_offset(0x1f2a6f0)]
-fn person_get_CommonSkill(this: &PersonData, method_info: OptionalMethod) -> &SkillArray;
+fn person_get_commonskill(this: &PersonData, method_info: OptionalMethod) -> &SkillArray;
 
 #[skyline::from_offset(0x1f26000)]
 fn person_get_limit(this: &PersonData, method_info: OptionalMethod) -> & mut CapabilitySbyte;
@@ -153,7 +153,7 @@ fn person_get_jid(this: &PersonData, method_info: OptionalMethod) -> Option<&Il2
 fn person_get_level(this: &PersonData, method_info: OptionalMethod) -> u8;
 
 #[skyline::from_offset(0x1f25de0)]
-fn person_get_InternalLevel(this: &PersonData, method_info: OptionalMethod) -> i8;
+fn person_get_internallevel(this: &PersonData, method_info: OptionalMethod) -> i8;
 
 #[skyline::from_offset(0x1f25df0)]
 fn person_set_InternalLevel(this: &PersonData, value: i8, method_info: OptionalMethod);
@@ -168,10 +168,10 @@ fn person_set_gender(this: &PersonData, value: i32, method_info: OptionalMethod)
 fn person_set_name(this: &PersonData, name: &Il2CppString, method_info: OptionalMethod);
 
 #[skyline::from_offset(0x1f26050)]
-fn set_commonSids(this: &PersonData, value: &mut Array<&Il2CppString>, method_info: OptionalMethod);
+fn set_commonsids(this: &PersonData, value: &mut Array<&Il2CppString>, method_info: OptionalMethod);
 
 #[skyline::from_offset(0x1f25d30)]
-fn person_set_UnitIconID(this: &PersonData, name: &Il2CppString, method_info: OptionalMethod);
+fn person_set_uniticonid(this: &PersonData, name: &Il2CppString, method_info: OptionalMethod);
 
 #[skyline::from_offset(0x1f26030)]
 fn person_set_grow(this: &PersonData, value: &Capability, method_info: OptionalMethod);
@@ -186,7 +186,7 @@ fn person_get_help(this: &PersonData, method_info: OptionalMethod) -> &Il2CppStr
 fn person_set_help(this: &PersonData, value: &Il2CppString, method_info: OptionalMethod);
 
 #[skyline::from_offset(0x1f2a700)]
-fn set_CommonSkill(this: &PersonData, value : &SkillArray, method_info: OptionalMethod);
+fn set_commonskill(this: &PersonData, value : &SkillArray, method_info: OptionalMethod);
 
 #[skyline::from_offset(0x1f2a7a0)]
 fn set_facedata(this: &PersonData, value : &PersonData, method_info: OptionalMethod);
@@ -219,19 +219,19 @@ fn person_set_sub_apt(this: &PersonData, value: &WeaponMask, method_info: Option
 fn person_get_summon_rank(this: &PersonData, method_info: OptionalMethod) -> i32;
 
 #[unity::from_offset("App", "PersonData", "get_SummonColor")]
-fn get_SummonColor(this: &PersonData, method_info: OptionalMethod) -> i32;
+fn person_get_summoncolor(this: &PersonData, method_info: OptionalMethod) -> i32;
 
 //Capability
 
 #[skyline::from_offset(0x25bcda0)]
-fn Capability_is_zero(this: &Capability, method_info: OptionalMethod) -> bool;
+fn capability_is_zero(this: &Capability, method_info: OptionalMethod) -> bool;
 
 #[skyline::from_offset(0x025be030)]
-fn CapabilitySbyte_is_zero(this: &CapabilitySbyte, method_info: OptionalMethod) -> bool;
+fn capabilitysbyte_is_zero(this: &CapabilitySbyte, method_info: OptionalMethod) -> bool;
 
 #[skyline::from_offset(0x25bcd00)]
-fn Capability_add(this: &Capability, i: i32, v: u8, method_info: OptionalMethod);
+fn capability_add(this: &Capability, i: i32, v: u8, method_info: OptionalMethod);
 
 #[skyline::from_offset(0x25bdf90)]
-fn CapabilitySbyte_add(this: &CapabilitySbyte, i: i32, v: i8,  method_info: OptionalMethod);
+fn capabilitysbyte_add(this: &CapabilitySbyte, i: i32, v: i8,  method_info: OptionalMethod);
 

@@ -8,8 +8,6 @@ pub struct HubSequence {
     proc: ProcInst,
     is_resume: bool,
     m_is_loaded: bool,
-    pub m_scene_name: &'static Il2CppString,
-    scene_mode: i32,
     //
 }
 impl Bindable for HubSequence {}

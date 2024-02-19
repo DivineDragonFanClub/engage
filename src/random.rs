@@ -13,7 +13,7 @@ impl Random {
     pub fn get_combat() -> &'static Random { unsafe { random_get_combat(None)} }
     pub fn get_game() -> &'static Random { unsafe { random_get_game(None)} }
     pub fn get_system() -> &'static Random { unsafe { random_get_system(None) } }
-    pub fn get_kill_bonus() -> &'static Random { unsafe { random_get_killBonus(None)} }
+    pub fn get_kill_bonus() -> &'static Random { unsafe { random_get_kill_bonus(None)} }
     pub fn get_spot() -> &'static Random { unsafe { random_get_spot(None)} }
     pub fn get_hub() -> &'static Random { unsafe { random_get_hub(None) } }
     pub fn get_hub_item() -> &'static Random { unsafe { random_get_hub_item(None) } }
@@ -46,7 +46,7 @@ fn random_get_hub(method_info: OptionalMethod) -> &'static Random;
 fn random_get_hub_item(method_info: OptionalMethod) -> &'static Random;
 
 #[unity::from_offset("App", "Random", "get_KillBonus")]
-fn random_get_killBonus(method_info: OptionalMethod) -> &'static Random;
+fn random_get_kill_bonus(method_info: OptionalMethod) -> &'static Random;
 
 #[unity::from_offset("App", "Random", "get_System")]
 fn random_get_system(method_info: OptionalMethod) -> &'static Random;

@@ -17,7 +17,7 @@ pub enum ForceType {
 pub struct Force {
     pub head: Option<&'static Unit>,
 	pub tail: Option<&'static Unit>,
-    pub m_Type: i32,
+    pub force_type: i32,
     // ...
 }
 

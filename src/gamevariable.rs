@@ -95,9 +95,9 @@ impl GameVariableManager {
     }
     pub fn find_starts_with(string: &str) -> &'static List<&'static Il2CppString> {
         let game_variable = GameUserData::get_variable();
-        unsafe { GameVariable_FindStartWith(game_variable, string.into(), None)  }
+        unsafe { gamevariable_find_start_with(game_variable, string.into(), None)  }
     }
 }
 
 #[unity::from_offset("App", "GameVariable", "FindStartsWith")]
-pub fn GameVariable_FindStartWith(this: &GameVariable, name: &Il2CppString, method_info: OptionalMethod) -> &'static List<&'static Il2CppString>;
+pub fn gamevariable_find_start_with(this: &GameVariable, name: &Il2CppString, method_info: OptionalMethod) -> &'static List<&'static Il2CppString>;

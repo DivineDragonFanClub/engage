@@ -68,12 +68,12 @@ impl GameUserData {
     }
     pub fn get_grow_mode() -> i32 {
         let instance = Self::get_instance();
-        unsafe { GetGrowMode(instance, None)}
+        unsafe { getgrowmode(instance, None)}
     }
 
     pub fn get_sequence() -> i32 {
         let instance = Self::get_instance();
-        unsafe { get_Sequence(instance, None) }
+        unsafe { game_user_data_get_sequence(instance, None) }
     }
 
     pub fn add_iron(amount: i32) -> i32 {
@@ -106,19 +106,19 @@ impl GameUserData {
     pub fn add_bond(amount: i32) -> i32 {
         let instance = Self::get_instance();
         unsafe {
-            let new_amount = get_PieceOfBond(instance, None) + amount;
-            set_PieceOfBond(instance, new_amount, None);
+            let new_amount = get_piece_of_bond(instance, None) + amount;
+           set_piece_of_bond(instance, new_amount, None);
             new_amount
         }
     }
     pub fn get_chapter() -> &'static ChapterData { unsafe { get_chapter_data(Self::get_instance(), None)}}
-    pub fn get_status() -> &'static mut GameUserDataStatus { unsafe { get_UserData_Status(Self::get_instance(), None) } }
+    pub fn get_status() -> &'static mut GameUserDataStatus { unsafe { get_game_user_data_status(Self::get_instance(), None) } }
 
-    pub fn set_gold(monies: i32) { unsafe { setGold(Self::get_instance(), monies, None );} }
+    pub fn set_gold(monies: i32) { unsafe { setgold(Self::get_instance(), monies, None );} }
     pub fn set_iron(amount: i32){ unsafe { game_user_data_set_iron(Self::get_instance(), amount, None); } }
     pub fn set_steel(amount: i32){ unsafe { game_user_data_set_steel(Self::get_instance(), amount, None); } }
     pub fn set_silver(amount: i32){ unsafe { game_user_data_set_silver(Self::get_instance(), amount, None); } }
-    pub fn set_bond(amount: i32){ unsafe { set_PieceOfBond(Self::get_instance(), amount, None); } }
+    pub fn set_bond(amount: i32){ unsafe {set_piece_of_bond(Self::get_instance(), amount, None); } }
 
     pub fn is_encount_map() -> bool { unsafe { is_encounter_map(Self::get_instance(), None)}}
     pub fn is_cid_completed(cid: &Il2CppString) -> bool { unsafe{ is_completed(Self::get_instance(), cid, None) }}
@@ -136,7 +136,7 @@ pub struct GameUserDataStatus {
 fn get_difficulty(this: &GameUserData, is_dynamic: bool, method_info: OptionalMethod) -> i32;
 
 #[unity::from_offset("App", "GameUserData", "GetGrowMode")]
-fn GetGrowMode(this: &GameUserData, method_info: OptionalMethod) -> i32;
+fn getgrowmode(this: &GameUserData, method_info: OptionalMethod) -> i32;
 
 #[unity::from_offset("App", "GameUserData", "get_RefineIron")]
 fn get_iron(this: &GameUserData, method_info: OptionalMethod) -> i32;
@@ -157,19 +157,19 @@ fn game_user_data_set_silver(this: &GameUserData, value: i32, method_info: Optio
 fn game_user_data_set_steel(this: &GameUserData, value: i32, method_info: OptionalMethod);
 
 #[unity::from_offset("App", "GameUserData", "get_PieceOfBond")]
-fn get_PieceOfBond(this: &GameUserData, method_info: OptionalMethod) -> i32;
+fn get_piece_of_bond(this: &GameUserData, method_info: OptionalMethod) -> i32;
 
 #[unity::from_offset("App", "GameUserData", "set_PieceOfBond")]
-fn set_PieceOfBond(this: &GameUserData, value: i32, method_info: OptionalMethod);
+fn set_piece_of_bond(this: &GameUserData, value: i32, method_info: OptionalMethod);
 
 #[unity::from_offset("App", "GameUserData", "get_Sequence")]
-fn get_Sequence(this: &GameUserData, method_info: OptionalMethod) -> i32;
+fn game_user_data_get_sequence(this: &GameUserData, method_info: OptionalMethod) -> i32;
 
 #[unity::from_offset("App", "GameUserData", "get_Status")]
-fn get_UserData_Status(this: &GameUserData, method_info: OptionalMethod) -> &'static mut GameUserDataStatus;
+fn get_game_user_data_status(this: &GameUserData, method_info: OptionalMethod) -> &'static mut GameUserDataStatus;
 
 #[skyline::from_offset(0x0250e450)]
-fn setGold(this: &GameUserData, value : i32, method_info: OptionalMethod);
+fn setgold(this: &GameUserData, value : i32, method_info: OptionalMethod);
 
 #[skyline::from_offset(0x02515fa0)]
 fn is_encounter_map(this: &GameUserData, method_info: OptionalMethod) -> bool;

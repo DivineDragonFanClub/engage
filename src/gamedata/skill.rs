@@ -3,7 +3,7 @@ use unity::il2cpp::object::Array;
 use unity::system::List;
 use super::*;
 use std::ops::Deref;
-// Structs, methods required for PersonData, JobData, SkillArray
+// Structs, methods required for SkillArray and SkillData
 
 #[unity::class("App", "SkillArray")]
 pub struct SkillArray {}
@@ -16,12 +16,13 @@ pub struct SkillData {
     pub name: Option<&'static Il2CppString>,
 }
 impl Gamedata for SkillData{}
+
 impl SkillArray {
     pub fn clear(&self){ unsafe { skillarray_clear(self, None); } }
     pub fn copy(&self, src: &SkillArray) { unsafe { skillarray_copy(self, src, None); }}
     pub fn ctor(&self, src: &SkillArray) { unsafe { skillarray_ctor(self, src, None); }}
     pub fn find_sid(&self, sid: &Il2CppString) -> Option<&'static SkillData> { unsafe { skillarray_find(self, sid, None)}}
-    pub fn remove_sid(&self, sid: &Il2CppString) -> bool { unsafe { Skill_Array_remove(self, sid, None)}}
+    pub fn remove_sid(&self, sid: &Il2CppString) -> bool { unsafe { skill_array_remove(self, sid, None)}}
     pub fn skill_array_add(&self, add: &SkillArray) -> bool { unsafe { add_skill_array(self, add, None)}}
 }
 
@@ -41,7 +42,7 @@ fn skillarray_ctor(this: &SkillArray, src: &SkillArray, method_info: OptionalMet
 fn skillarray_copy(this: &SkillArray, src: &SkillArray, method_info: OptionalMethod);
 
 #[skyline::from_offset(0x02482850)]
-fn Skill_Array_remove(this: &SkillArray, sid: &Il2CppString, method_info: OptionalMethod) -> bool;
+fn skill_array_remove(this: &SkillArray, sid: &Il2CppString, method_info: OptionalMethod) -> bool;
 
 #[skyline::from_offset(0x24820c0)]
 fn add_skill_array(this: &SkillArray, src: &SkillArray, method_info: OptionalMethod) -> bool;

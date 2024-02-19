@@ -210,18 +210,4 @@ pub trait Gamedata: Il2CppClassData + Sized {
     
         get_list(method?)
     }
-    fn print_method_list(){
-        let method2 = Self::class().get_methods().iter();
-        for i in method2 {
-            println!("Class Method: {}", i.get_name().unwrap());
-        }
-        let method3 = Self::class()._1.parent.get_methods().iter();
-        for i in method3 {
-            println!("Parent Method: {}", i.get_name().unwrap());
-        }
-        let method = Self::class()._1.parent._1.parent.get_methods().iter();
-        for i in method {
-            println!("Parent Parent Method: {}", i.get_name().unwrap());
-        }
-    }
 }

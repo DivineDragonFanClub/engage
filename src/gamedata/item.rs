@@ -34,53 +34,54 @@ pub struct UnitItem {
 }
 
 impl UnitItem {
-	pub fn get_equipped_skills(&self) ->  Option<&SkillArray> { unsafe { UnitItem_GetEquipSkills(self, None)}}
-	pub fn get_power(&self) -> i32 { unsafe { UnitItem_GetPower(self, None)}}
+	pub fn ctor(&self, item: &ItemData) { unsafe { unititem_ctor(self, item, None); }}
+	pub fn get_equipped_skills(&self) ->  Option<&SkillArray> { unsafe { unititem_get_equip_skills(self, None)}}
+	pub fn get_power(&self) -> i32 { unsafe { unititem_get_power(self, None)}}
 
-	pub fn is_weapon(&self) -> bool { { unsafe { UnitItem_IsWeapon(self, None) }}}
-	pub fn is_drop(&self) -> bool { { unsafe {  UnitItem_get_is_drop(self, None)}}}
-	pub fn refine_data_exist(&self) -> bool { {unsafe { UnitItem_IsExistRefineData(self, None)}}}
+	pub fn is_weapon(&self) -> bool { { unsafe { unititem_is_weapon(self, None) }}}
+	pub fn is_drop(&self) -> bool { { unsafe {  unititem_get_is_drop(self, None)}}}
+	pub fn refine_data_exist(&self) -> bool { {unsafe { unititem_is_exsistrefinedata(self, None)}}}
 
-	pub fn set_engrave(&self, engrave: &GodData) -> bool { unsafe { UnitItem_SetEngrave(self, engrave, None)}}
-	pub fn set_refine_level(&self, level: i32) { unsafe { UnitItem_Set_RefineLevel(self, level, None); }}
+	pub fn set_engrave(&self, engrave: &GodData) -> bool { unsafe { unititem_set_engrave(self, engrave, None)}}
+	pub fn set_refine_level(&self, level: i32) { unsafe { unititem_set_refine_level(self, level, None); }}
 }
 
 impl UnitItemList {
-	pub fn get_count(&self) -> i32 { unsafe { UnitItemList_Get_Count(self, None)}}
-	pub fn add(&self, item: &ItemData) { unsafe { UnitItemList_Add(self, item, None); }}
-	pub fn get_item(&self, index: i32) -> Option<&'static mut UnitItem> { unsafe { UnitItemList_Get_Item(self, index, None)}}
+	pub fn get_count(&self) -> i32 { unsafe { unititemlist_get_count(self, None)}}
+	pub fn add(&self, item: &ItemData) { unsafe { unititemlist_add(self, item, None); }}
+	pub fn get_item(&self, index: i32) -> Option<&'static mut UnitItem> { unsafe { unititemlist_get_item(self, index, None)}}
 }
 
 
 #[unity::from_offset("App", "UnitItemList", "get_Count")]
-pub fn UnitItemList_Get_Count(this: &UnitItemList, method_info: OptionalMethod) -> i32;
+pub fn unititemlist_get_count(this: &UnitItemList, method_info: OptionalMethod) -> i32;
 
 #[unity::from_offset("App", "UnitItemList", "get_Item")]
-pub fn UnitItemList_Get_Item(this: &UnitItemList, index: i32, method_info: OptionalMethod) ->  Option<&'static mut UnitItem>;
+pub fn unititemlist_get_item(this: &UnitItemList, index: i32, method_info: OptionalMethod) ->  Option<&'static mut UnitItem>;
 
 #[skyline::from_offset(0x01fb3ab0)]
-pub fn UnitItemList_Add(this: &UnitItemList, item: &ItemData, method_info: OptionalMethod) -> i32;
+pub fn unititemlist_add(this: &UnitItemList, item: &ItemData, method_info: OptionalMethod) -> i32;
 
 #[unity::from_offset("App", "UnitItem", "set_RefineLevel")]
-pub fn UnitItem_Set_RefineLevel(this: &UnitItem, value: i32, method_info: OptionalMethod);
+pub fn unititem_set_refine_level(this: &UnitItem, value: i32, method_info: OptionalMethod);
 
 #[unity::from_offset("App", "UnitItem", "IsExistRefineData")]
-pub fn UnitItem_IsExistRefineData(this: &UnitItem, method_info: OptionalMethod) -> bool;
+pub fn unititem_is_exsistrefinedata(this: &UnitItem, method_info: OptionalMethod) -> bool;
 
 #[unity::from_offset("App", "UnitItem", "SetEngrave")]
-pub fn UnitItem_SetEngrave(this: &UnitItem, data: &GodData, method_info: OptionalMethod) -> bool;
+pub fn unititem_set_engrave(this: &UnitItem, data: &GodData, method_info: OptionalMethod) -> bool;
 
 #[skyline::from_offset(0x01fad9e0)]
-pub fn UnitItem_ctor(this: &UnitItem, item: &ItemData, method_info: OptionalMethod);
+pub fn unititem_ctor(this: &UnitItem, item: &ItemData, method_info: OptionalMethod);
 
 #[unity::from_offset("App", "UnitItem", "IsWeapon")]
-pub fn UnitItem_IsWeapon(this: &UnitItem, method_info: OptionalMethod) -> bool;
+pub fn unititem_is_weapon(this: &UnitItem, method_info: OptionalMethod) -> bool;
 
 #[unity::from_offset("App", "UnitItem", "get_IsDrop")]
-pub fn UnitItem_get_is_drop(this: &UnitItem, method_info: OptionalMethod) -> bool;
+pub fn unititem_get_is_drop(this: &UnitItem, method_info: OptionalMethod) -> bool;
 
 #[unity::from_offset("App", "UnitItem", "GetPower")]
-pub fn UnitItem_GetPower(this: &UnitItem, method_info: OptionalMethod) -> i32;
+pub fn unititem_get_power(this: &UnitItem, method_info: OptionalMethod) -> i32;
 
 #[unity::from_offset("App", "UnitItem", "GetEquipSkills")]
-pub fn UnitItem_GetEquipSkills(this: &UnitItem, method_info: OptionalMethod) -> Option<&SkillArray>;
+pub fn unititem_get_equip_skills(this: &UnitItem, method_info: OptionalMethod) -> Option<&SkillArray>;

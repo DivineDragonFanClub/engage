@@ -156,15 +156,15 @@ impl Unit {
         unsafe { unit_is_engage_owner(self, None) }
     }
     pub fn is_enchantment(&self) -> bool {
-        unsafe { Unit_is_enchantment(self, None) }
+        unsafe { unit_is_enchantment(self, None) }
     }
     // Getters 
     pub fn get_aptitude(&self) -> &'static mut WeaponMask { unsafe { get_unit_aptitude(self, None) } }
-    pub fn get_capability(&self, index: i32, enhance: bool) -> i32 { unsafe { unit_GetCapability(self, index, enhance, None)} }
+    pub fn get_capability(&self, index: i32, enhance: bool) -> i32 { unsafe { unit_getcapability(self, index, enhance, None)} }
     pub fn get_capability_grow(&self, index: i32, auto_level: bool) -> i32 { unsafe { unit_get_capability_grow(self, index, auto_level, None)}}
     pub fn get_enchanced_level(&self) -> i32 { unsafe { unit_get_enhance_level(self, None)}}
-    pub fn get_hp(&self) -> i32 { unsafe { unit_get_Hp(self, None) } }
-    pub fn get_learn_job_skill(&self) -> Option<&SkillData> { unsafe { LearnJobSkill_Unit(self, None)}}
+    pub fn get_hp(&self) -> i32 { unsafe { unit_get_hp(self, None) } }
+    pub fn get_learn_job_skill(&self) -> Option<&SkillData> { unsafe { learn_job_kill_unit(self, None)}}
     pub fn get_pid(&self) -> &'static Il2CppString {  unsafe { unit_get_pid(self, None)} }
 
     // Setters
@@ -174,18 +174,21 @@ impl Unit {
     pub fn set_internal_level(&self, internal: i32) {  unsafe {unit_set_internal_level(self, internal, None); }  }
     pub fn set_job(&self, job: &JobData) { unsafe { unit_set_job(self, job, None); } }
     pub fn set_level(&self, level: i32){  unsafe {  unit_set_level(self, level, None);} }
-    pub fn set_sp(&self, sp: i32) { unsafe { unit_set_SP(self, sp, None); } }
+    pub fn set_sp(&self, sp: i32) { unsafe { unit_set_sp(self, sp, None); } }
 
     // Others
-    pub fn add_sp(&self, added_sp: i32) {  unsafe { unit_add_SP(self, added_sp, None); }  }
+    pub fn add_sp(&self, added_sp: i32) {  unsafe { unit_add_sp(self, added_sp, None); }  }
     pub fn add_item_iid(&self, iid: &Il2CppString) -> i32 { unsafe { unit_add_item_iid(self, iid, None)}}
-    pub fn add_item_iids(&self, iids: &Array<Il2CppString>) -> bool { unsafe { unit_add_itemList(self, iids, None )}}
+    pub fn add_item_iids(&self, iids: &Array<&Il2CppString>) -> bool { unsafe { unit_add_item_list(self, iids, None )}}
+
     //Creation of Unit
     pub fn create(&self, person: &PersonData, job: &JobData, level: i32, rng: &Random) { unsafe { unit_create(self, person, job, level, rng, None); }}
-    pub fn create_impl1(&self, person: &PersonData, job: &JobData, level: i32, rng: &Random) { unsafe { unit_CreateImpl1(self, person, job, level, rng, None); }}
+    pub fn create_impl1(&self, person: &PersonData, job: &JobData, level: i32, rng: &Random) { unsafe { unit_create_impl_1(self, person, job, level, rng, None); }}
+
+    // skill check (checks mask skill)
     pub fn has_private_skill(&self, sid: &Il2CppString) -> bool { unsafe { unit_has_private_skill(self, sid, None) } }
-    pub fn has_sid(&self, sid: &Il2CppString) -> bool { unsafe { Unit_has_skill_sid(self, sid, None) }}
-    pub fn has_skill(&self, skill: &SkillData) -> bool { unsafe { Unit_has_skill(self, skill, None)}}
+    pub fn has_sid(&self, sid: &Il2CppString) -> bool { unsafe { unit_has_skill_sid(self, sid, None) }}
+    pub fn has_skill(&self, skill: &SkillData) -> bool { unsafe { unit_has_skill(self, skill, None)}}
 
     // Level up/down
     pub fn level_up(&self, num_min_stats: i32) { unsafe { unit_level_up(self, num_min_stats, None); } }
@@ -194,10 +197,12 @@ impl Unit {
     pub fn set_weapon_mask_from_person(&self) { unsafe { unit_set_weapon_mask_from_person(self, None); }}
     
 }
+
 impl UnitEdit {
     pub fn set_gender(&self, gender: i32) { unsafe { unit_edit_set_gender(self, gender, None);}}
     pub fn set_name(&self, name: &Il2CppString) { unsafe { unit_edit_set_name(self, name, None); }}
 }
+
 #[skyline::from_offset(0x1a3f400)]
 extern "C" fn unit_itemadd(this: &Unit, item: &ItemData, method_info: OptionalMethod);
 
@@ -229,7 +234,7 @@ extern "C" fn unit_is_engage_owner(this: &Unit, method_info: OptionalMethod) -> 
 
 //triabolical added
 #[unity::from_offset("App", "Unit", "AddSkillPoint")]
-fn unit_add_SP(this: &Unit, value: i32, method_info: OptionalMethod);
+fn unit_add_sp(this: &Unit, value: i32, method_info: OptionalMethod);
 
 #[unity::from_offset("App","Unit", "set_Hp")]
 fn unit_set_Hp(this: &Unit, value: i32, method_info: OptionalMethod);
@@ -238,19 +243,19 @@ fn unit_set_Hp(this: &Unit, value: i32, method_info: OptionalMethod);
 fn unit_set_exp(this: &Unit, exp: i32, method_info: OptionalMethod);
 
 #[unity::from_offset("App", "Unit", "GetEnhancedLevel")]
-fn unit_GetEnhancedLevel(this: &Unit, method_info: OptionalMethod) ->i32;
+fn unit_get_enhanced_level(this: &Unit, method_info: OptionalMethod) ->i32;
 
 #[unity::from_offset("App", "Unit", "set_InternalLevel")]
 fn unit_set_internal_level(this: &Unit, level: i32, method_info: OptionalMethod);
 
 #[unity::from_offset("App","Unit", "get_Hp")]
-fn unit_get_Hp(this: &Unit, method_info: OptionalMethod) -> i32;
+fn unit_get_hp(this: &Unit, method_info: OptionalMethod) -> i32;
 
 #[skyline::from_offset(0x01a5ba20)]
-fn unit_GetCapability(this: &Unit, type_: i32, calcEnhance: bool, method_info: OptionalMethod) -> i32;
+fn unit_getcapability(this: &Unit, type_: i32, calcEnhance: bool, method_info: OptionalMethod) -> i32;
 
 #[unity::from_offset("App", "Unit", "set_SkillPoint")]
-fn unit_set_SP(this: &Unit, value: i32, method_info: OptionalMethod);
+fn unit_set_sp(this: &Unit, value: i32, method_info: OptionalMethod);
 
 #[skyline::from_offset(0x01a378b0)]
 fn unit_has_private_skill(this: &Unit, sid: &Il2CppString, method_info: OptionalMethod) -> bool;
@@ -268,19 +273,19 @@ fn get_unit_aptitude(this: &Unit, method_info: OptionalMethod) -> &'static mut W
 fn unit_level_down(this: &Unit, method_info: OptionalMethod);
 
 #[unity::from_offset("App", "Unit", "CreateImpl1")]
-fn unit_CreateImpl1(this: &Unit, person: &PersonData, job: &JobData, level: i32, random: &Random, method_info: OptionalMethod);
+fn unit_create_impl_1(this: &Unit, person: &PersonData, job: &JobData, level: i32, random: &Random, method_info: OptionalMethod);
 
 #[unity::from_offset("App", "Unit", "Create")]
 fn unit_create(this: &Unit, person: &PersonData, job: &JobData, level: i32, random: &Random, method_info: OptionalMethod);
 
 #[skyline::from_offset(0x01a3c290)]
-fn LearnJobSkill_Unit(this: &Unit, method_info: OptionalMethod) -> Option<&SkillData>;
+fn learn_job_kill_unit(this: &Unit, method_info: OptionalMethod) -> Option<&SkillData>;
 
 #[unity::from_offset("App", "Unit", "ItemPutOffAll")]
 fn unit_item_put_off_all(this: &Unit, method_info: OptionalMethod);
 
 #[skyline::from_offset(0x01a3f480)]
-fn unit_add_itemList(this: &Unit, iid: &Array<Il2CppString>, method_info: OptionalMethod) -> bool;
+fn unit_add_item_list(this: &Unit, iid: &Array<&Il2CppString>, method_info: OptionalMethod) -> bool;
 
 #[skyline::from_offset(0x01a0c990)]
 fn unit_add_item_iid(this: &Unit, iid: &Il2CppString, method_info: OptionalMethod) -> i32;
@@ -289,19 +294,19 @@ fn unit_add_item_iid(this: &Unit, iid: &Il2CppString, method_info: OptionalMetho
 fn unit_set_job(this: &Unit, value: &JobData, method_info: OptionalMethod);
 
 #[skyline::from_offset(0x01a35520)]
-fn Unit_has_skill(this: &Unit, skill: &SkillData, method_info: OptionalMethod) -> bool;
+fn unit_has_skill(this: &Unit, skill: &SkillData, method_info: OptionalMethod) -> bool;
 
 #[skyline::from_offset(0x01a35540)]
-fn Unit_has_skill_sid(this: &Unit, sid: &Il2CppString, method_info: OptionalMethod) -> bool;
+fn unit_has_skill_sid(this: &Unit, sid: &Il2CppString, method_info: OptionalMethod) -> bool;
 
 #[skyline::from_offset(0x01a23a40)]
-fn Unit_is_enchantment(this: &Unit, method_info: OptionalMethod) -> bool;
+fn unit_is_enchantment(this: &Unit, method_info: OptionalMethod) -> bool;
 
 #[unity::from_offset("App", "Unit", "SetBaseCapability")]
 fn unit_set_base_capability(this: &Unit, index: i32, value: i32, method_info: OptionalMethod);
 
 #[skyline::from_offset(0x01a2ff20)]
-fn unit_get_capability_grow(this: &Unit, index: i32, is_autoGrow: bool, method_info: OptionalMethod) -> i32;
+fn unit_get_capability_grow(this: &Unit, index: i32, is_auto_grow: bool, method_info: OptionalMethod) -> i32;
 
 #[unity::from_offset("App", "Unit", "GetEnhancedLevel")]
 fn unit_get_enhance_level(this: &Unit, method_info: OptionalMethod) -> i32;
