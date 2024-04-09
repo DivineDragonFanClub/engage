@@ -1,6 +1,5 @@
-pub use unity::prelude::*;
-use unity::il2cpp::object::Array;
-use unity::system::List;
+pub use unity::{prelude::*, system::{List, Dictionary}, il2cpp::object::Array};
+use crate::gamedata::{skill::SkillArray, WeaponMask};
 use super::GodData;
 
 impl GodData {
@@ -13,6 +12,7 @@ impl GodData {
     pub fn get_engrave_weight(&self) -> i8 { unsafe{ goddata_get_engrave_weight(self, None) }}
 
     pub fn load() { unsafe { goddata_load(None); }}
+    pub fn on_complete(&self) { unsafe{ god_data_on_complete(self, None); }}
 
     pub fn set_engage_attack(&self, value: &Il2CppString) { unsafe { goddata_set_engage_attack(self, value, None); }}
     pub fn set_engrave_avoid(&self, value: i8) { unsafe{ goddata_set_engrave_avoid(self, value, None); }}
@@ -44,6 +44,7 @@ impl GodGrowthData {
     pub fn get_inheritance_skills(&self) ->  Option<&mut Array<&Il2CppString>> { unsafe { ggd_set_inherit_skills(self, None)}}
     pub fn load() { unsafe { ggd_load(None); }}
     pub fn on_complete(&self) { unsafe { ggd_on_complete(self, None); }}
+    pub fn on_complete_end() { unsafe { god_growth_on_completed_end(None, None); }}
     pub fn try_get_from_god_data(this: &GodData) -> Option<&'static List<GodGrowthData>> { unsafe { ggd_try_get_from_god(this, None)}}
     pub fn unload() {
         let mut method = Self::class()._1.parent.get_methods().iter().find(|method| method.get_name() == Some(String::from("Unload")));
@@ -52,6 +53,31 @@ impl GodGrowthData {
         let unload = unsafe { std::mem::transmute::<_, extern "C" fn(&MethodInfo) -> ()> ( method.unwrap().method_ptr,) };
         unload(method.unwrap());
     }
+    pub fn get_level_data(key: &str) -> Option<&'static List<GodGrowthDataLevelData>> {
+        let level_list = Self::class().get_static_fields::<GodGrowthDataStaticFields>().level_list;
+        let method = level_list.get_class().get_methods().iter()
+        .find(|method| method.get_name() == Some(String::from("get_Item")))
+        .unwrap();
+        let get_keys = unsafe {
+            std::mem::transmute::<_, extern "C" fn(&Dictionary<&'static Il2CppString, &'static List<GodGrowthDataLevelData>>, &Il2CppString, &MethodInfo) -> Option<&'static List<GodGrowthDataLevelData>>>(
+                method.method_ptr,
+            )
+        };
+        get_keys(level_list, key.into(), method)
+    }
+}
+#[unity::class("App", "GodGrowthData.LevelData")]
+pub struct GodGrowthDataLevelData {
+    pub synchro_skills: &'static SkillArray,
+    pub engaged_skills: &'static SkillArray,
+    pub engage_skills: &'static SkillArray,
+    style_names: *const u8,
+    pub aptitude: &'static WeaponMask,
+    pub flags: &'static WeaponMask,
+}
+
+pub struct GodGrowthDataStaticFields {
+    pub level_list: &'static Dictionary<&'static Il2CppString, &'static List<GodGrowthDataLevelData>>,
 }
 
 
@@ -101,6 +127,9 @@ fn goddata_set_engrave_weight(this: &GodData, value: i8, method_info: OptionalMe
 #[unity::from_offset("App","GodData","Load")]
 fn goddata_load(method_info: OptionalMethod);
 
+#[unity::from_offset("App", "GodData", "OnCompleted")]
+fn god_data_on_complete(this: &GodData, method_info: OptionalMethod);
+
 // God Growth Data
 #[unity::from_offset("App", "GodGrowthData", "get_EngageSkills")]
 fn ggd_get_engage_skills(this: &GodGrowthData, method_info: OptionalMethod) -> &mut Array<&Il2CppString>;
@@ -116,3 +145,6 @@ fn ggd_on_complete(this: &GodGrowthData, method_info: OptionalMethod);
 
 #[unity::from_offset("App", "GodGrowthData", "TryGetFromGodData")]
 fn ggd_try_get_from_god(god: &GodData, method_info: OptionalMethod) -> Option<&'static List<GodGrowthData>>;
+
+#[skyline::from_offset(0x02332320)]
+fn god_growth_on_completed_end(this: Option<&GodGrowthData>, method_info: OptionalMethod);
