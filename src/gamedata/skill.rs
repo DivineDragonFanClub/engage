@@ -1,9 +1,30 @@
-pub use unity::prelude::*;
+pub use unity::{il2cpp::object::Array, prelude::*};
 use super::*;
 // Structs, methods required for SkillArray and SkillData
 
+pub struct SkillArrayEntity {
+    pub value : u32,
+}
+pub struct SkillArrayEnityList {
+    klass : *const u8,
+    monitor: *const u8,
+    pub items: &'static Array<&'static SkillArrayEntity>,
+    pub size: i32,
+    pub version: i32,
+    sync_root: *const u8,
+}
+
 #[unity::class("App", "SkillArray")]
-pub struct SkillArray {}
+pub struct SkillArray {
+    mask: *const u8,
+    pub list: u8,
+    pub list: &'static SkillArrayEntityList,
+    pub flags: i64,
+    pub cycles: i32,
+    pub timing: i32,
+    pub efficacys: i32,
+    pub efficacy_ignore: i32,
+}
 
 #[unity::class("App", "SkillData")]
 pub struct SkillData {
