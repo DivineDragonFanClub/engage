@@ -104,7 +104,14 @@ impl GameVariableManager {
         let game_variable = GameUserData::get_variable();
         unsafe { gamevariable_find_start_with(game_variable, string.into(), None)  }
     }
+    pub fn exist(string: &str) -> bool {
+        let game_variable = GameUserData::get_variable();
+        unsafe { gamevariable_is_exist(game_variable, string.into(), None)  }
+    }
 }
 
 #[unity::from_offset("App", "GameVariable", "FindStartsWith")]
 pub fn gamevariable_find_start_with(this: &GameVariable, name: &Il2CppString, method_info: OptionalMethod) -> &'static List<&'static Il2CppString>;
+
+#[unity::from_offset("App", "GameVariable", "IsExist")]
+pub fn gamevariable_is_exist(this: &GameVariable, key: &Il2CppString, method_info: OptionalMethod) -> bool;

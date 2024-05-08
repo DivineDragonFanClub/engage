@@ -1,15 +1,17 @@
 pub use unity::{prelude::*, system::{List, Dictionary}, il2cpp::object::Array};
-use crate::gamedata::{skill::SkillArray, WeaponMask};
+use crate::gamedata::{*, item::ItemData, skill::SkillArray, WeaponMask};
 use super::GodData;
 
 impl GodData {
     pub fn get_engage_attack(&self) -> &'static Il2CppString { unsafe { goddata_get_engage_attack(self, None) }}
     pub fn get_engrave_avoid(&self) -> i8 { unsafe{ goddata_get_engrave_avoid(self, None) }}
+    pub fn get_engage_attack_link(&self) -> Option<&'static Il2CppString> { unsafe { god_data_get_engage_link(self, None)}}
     pub fn get_engrave_critical(&self) -> i8 { unsafe{ goddata_get_engrave_critical(self, None) }}
     pub fn get_engrave_hit(&self) -> i8 { unsafe{ goddata_get_engrave_hit(self, None) }}
     pub fn get_engrave_power(&self) -> i8 { unsafe{ goddata_get_engrave_power(self, None) }}
     pub fn get_engrave_secure(&self) -> i8 { unsafe{ goddata_get_engrave_secure(self, None) }}
     pub fn get_engrave_weight(&self) -> i8 { unsafe{ goddata_get_engrave_weight(self, None) }}
+    pub fn get_force_type(&self) -> i32 { unsafe {  god_data_force_type(self, None)}}
 
     pub fn load() { unsafe { goddata_load(None); }}
     pub fn on_complete(&self) { unsafe{ god_data_on_complete(self, None); }}
@@ -53,13 +55,13 @@ impl GodGrowthData {
         let unload = unsafe { std::mem::transmute::<_, extern "C" fn(&MethodInfo) -> ()> ( method.unwrap().method_ptr,) };
         unload(method.unwrap());
     }
-    pub fn get_level_data(key: &str) -> Option<&'static List<GodGrowthDataLevelData>> {
+    pub fn get_level_data(key: &str) -> Option<&'static mut List<GodGrowthDataLevelData>> {
         let level_list = Self::class().get_static_fields::<GodGrowthDataStaticFields>().level_list;
         let method = level_list.get_class().get_methods().iter()
         .find(|method| method.get_name() == Some(String::from("get_Item")))
         .unwrap();
         let get_keys = unsafe {
-            std::mem::transmute::<_, extern "C" fn(&Dictionary<&'static Il2CppString, &'static List<GodGrowthDataLevelData>>, &Il2CppString, &MethodInfo) -> Option<&'static List<GodGrowthDataLevelData>>>(
+            std::mem::transmute::<_, extern "C" fn(&Dictionary<&'static Il2CppString, &'static mut List<GodGrowthDataLevelData>>, &Il2CppString, &MethodInfo) -> Option<&'static mut List<GodGrowthDataLevelData>>>(
                 method.method_ptr,
             )
         };
@@ -71,17 +73,48 @@ pub struct GodGrowthDataLevelData {
     pub synchro_skills: &'static SkillArray,
     pub engaged_skills: &'static SkillArray,
     pub engage_skills: &'static SkillArray,
-    style_names: *const u8,
+    pub style_names: &'static GodGrowthDataStyleItems,
     pub aptitude: &'static WeaponMask,
     pub flags: &'static WeaponMask,
 }
 
 pub struct GodGrowthDataStaticFields {
-    pub level_list: &'static Dictionary<&'static Il2CppString, &'static List<GodGrowthDataLevelData>>,
+    pub level_list: &'static Dictionary<&'static Il2CppString, &'static mut List<GodGrowthDataLevelData>>,
 }
 
+#[unity::class("App", "GodGrowthData.StyleItems")]
+pub struct GodGrowthDataStyleItems {
+    pub items: &'static Array<&'static List<ItemData>>,
+    pub count: i32,
+}
+impl GodGrowthDataStyleItems {
+    pub fn clear(&self){ unsafe { ggd_style_clear(self, None); }}
+    pub fn add_item(&self, style: i32, item: &ItemData) { unsafe { ggd_style_add_item(self, style, item, None); }}
+}
+#[unity::class("App", "RingData")]
+pub struct RingData {
+    pub parent: StructBaseFields,
+    pub rid: &'static Il2CppString,
+    pub name: &'static Il2CppString,
+    pub help: &'static Il2CppString,
+    pub gid: Option<&'static Il2CppString>,
+    ring_model: &'static Il2CppString,
+    pub kind: i32,
+    pub rank: i32,
+}
+impl Gamedata for RingData {}
+
+impl RingData {
+    pub fn get_equip_skills(&self) -> &'static SkillArray { unsafe { ringdata_get_skill_array(self, None)}}
+    pub fn load() { unsafe { ringdata_load(None); }}
+}
 
 // GodData 
+#[unity::from_offset("App", "GodData", "get_EngageAttackLink")]
+fn god_data_get_engage_link(this: &GodData, method_info: OptionalMethod) -> Option<&'static Il2CppString>;
+#[unity::from_offset("App", "GodData", "get_ForceType")]
+fn god_data_force_type(this: &GodData, method_info: OptionalMethod) -> i32;
+
 #[unity::from_offset("App","GodData","get_EngageAttack")]
 fn goddata_get_engage_attack(this: &GodData, method_info: OptionalMethod) -> &'static Il2CppString;
 
@@ -148,3 +181,16 @@ fn ggd_try_get_from_god(god: &GodData, method_info: OptionalMethod) -> Option<&'
 
 #[skyline::from_offset(0x02332320)]
 fn god_growth_on_completed_end(this: Option<&GodGrowthData>, method_info: OptionalMethod);
+
+#[skyline::from_offset(0x024246f0)]
+fn ringdata_get_skill_array(this: &RingData, method_info: OptionalMethod) -> &'static SkillArray;
+
+#[unity::from_offset("App", "RingData", "Load")]
+fn ringdata_load(method_info: OptionalMethod);
+
+// God Growth Data Style Item
+#[skyline::from_offset(0x01cd8cd0)]
+fn ggd_style_clear(this: &GodGrowthDataStyleItems, method_info: OptionalMethod);
+
+#[skyline::from_offset(0x01cd8aa0)]
+fn ggd_style_add_item(this: &GodGrowthDataStyleItems, style: i32, item: &ItemData, method_info: OptionalMethod);

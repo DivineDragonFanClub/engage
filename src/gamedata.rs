@@ -37,7 +37,14 @@ pub struct JobData {
     pub name: &'static Il2CppString, //0x18
     pub aid: &'static Il2CppString, //0x20
     pub help: &'static Il2CppString, //0x28
-    junk: [u8; 0xD0],
+    pub unit_icon_id_m : &'static Il2CppString, //0x30
+    pub unit_icon_id_f : &'static Il2CppString, //0x38
+    pub unit_icon_weapon_id: &'static Il2CppString, //0x40
+    pub rank: i32,  //0x48
+    __ : i32,   ///0x4c
+    pub style_name: &'static Il2CppString, //0x50
+    pub move_type: i32, //0x58
+    junk: [u8; 0xA4],
     pub learn_skill: Option<&'static Il2CppString>, // 0x100
     pub lunatic_skill: Option<&'static Il2CppString>, //0x108
 }
@@ -227,6 +234,21 @@ pub trait Gamedata: Il2CppClassData + Sized {
         let mut method = Self::class()._1.parent.get_methods().iter().find(|method| method.get_name() == Some(String::from("Unload")));
         if method.is_none() {
             method = Self::class()._1.parent._1.parent.get_methods().iter().find(|method| method.get_name() == Some(String::from("Unload")));
+        }
+        if method.is_none() {
+            return;
+        }
+        let unload = unsafe {
+            std::mem::transmute::<_, extern "C" fn(&MethodInfo) -> ()> (
+                method.unwrap().method_ptr,
+            )
+        };
+        unload(method.unwrap());
+    }
+    fn load_data() {
+        let mut method = Self::class().get_methods().iter().find(|method| method.get_name() == Some(String::from("Load")));
+        if method.is_none() {
+            method = Self::class()._1.parent.get_methods().iter().find(|method| method.get_name() == Some(String::from("Load")));
         }
         if method.is_none() {
             return;

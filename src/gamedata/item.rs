@@ -22,6 +22,9 @@ pub struct ItemData {
 	pub icon: &'static Il2CppString,
 	pub endurance: u8,
 	pub power: u8,
+	pub weight: u8,
+	pub range_i: u8,
+	pub range_o: u8,
 }
 impl Gamedata for ItemData { }
 
@@ -38,7 +41,11 @@ pub struct UnitItem {
 impl ItemData {
 	pub fn get_kind(&self) -> i32 { unsafe { itemdata_get_kind(self, None)}}
 	pub fn get_weapon_level(&self) -> i32 { unsafe { itemdata_get_weapon_level(self, None)}}
-	
+	pub fn get_equip_skills(&self) -> &'static SkillArray { unsafe { item_get_equip_skills(self, None)}}
+	pub fn get_give_skills(&self) -> &'static SkillArray { unsafe { item_get_give_skills(self, None)}}
+	pub fn on_complete(&self) { unsafe { item_on_complete(self, None); }}
+	pub fn set_cannon_effect(&self, value: &Il2CppString) { unsafe { item_set_cannon_effect(self, value, None); }}
+	pub fn set_hit_effect(&self, value: &Il2CppString) { unsafe { item_set_hit_effect(self, value, None); }}
 }
 impl UnitItem {
 	pub fn ctor(&self, item: &ItemData) { unsafe { unititem_ctor(self, item, None); }}
@@ -52,6 +59,7 @@ impl UnitItem {
 	pub fn get_equipped_skills(&self) ->  Option<&SkillArray> { unsafe { unititem_get_equip_skills(self, None)}}
 	pub fn get_power(&self) -> i32 { unsafe { unititem_get_power(self, None)}}
 
+	pub fn is_equip(&self) -> bool { unsafe { unititem_is_equip(self, None)}}
 	pub fn is_empty(&self) -> bool { unsafe { unititem_is_empty(self, None) } }
 	pub fn is_weapon(&self) -> bool {  unsafe { unititem_is_weapon(self, None) } }
 	pub fn is_drop(&self) -> bool { unsafe {  unititem_get_is_drop(self, None) } }
@@ -59,6 +67,7 @@ impl UnitItem {
 
 	pub fn set_engrave(&self, engrave: &GodData) -> bool { unsafe { unititem_set_engrave(self, engrave, None)}}
 	pub fn set_refine_level(&self, level: i32) { unsafe { unititem_set_refine_level(self, level, None); }}
+	pub fn set_flags(&self, value: i32) { unsafe { unititem_set_flags(self, value, None);}}
 }
 
 impl UnitItemList {
@@ -86,6 +95,20 @@ fn itemdata_get_kind(this: &ItemData, method_info: OptionalMethod) -> i32;
 #[unity::from_offset("App", "ItemData", "GetWeaponLevel")]
 fn itemdata_get_weapon_level(this: &ItemData, method_info: OptionalMethod) -> i32;
 
+#[unity::from_offset("App", "ItemData", "set_CannonEffect")]
+fn item_set_cannon_effect(this: &ItemData, value: &Il2CppString, method_info: OptionalMethod);
+
+#[unity::from_offset("App", "ItemData", "set_HitEffect")]
+fn item_set_hit_effect(this: &ItemData, value: &Il2CppString, method_info: OptionalMethod);
+
+#[unity::from_offset("App", "ItemData", "OnCompleted")]
+fn item_on_complete(this: &ItemData, method_info: OptionalMethod);
+
+#[unity::from_offset("App", "ItemData", "get_EquipSkills")]
+fn item_get_equip_skills(this: &ItemData, method_info: OptionalMethod) -> &'static SkillArray;
+
+#[unity::from_offset("App", "ItemData", "get_GiveSkills")]
+fn item_get_give_skills(this: &ItemData, method_info: OptionalMethod) -> &'static SkillArray;
 //UnitItemList
 #[unity::from_offset("App", "UnitItemList", "get_Count")]
 pub fn unititemlist_get_count(this: &UnitItemList, method_info: OptionalMethod) -> i32;
@@ -131,3 +154,9 @@ pub fn unititem_get_equip_skills(this: &UnitItem, method_info: OptionalMethod) -
 
 #[unity::from_offset("App", "UnitItem", "IsEmpty")]
 pub fn unititem_is_empty(this: &UnitItem, method_info: OptionalMethod) -> bool;
+
+#[unity::from_offset("App", "UnitItem", "get_IsEquipped")]
+pub fn unititem_is_equip(this: &UnitItem, method_info: OptionalMethod) -> bool;
+
+#[unity::from_offset("App", "UnitItem", "SetFlags")]
+pub fn unititem_set_flags(this: &UnitItem, value: i32, method_info: OptionalMethod);

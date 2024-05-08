@@ -82,7 +82,7 @@ pub struct Unit {
     drop_seed :i32,
     actor :u64,
     info :u64,
-    index :u8,
+    pub index :u8,
     pub level :u8,
     pub exp :u8,
     pub hp_value: u8,
@@ -194,6 +194,7 @@ impl Unit {
     pub fn get_learn_job_skill(&self) -> Option<&SkillData> { unsafe { learn_job_kill_unit(self, None)}}
     pub fn get_pid(&self) -> &'static Il2CppString {  unsafe { unit_get_pid(self, None)} }
     pub fn get_person(&self) -> &'static PersonData { unsafe { unit_get_person(self, None)}}
+    pub fn get_god_unit(&self) -> Option<&'static GodUnit> { unsafe { unit_get_god_unit(self, None)}}
     // Setters
     pub fn set_base_capability(&self, index: i32, value: i32) { unsafe { unit_set_base_capability(self, index, value, None);}}
     pub fn set_exp(&self, exp: i32){  unsafe { unit_set_exp(self, exp, None); }  }
@@ -381,6 +382,9 @@ fn unit_get_person(this: &Unit, method_info: OptionalMethod) -> &'static PersonD
 
 #[skyline::from_offset(0x01a0b1b0)]
 fn unit_auto_grow_cap(this: &Unit, level: i32, target_level: i32, method_info: OptionalMethod);
+
+#[unity::from_offset("App", "Unit", "get_GodUnit")]
+fn unit_get_god_unit(this: &Unit, method_info: OptionalMethod) -> Option<&'static GodUnit>;
 
 // UnitEdit 
 #[skyline::from_offset(0x01f73e50)]

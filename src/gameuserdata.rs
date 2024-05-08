@@ -119,6 +119,9 @@ impl GameUserData {
     pub fn set_silver(amount: i32){ unsafe { game_user_data_set_silver(Self::get_instance(), amount, None); } }
     pub fn set_bond(amount: i32){ unsafe {set_piece_of_bond(Self::get_instance(), amount, None); } }
 
+    pub fn set_field_bgm_player(event_name: &Il2CppString) { unsafe { game_user_data_set_field_bgm_player(Self::get_instance(), event_name, None); }}
+    pub fn set_field_bgm_enemy(event_name: &Il2CppString) { unsafe { game_user_data_set_field_bgm_enemy(Self::get_instance(), event_name, None); }}
+    
     pub fn is_encount_map() -> bool { unsafe { is_encounter_map(Self::get_instance(), None)}}
     pub fn is_cid_completed(cid: &Il2CppString) -> bool { unsafe{ is_completed(Self::get_instance(), cid, None) }}
     pub fn is_chapter_completed(chapter: &ChapterData) -> bool { unsafe {is_completed_chapterdata(Self::get_instance(), chapter, None) }}
@@ -185,3 +188,9 @@ fn get_chapter_data(this: &GameUserData, method_info: OptionalMethod) -> &Chapte
 
 #[unity::from_offset("App", "GameUserData", "IsEvilMap")]
 fn is_evil_map(this: &GameUserData, method_info: OptionalMethod) -> bool;
+
+#[unity::from_offset("App", "GameUserData", "set_FieldBGMPlayer")]
+fn game_user_data_set_field_bgm_player(this: &GameUserData, value: &Il2CppString, method_info: OptionalMethod);
+
+#[unity::from_offset("App", "GameUserData", "set_FieldBGMEnemy")]
+fn game_user_data_set_field_bgm_enemy(this: &GameUserData, value: &Il2CppString, method_info: OptionalMethod);
