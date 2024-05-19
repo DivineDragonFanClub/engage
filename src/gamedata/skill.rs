@@ -22,6 +22,12 @@ pub struct SkillArray {
     pub efficacys: i32,
     pub efficacy_ignore: i32,
 }
+impl Deref for SkillArrayFields {
+    type Target = [SkillArrayEntity];
+    fn deref(&self) -> &Self::Target {
+        &self.list.item
+    }
+}
 
 #[unity::class("App", "SkillData")]
 pub struct SkillData {
@@ -30,6 +36,7 @@ pub struct SkillData {
     pub sid: &'static Il2CppString,
     pub name: Option<&'static Il2CppString>,
     pub help: Option<&'static Il2CppString>,
+    
 }
 impl Gamedata for SkillData{}
 
@@ -47,6 +54,7 @@ impl SkillArray {
     }
 
     pub fn find_sid(&self, sid: &Il2CppString) -> Option<&'static SkillData> { unsafe { skillarray_find(self, sid, None)}}
+    pub fn remove_skill(&self, skill: &SkillData) -> bool { unsafe { skill_array_remove_skill(self, skill, None)}}
     pub fn remove_sid(&self, sid: &Il2CppString) -> bool { unsafe { skill_array_remove(self, sid, None)}}
     pub fn replace(&self, index: i32, skill: &SkillData, category: i32 ) { unsafe { skill_array_replace(self, index, skill, category, None); }}
     pub fn skill_array_add(&self, add: &SkillArray) -> bool { unsafe { add_skill_array(self, add, None)}}
@@ -54,19 +62,27 @@ impl SkillArray {
 }
 
 impl SkillData {
+    pub fn ctor(&self) { unsafe { skilldata_ctor(self, None); }}
     pub fn can_override_skill(&self) -> bool { unsafe {skilldata_can_override_skill(self, None)}}
     pub fn get_efficacy(&self) -> i32 { unsafe { skilldata_get_efficacy(self, None)} }
     pub fn get_efficacy_value(&self) -> i32 { unsafe { skilldata_get_efficacy_value(self, None)}}
     pub fn get_enchance_value(&self) -> &'static CapabilitySbyte { unsafe { skilldata_get_enhance_value(self, None)}}
-    pub fn get_flag(&self) -> i32{ unsafe { skilldata_get_flag(self, None)}}
+    pub fn get_flag(&self) -> i64{ unsafe { skilldata_get_flag(self, None)}}
+    pub fn set_flag(&self, value: i64) { unsafe { skilldata_set_flag(self, value, None); }}
     pub fn get_inheritance_cost(&self) -> u16 { unsafe { skilldata_get_inherit_cost(self, None)}}
     pub fn get_inheritance_sort(&self) -> u16 { unsafe { skilldata_get_inherit_sort(self, None)}}
+    pub fn get_range_target(&self) -> i32 { unsafe { skilldata_get_range_target(self, None)}}
+    pub fn get_range_o(&self) -> i32 { unsafe { skilldata_getrange_o(self, None)}}
     pub fn get_weapon_prohibit(&mut self) -> &'static mut WeaponMask { unsafe { skilldata_weapon_prohibit(self, None)} }
     pub fn set_inherit_cost(&self, value: u16) { unsafe { skilldata_set_inherit_cost(self, value, None); }}
+    pub fn set_range_target(&self, value: i32) { unsafe {skilldata_set_range_target(self, value, None); }}
+    pub fn set_range_add(&self, value: i32) { unsafe {skilldata_set_range_add(self, value, None); }}
     pub fn get_priority(&self) -> i32 { unsafe { skilldata_priority(self, None) }}
     pub fn has_effect(&self) -> bool { unsafe { skilldata_has_effect(self, None)}}
     pub fn is_style_skill(&self) -> bool { unsafe { skilldata_is_style(self, None)}}
     pub fn load() { unsafe { skilldata_load(None); }}
+    pub fn on_complete(&self) { unsafe { skilldata_oncomplete(self, None);} }
+    pub fn on_build(&self) { unsafe{ skilldata_on_build(self, None); }}
 }
 
 impl SkillArrayEntity {
@@ -84,7 +100,6 @@ fn skill_array_entity_get_age(this: &SkillArrayEntity, method_info: OptionalMeth
 #[skyline::from_offset(0x01d6e100)]
 fn skill_array_entity_get_category(this: &SkillArrayEntity, method_info: OptionalMethod) -> i32;
 
-
 //Skill Array
 #[unity::from_offset("App","SkillArray", "Clear")]
 fn skillarray_clear(this: &SkillArray, method_info: OptionalMethod);
@@ -97,6 +112,9 @@ fn skillarray_copy(this: &SkillArray, src: &SkillArray, method_info: OptionalMet
 
 #[skyline::from_offset(0x02482850)]
 fn skill_array_remove(this: &SkillArray, sid: &Il2CppString, method_info: OptionalMethod) -> bool;
+
+#[skyline::from_offset(0x02483080)]
+fn skill_array_remove_skill(this: &SkillArray, skill: &SkillData, method_info: OptionalMethod) -> bool;
 
 #[skyline::from_offset(0x24820c0)]
 fn add_skill_array(this: &SkillArray, src: &SkillArray, method_info: OptionalMethod) -> bool;
@@ -120,7 +138,10 @@ fn skilldata_get_efficacy(this: &SkillData, method_info: OptionalMethod) -> i32;
 fn skilldata_get_efficacy_value(this: &SkillData, method_info: OptionalMethod) -> i32;
 
 #[unity::from_offset("App", "SkillData", "get_Flag")]
-fn skilldata_get_flag(this: &SkillData, method_info: OptionalMethod) -> i32;
+fn skilldata_get_flag(this: &SkillData, method_info: OptionalMethod) -> i64;
+
+#[unity::from_offset("App", "SkillData", "set_Flag")]
+fn skilldata_set_flag(this: &SkillData, value: i64, method_info: OptionalMethod);
 
 #[unity::from_offset("App", "SkillData", "IsStyleSkill")]
 fn skilldata_is_style(this: &SkillData, method_info: OptionalMethod) -> bool;
@@ -149,5 +170,26 @@ fn skilldata_set_inherit_cost(this: &SkillData, value: u16, method_info: Optiona
 #[unity::from_offset("App", "SkillData", "get_EnhanceValue")]
 fn skilldata_get_enhance_value(this: &SkillData, method_info: OptionalMethod) -> &'static CapabilitySbyte;
 
+#[unity::from_offset("App", "SkillData", "set_RangeTarget")]
+fn skilldata_set_range_target(this: &SkillData, value: i32, method_info: OptionalMethod);
+
+#[unity::from_offset("App", "SkillData", "get_RangeTarget")]
+fn skilldata_get_range_target(this: &SkillData, method_info: OptionalMethod) -> i32;
+
+#[unity::from_offset("App", "SkillData", "get_RangeO")]
+fn skilldata_getrange_o(this: &SkillData, method_info: OptionalMethod) -> i32;
+
+#[unity::from_offset("App", "SkillData", "set_RangeAdd")]
+fn skilldata_set_range_add(this: &SkillData, range: i32, method_info: OptionalMethod);
+
 #[unity::from_offset("App", "SkillData", "Load")]
 fn skilldata_load(method_info: OptionalMethod);
+
+#[unity::from_offset("App", "SkillData", ".ctor")]
+fn skilldata_ctor(this: &SkillData, method_info: OptionalMethod);
+
+#[unity::from_offset("App", "SkillData", "OnBuild")]
+fn skilldata_on_build(this: &SkillData, method_info: OptionalMethod);
+
+#[unity::from_offset("App", "SkillData", "OnCompleted")]
+fn skilldata_oncomplete(this: &SkillData,method_info: OptionalMethod);

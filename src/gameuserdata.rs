@@ -124,6 +124,7 @@ impl GameUserData {
     
     pub fn is_encount_map() -> bool { unsafe { is_encounter_map(Self::get_instance(), None)}}
     pub fn is_cid_completed(cid: &Il2CppString) -> bool { unsafe{ is_completed(Self::get_instance(), cid, None) }}
+    pub fn set_chapter(chapter: &ChapterData) { unsafe { set_chapter_data(Self::get_instance(), chapter, None); }}
     pub fn is_chapter_completed(chapter: &ChapterData) -> bool { unsafe {is_completed_chapterdata(Self::get_instance(), chapter, None) }}
     pub fn is_evil_map() -> bool { unsafe { is_evil_map(Self::get_instance(), None) }}
 }
@@ -184,7 +185,10 @@ fn is_completed(this: &GameUserData, cid: &Il2CppString, method_info: OptionalMe
 fn is_completed_chapterdata(this: &GameUserData, chapter: &ChapterData, method_info: OptionalMethod) -> bool;
 
 #[unity::from_offset("App", "GameUserData", "get_Chapter")]
-fn get_chapter_data(this: &GameUserData, method_info: OptionalMethod) -> &ChapterData;
+fn get_chapter_data(this: &GameUserData, method_info: OptionalMethod) -> &'static ChapterData;
+
+#[unity::from_offset("App", "GameUserData", "SetChapter")]
+fn set_chapter_data(this: &GameUserData, chapter: &ChapterData, method_info: OptionalMethod);
 
 #[unity::from_offset("App", "GameUserData", "IsEvilMap")]
 fn is_evil_map(this: &GameUserData, method_info: OptionalMethod) -> bool;

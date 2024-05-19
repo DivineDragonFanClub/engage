@@ -1,39 +1,60 @@
 use unity::prelude::*;
 use unity::system::List;
 use super::{StructList, PersonData, StructBaseFields};
-use crate::gamedata::Gamedata;
+use crate::gamedata::*;
 // Contains DisposData and ChapterData Impls
 #[unity::class("App", "DisposData")]
 pub struct DisposData {
-    pub parent: StructBaseFields,
-    pub array_name: &'static Il2CppString,
+    pub parent: StructDataArrayFields,
     pub _group: &'static Il2CppString,
     pub pid: &'static Il2CppString,
     tid: &'static Il2CppString,
-    flag: &'static DisposDataFlag,
+    pub flag: &'static DisposDataFlag,
     jid: &'static Il2CppString,
     sid: &'static Il2CppString,
     bid: &'static Il2CppString,
-    appear_x: i8,
-    appear_y: i8,
+    pub appear_x: i8,
+    pub appear_y: i8,
     pub dispos_x: i8,
     pub dispos_y: i8,
+    pub direction: i32,
+    pub rotation: i8,
+    pub level_n: u8,
+    pub level_h: u8,
+    pub level_l: u8,
+    __: i32,
+    items: u64,
+    item1: u64,
+    item2: u64,
+    item3: u64,
+    item4: u64,
+    item5: u64,
+    item6: u64,
+    pub gid: Option<&'static Il2CppString>,
+    pub hp_stock_count: u32,
+    state0: i32,
+    state1: i32,
+    state2: i32,
+    state3: i32,
+    state4: i32,
+    state5: i32,
+    ___: i32,
+    pub ai_action_name: &'static Il2CppString,
+    pub ai_action_value: Option<&'static Il2CppString>,
+    pub ai_mind_name: &'static Il2CppString,
+    pub ai_mind_value: Option<&'static Il2CppString>,
+    pub ai_attack_name: &'static Il2CppString,
+    pub ai_attack_value: Option<&'static Il2CppString>,
+    pub ai_move_name: &'static Il2CppString,
+    pub ai_move_value: Option<&'static Il2CppString>,
 }
 #[unity::class("App", "DisposDataFlag")]
 pub struct DisposDataFlag {
     pub value: i32,
 }
-impl DisposData {
-    pub fn get_array_mut() -> Option<&'static mut StructList<List<Self>>> {
-        let method = Self::class()._1.parent.get_methods().iter().find(|method| method.get_name() == Some(String::from("GetList"))).unwrap();
-        let get_list = unsafe {
-            std::mem::transmute::<_, extern "C" fn(&MethodInfo) -> Option<&'static mut StructList<List<Self>>>>(
-                method.method_ptr,
-            )
-        };
-        get_list(method)
-    }
+impl GamedataArray for DisposData {}
 
+impl DisposData {
     pub fn get_flag(&self) -> &'static mut DisposDataFlag { unsafe { disposdata_get_flag(self, None)}}
     pub fn get_force(&self) -> i8 { unsafe {disposdata_get_force(self, None)}}
     pub fn get_gid(&self) -> &'static Il2CppString { unsafe { disposdata_get_gid(self, None)} }
@@ -60,6 +81,7 @@ pub struct ChapterData {
 }
 
 impl Gamedata for ChapterData {}
+
 impl ChapterData {
     pub fn get_cleared_flag_name(&self) -> &'static Il2CppString { unsafe { get_cleared_flagname(self, None) }}
     pub fn get_gmap_open_condition(&self) -> &'static Il2CppString { unsafe { chapter_get_gmapspotopencondition(self, None)} }

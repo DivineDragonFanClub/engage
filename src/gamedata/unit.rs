@@ -222,7 +222,9 @@ impl Unit {
     pub fn has_private_skill(&self, sid: &Il2CppString) -> bool { unsafe { unit_has_private_skill(self, sid, None) } }
     pub fn has_sid(&self, sid: &Il2CppString) -> bool { unsafe { unit_has_skill_sid(self, sid, None) }}
     pub fn has_skill(&self, skill: &SkillData) -> bool { unsafe { unit_has_skill(self, skill, None)}}
-
+    pub fn has_interfence_rod(&self) -> bool { unsafe { unit_inference_rod(self, None)}}
+    pub fn has_heal_rod(&self) -> bool { unsafe { unit_heal_rod(self, None)}}
+    
     pub fn auto_grow_capability(&self, level: i32, target_level: i32) { unsafe { unit_auto_grow_cap(self, level, target_level, None); }}
     pub fn level_up(&self, num_min_stats: i32) { unsafe { unit_level_up(self, num_min_stats, None); } }
     pub fn level_down(&self) { unsafe { unit_level_down(self, None); }}
@@ -386,6 +388,11 @@ fn unit_auto_grow_cap(this: &Unit, level: i32, target_level: i32, method_info: O
 #[unity::from_offset("App", "Unit", "get_GodUnit")]
 fn unit_get_god_unit(this: &Unit, method_info: OptionalMethod) -> Option<&'static GodUnit>;
 
+#[unity::from_offset("App", "Unit", "HasInterferenceRod")]
+fn unit_inference_rod(this: &Unit, method_info: OptionalMethod) -> bool;
+
+#[unity::from_offset("App", "Unit", "HasHealRod")]
+fn unit_heal_rod(this: &Unit, method_info: OptionalMethod) -> bool;
 // UnitEdit 
 #[skyline::from_offset(0x01f73e50)]
 fn unit_edit_set_gender(this: &UnitEdit, gender: i32, method_info: OptionalMethod);

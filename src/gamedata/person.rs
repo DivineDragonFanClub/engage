@@ -72,6 +72,7 @@ impl PersonData {
     pub fn get_level(&self) -> u8 { unsafe { person_get_level(self, None) } }
     pub fn get_limit(&self) -> &mut CapabilitySbyte {  unsafe { person_get_limit(self, None) } }
     pub fn get_name(&self) -> Option<&Il2CppString> {  unsafe { person_get_name(self, None) } }
+    pub fn get_sp(&self) -> i32 { unsafe { person_get_sp(self, None)}}
     pub fn get_summon_color(&self) -> i32 { unsafe { person_get_summoncolor(self, None)}}
     pub fn get_summon_rank(&self) -> i32 { unsafe { person_get_summon_rank(self, None)}}
     pub fn get_unit_icon_id(&self) -> &'static Il2CppString { unsafe { get_uniticonid(self, None )}}
@@ -222,6 +223,9 @@ fn person_get_summoncolor(this: &PersonData, method_info: OptionalMethod) -> i32
 
 #[unity::from_offset("App", "PersonData", "Load")]
 fn persondata_load(method_info: OptionalMethod);
+
+#[unity::from_offset("App", "PersonData", "get_SkillPoint")]
+fn person_get_sp(this: &PersonData, method_info: OptionalMethod) -> i32;
 //Capability
 
 #[skyline::from_offset(0x25bcda0)]
