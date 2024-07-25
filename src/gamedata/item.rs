@@ -121,6 +121,7 @@ impl UnitItemList {
 		if !self.has_item(item) { self.add(item); }
 	}
 	pub fn move_item(&self, from: i32, to: i32) { unsafe { unititemlist_move(self, from, to, None) } }
+	pub fn put_off_all_item(&self) { unsafe { unititemlist_putoffall(self, None); } }
 }
 
 #[unity::class("App", "ItemDataFlag")]
@@ -182,6 +183,10 @@ pub fn unititemlist_add(this: &UnitItemList, item: &ItemData, method_info: Optio
 
 #[unity::from_offset("App", "UnitItemList", "Move")]
 pub fn unititemlist_move(this: &UnitItemList, from: i32, to: i32, method_info: OptionalMethod);
+
+#[unity::from_offset("App", "UnitItemList", "PutOffAll")]
+pub fn unititemlist_putoffall(this: &UnitItemList, method_info: OptionalMethod);
+
 //UnitItem
 #[unity::from_offset("App", "UnitItem", "Dispose")]
 pub fn unititem_dispose(this: &UnitItem, method_info: OptionalMethod);

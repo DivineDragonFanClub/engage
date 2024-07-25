@@ -14,6 +14,8 @@ impl GodData {
     pub fn get_force_type(&self) -> i32 { unsafe {  god_data_force_type(self, None)}}
     pub fn get_link_gid(&self) -> Option<&'static Il2CppString> { unsafe { god_data_get_link_gid(self, None)}}
     pub fn get_link(&self) -> Option<&'static Il2CppString> { unsafe { god_data_get_link(self, None) }}
+    pub fn get_flag(&self) -> &'static mut WeaponMask { unsafe { god_data_get_flag(self, None)}}
+    pub fn get_grow_table(&self) -> Option<&'static Il2CppString> { unsafe { god_data_get_grow_table(self, None)}}
     pub fn load() { unsafe { goddata_load(None); }}
     pub fn on_complete(&self) { unsafe{ god_data_on_complete(self, None); }}
 
@@ -26,6 +28,7 @@ impl GodData {
     pub fn set_engrave_secure(&self, value: i8)  { unsafe{ goddata_set_engrave_secure(self, value, None); }}
     pub fn set_engrave_weight(&self, value: i8) { unsafe{ goddata_set_engrave_weight(self, value, None); }}
     pub fn set_link_gid(&self, value: &Il2CppString) { unsafe { god_data_set_link_gid(self, value, None); }}
+    pub fn set_ascii_name(&self, value: &Il2CppString) { unsafe { god_data_set_ascii(self, value, None); }}
     pub fn set_engrave(&self, index: i32, value: i8){
         match index {
             0 => self.set_engrave_avoid(value),
@@ -141,6 +144,13 @@ impl RingData {
 }
 
 // GodData 
+#[unity::from_offset("App", "GodData", "get_GrowTable")]
+fn god_data_get_grow_table(this: &GodData, method_info: OptionalMethod) -> Option<&'static Il2CppString>;
+#[unity::from_offset("App", "GodData", "set_AsciiName")]
+fn god_data_set_ascii(this: &GodData, value: &Il2CppString, method_info: OptionalMethod);
+#[unity::from_offset("App", "GodData", "get_Flag")]
+fn god_data_get_flag(this: &GodData, method_info: OptionalMethod) -> &'static mut WeaponMask;
+
 #[unity::from_offset("App", "GodData", "get_Link")]
 fn god_data_get_link(this: &GodData, method_info: OptionalMethod) -> Option<&'static Il2CppString>;
 

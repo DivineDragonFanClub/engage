@@ -66,7 +66,7 @@ pub struct UnitAccessoryList {
 
 #[unity::class("App", "Unit")]
 pub struct Unit {
-    pub status: &'static UnitStatus,
+    pub status: &'static mut UnitStatus,
     pub prev: Option<&'static Unit>,
     pub next: Option<&'static Unit>,
     ai: &'static (),
@@ -104,7 +104,7 @@ pub struct Unit {
     dont_attack_force_mask :i32,
     pub item_list : &'static UnitItemList,
     item_selected :u64,
-    accessory_list :u64,
+    pub accessory_list : &'static mut UnitAccessoryList,
     pub god_unit :Option<&'static GodUnit>,
     pub god_link :Option<&'static GodUnit>,
     pub ring :Option<&'static UnitRing>,
@@ -116,7 +116,7 @@ pub struct Unit {
     pub receive_skill :&'static SkillArray,
     pub supported_skill :&'static SkillArray,
     pub equip_skill_pool :&'static SkillArray,
-    pub learned_job_skill :&'static SkillArray,
+    pub learned_job_skill :Option<&'static SkillData>,
     pub original_aptitude : &'static mut WeaponMask,
     pub aptitude : &'static mut WeaponMask,
     pub weapon_mask :&'static mut WeaponMask,
@@ -240,6 +240,7 @@ impl Unit {
 impl UnitEdit {
     pub fn set_gender(&self, gender: i32) { unsafe { unit_edit_set_gender(self, gender, None);}}
     pub fn set_name(&self, name: &Il2CppString) { unsafe { unit_edit_set_name(self, name, None); }}
+    pub fn is_enabled(&self) -> bool { unsafe { unit_edit_is_enable(self, None)}}
 }
 
 impl GodUnit {
@@ -393,6 +394,7 @@ fn unit_inference_rod(this: &Unit, method_info: OptionalMethod) -> bool;
 
 #[unity::from_offset("App", "Unit", "HasHealRod")]
 fn unit_heal_rod(this: &Unit, method_info: OptionalMethod) -> bool;
+
 // UnitEdit 
 #[skyline::from_offset(0x01f73e50)]
 fn unit_edit_set_gender(this: &UnitEdit, gender: i32, method_info: OptionalMethod);
@@ -400,6 +402,8 @@ fn unit_edit_set_gender(this: &UnitEdit, gender: i32, method_info: OptionalMetho
 #[unity::from_offset("App", "UnitEdit", "SetName")]
 fn unit_edit_set_name(this: &UnitEdit, name: &Il2CppString, method_info: OptionalMethod);
 
+#[unity::from_offset("App", "UnitEdit", "IsEnable")]
+pub fn unit_edit_is_enable(this: &UnitEdit, method_info: OptionalMethod) -> bool;
 
 // God Unit
 #[skyline::from_offset(0x0233eae0)]

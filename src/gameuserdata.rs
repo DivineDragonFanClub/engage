@@ -56,7 +56,10 @@ impl GameUserData {
         let instance = Self::get_instance();
         unsafe { get_game_mode(instance, None) }
     }
-
+    pub fn get_piece_bond() -> i32 {
+        let instance = Self::get_instance();
+        unsafe { get_piece_of_bond(instance, None) }
+    }
     pub fn set_game_mode(game_mode: GameMode) {
         let instance = Self::get_instance();
         unsafe { set_game_mode(instance, game_mode, None) }
@@ -96,7 +99,7 @@ impl GameUserData {
     pub fn add_silver(amount: i32) -> i32 {
         let instance = Self::get_instance();
         unsafe {
-            let new_amount = get_steel(instance, None) + amount;
+            let new_amount = get_silver(instance, None) + amount;
             game_user_data_set_silver(instance, new_amount, None);
             new_amount
         }
@@ -165,6 +168,9 @@ fn get_piece_of_bond(this: &GameUserData, method_info: OptionalMethod) -> i32;
 
 #[unity::from_offset("App", "GameUserData", "set_PieceOfBond")]
 fn set_piece_of_bond(this: &GameUserData, value: i32, method_info: OptionalMethod);
+
+#[unity::from_offset("App", "GameUserData", "get_TotalPieceOfBond")]
+fn get_total_piece_of_bond(this: &GameUserData, method_info: OptionalMethod) -> i32;
 
 #[unity::from_offset("App", "GameUserData", "get_Sequence")]
 fn game_user_data_get_sequence(this: &GameUserData, method_info: OptionalMethod) -> i32;

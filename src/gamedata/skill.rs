@@ -36,6 +36,19 @@ pub struct SkillData {
     pub sid: &'static Il2CppString,
     pub name: Option<&'static Il2CppString>,
     pub help: Option<&'static Il2CppString>,
+    pub command_name: Option<&'static Il2CppString>,
+    pub command_help: Option<&'static Il2CppString>,
+    pub command_warning: Option<&'static Il2CppString>,
+    pub root_command_sid: Option<&'static Il2CppString>,
+    pub icon_type: i64,
+    pub icon_label: Option<&'static Il2CppString>,
+    pub icon_bmap: Option<&'static Il2CppString>,
+    pub stand: i32,
+    pub action: i32,
+    pub timing: i32,
+    pub target: i32,
+    pub equip_iids: Option<&'static Array<&'static Il2CppString>>,
+
     
 }
 impl Gamedata for SkillData{}
@@ -66,6 +79,7 @@ impl SkillData {
     pub fn can_override_skill(&self) -> bool { unsafe {skilldata_can_override_skill(self, None)}}
     pub fn get_efficacy(&self) -> i32 { unsafe { skilldata_get_efficacy(self, None)} }
     pub fn get_efficacy_value(&self) -> i32 { unsafe { skilldata_get_efficacy_value(self, None)}}
+    pub fn set_efficacy_value(&self, value: i32) { unsafe { skilldata_set_efficacy_value(self, value, None); }}
     pub fn get_enchance_value(&self) -> &'static CapabilitySbyte { unsafe { skilldata_get_enhance_value(self, None)}}
     pub fn get_flag(&self) -> i64{ unsafe { skilldata_get_flag(self, None)}}
     pub fn set_flag(&self, value: i64) { unsafe { skilldata_set_flag(self, value, None); }}
@@ -193,3 +207,6 @@ fn skilldata_on_build(this: &SkillData, method_info: OptionalMethod);
 
 #[unity::from_offset("App", "SkillData", "OnCompleted")]
 fn skilldata_oncomplete(this: &SkillData,method_info: OptionalMethod);
+
+#[unity::from_offset("App", "SkillData", "set_EfficacyValue")]
+fn skilldata_set_efficacy_value(this: &SkillData, value: i32, method_info: OptionalMethod);

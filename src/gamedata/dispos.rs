@@ -70,6 +70,7 @@ impl DisposData {
     pub fn set_hp_stock_count(&self, value: u8) { unsafe { disposdata_set_hp_stock_count(self, value, None);}}
     pub fn set_pid(&self, pid: &Il2CppString) { unsafe { disposdata_set_pid(self, pid, None); }}
     pub fn set_sid(&self, sid: &Il2CppString) { unsafe { disposdata_set_sid(self, sid, None);}}
+
 }
 
 #[unity::class("App", "ChapterData")]
@@ -83,15 +84,17 @@ pub struct ChapterData {
 impl Gamedata for ChapterData {}
 
 impl ChapterData {
+    pub fn get_flag(&self) -> i32 { unsafe { get_chapter_flag(self, None)}}
     pub fn get_cleared_flag_name(&self) -> &'static Il2CppString { unsafe { get_cleared_flagname(self, None) }}
     pub fn get_gmap_open_condition(&self) -> &'static Il2CppString { unsafe { chapter_get_gmapspotopencondition(self, None)} }
     pub fn get_recommended_level(&self) -> u8 { unsafe { chapter_get_recommended_level(self, None)}}
-    
+    pub fn get_prefixless_cid(&self) -> &'static Il2CppString { unsafe { chapter_get_prefixless_cid(self, None)}}
     pub fn is_evil(&self) -> bool { unsafe {chapter_is_dlc_evil(self, None)} }
     pub fn is_god(&self) -> bool { unsafe {chapter_is_dlc_god(self, None)}}
     
     pub fn set_gmap_open_condition(&self, value: &str) { unsafe { chapter_set_gmap_open_condition(self, value.into(), None); } }
     pub fn set_flag(&self, value: i32) { unsafe {chapter_set_flag(self, value, None); }}
+    pub fn set_next_chapter(&self, value: &str) { unsafe {chapter_set_next_chapter(self, value.into(), None); }}
     pub fn set_hold_level(&self, value: u8) { unsafe { chapter_set_hold_level(self, value, None); }}
     pub fn set_recommended_level(&self, level: u8 ) { unsafe { chapter_set_recommended_level(self, level, None );}}
 }
@@ -166,3 +169,12 @@ fn chapter_set_flag(this: &ChapterData, value: i32, method_info: OptionalMethod)
 
 #[unity::from_offset("App", "ChapterData", "set_GmapSpotOpenCondition")]
 fn chapter_set_gmap_open_condition(this: &ChapterData, value: &Il2CppString, method_info: OptionalMethod);
+
+#[unity::from_offset("App", "ChapterData", "GetPrefixlessCid")]
+fn chapter_get_prefixless_cid(this: &ChapterData, method_info: OptionalMethod) -> &'static Il2CppString;
+
+#[unity::from_offset("App", "ChapterData", "set_NextChapter")]
+fn chapter_set_next_chapter(this: &ChapterData, value: &Il2CppString, method_info: OptionalMethod);
+
+#[unity::from_offset("App", "ChapterData", "get_Flag")]
+fn get_chapter_flag(this: &ChapterData, method_info: OptionalMethod) -> i32;

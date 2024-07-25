@@ -4,6 +4,7 @@ use unity::system::List;
 use crate::gamedata::{
     StructList,
     animal::AnimalData,
+    *,
 };
 
 #[unity::class("App", "HubAccessData")]
@@ -14,7 +15,9 @@ pub struct HubAccessData {
 }
 
 #[unity::class("App", "HubDisposData")]
-pub struct HubDisposData {}
+pub struct HubDisposData {
+    pub parent: StructDataArrayFields,
+}
 
 #[unity::class("App", "HubAccessManager")]
 pub struct HubAccessManager {
