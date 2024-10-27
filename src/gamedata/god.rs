@@ -137,6 +137,7 @@ pub struct RingData {
     ring_model: &'static Il2CppString,
     pub kind: i32,
     pub rank: i32,
+    pub icon: &'static Il2CppString,
 }
 impl Gamedata for RingData {}
 
