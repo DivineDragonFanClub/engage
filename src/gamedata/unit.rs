@@ -382,6 +382,9 @@ fn unit_try_create_actor(this: &Unit, method_info: OptionalMethod) -> bool;
 #[unity::from_offset("App", "Unit", "SetGodUnit")]
 fn unit_set_god_unit(this: &Unit, god: &GodUnit, method_info: OptionalMethod);
 
+#[unity::from_offset("App", "Unit", "SetRing")]
+fn unit_set_ring(this: &Unit, ring: &UnitRing, method_info: OptionalMethod);
+
 #[unity::from_offset("App", "Unit", "SetStatus")]
 fn unit_set_status(this: &Unit, status: i64, method_info: OptionalMethod);
 
@@ -405,6 +408,9 @@ fn unit_auto_grow_cap(this: &Unit, level: i32, target_level: i32, method_info: O
 
 #[unity::from_offset("App", "Unit", "get_GodUnit")]
 fn unit_get_god_unit(this: &Unit, method_info: OptionalMethod) -> Option<&'static GodUnit>;
+
+#[unity::from_offset("App", "Unit", "get_Ring")]
+fn unit_get_ring(this: &Unit, method_info: OptionalMethod) -> Option<&'static UnitRing>;
 
 #[unity::from_offset("App", "Unit", "HasInterferenceRod")]
 fn unit_inference_rod(this: &Unit, method_info: OptionalMethod) -> bool;
