@@ -16,7 +16,12 @@ pub struct GodUnit {
 }
 
 #[unity::class("App", "UnitRing")]
-pub struct UnitRing { }
+pub struct UnitRing {
+    base: [u8;0x10],
+    pub data: &'static UnitRing,
+    pub owner: Option<&'static Unit>,
+    pub stock_count: u8
+}
 
 #[unity::class("App","UnitEdit")]
 pub struct UnitEdit {
