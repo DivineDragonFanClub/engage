@@ -4,6 +4,7 @@ use super::{*, person::CapabilitySbyte};
 pub struct SkillArrayEntity {
     pub value : u32,
 }
+
 #[unity::class("App", "SkillArrayList")]
 pub struct SkillArrayEntityList {
     pub item: &'static mut Array<SkillArrayEntity>,
@@ -29,12 +30,14 @@ impl DerefMut for SkillArrayEntityListFields  {
 #[unity::class("App", "SkillArray")]
 pub struct SkillArray {
     mask: &'static Array<u8>,
-    pub list: &'static SkillArrayEntityList,
+    pub list: &'static mut SkillArrayEntityList,
     pub flags: i64,
     pub cycles: i32,
     pub timing: i32,
     pub efficacys: i32,
     pub efficacy_ignore: i32,
+    pub bad_States: i32,
+    pub bad_Ignore: i32,
 }
 impl Deref for SkillArrayFields {
     type Target = [SkillArrayEntity];

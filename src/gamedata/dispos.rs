@@ -1,6 +1,5 @@
 use unity::prelude::*;
-use unity::system::List;
-use super::{StructList, PersonData, StructBaseFields};
+use super::{PersonData, StructBaseFields};
 use crate::gamedata::*;
 // Contains DisposData and ChapterData Impls
 #[unity::class("App", "DisposData")]
@@ -95,8 +94,10 @@ pub struct ChapterData {
 impl Gamedata for ChapterData {}
 
 impl ChapterData {
+    pub fn try_set_spot_state(&self, state: i32) { unsafe { chapter_data_try_set_spot_state(self, state, None); } }
     pub fn get_flag(&self) -> i32 { unsafe { get_chapter_flag(self, None)}}
     pub fn get_cleared_flag_name(&self) -> &'static Il2CppString { unsafe { get_cleared_flagname(self, None) }}
+    pub fn get_gmap_spot_flag_name(&self) -> &'static Il2CppString { unsafe { get_gmap_spot_flagname(self, None) }}
     pub fn get_gmap_open_condition(&self) -> &'static Il2CppString { unsafe { chapter_get_gmapspotopencondition(self, None)} }
     pub fn get_recommended_level(&self) -> u8 { unsafe { chapter_get_recommended_level(self, None)}}
     pub fn get_prefixless_cid(&self) -> &'static Il2CppString { unsafe { chapter_get_prefixless_cid(self, None)}}
@@ -160,6 +161,9 @@ fn disposdata_get_job(this: &DisposData, method_info: OptionalMethod) -> &'stati
 fn disposdata_item_set_iid(this: &DisposDataItem, value: &Il2CppString, method_info: OptionalMethod);
 
 // Chapter Data
+#[unity::from_offset("App", "ChapterData", "TrySetSpotState")]
+fn chapter_data_try_set_spot_state(this: &ChapterData, state: i32, method_info: OptionalMethod);
+
 #[unity::from_offset("App", "ChapterData", "set_RecommendedLevel")]
 fn chapter_set_recommended_level(this: &ChapterData, value: u8, method_info: OptionalMethod);
 
@@ -171,6 +175,9 @@ fn chapter_get_recommended_level(this: &ChapterData, method_info: OptionalMethod
 
 #[skyline::from_offset(0x02af9b40)]
 fn get_cleared_flagname(this: &ChapterData, method_info: OptionalMethod) -> &'static Il2CppString;
+
+#[unity::from_offset("App", "ChapterData", "GetGmapSpotFlagName")]
+fn get_gmap_spot_flagname(this: &ChapterData, method_info: OptionalMethod) -> &'static Il2CppString;
 
 #[unity::from_offset("App", "ChapterData", "IsDlcGod")]
 fn chapter_is_dlc_god(this: &ChapterData, method_info: OptionalMethod) -> bool;

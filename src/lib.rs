@@ -1,4 +1,4 @@
-#![feature(ptr_sub_ptr, lazy_cell)]
+#![feature(ptr_sub_ptr)]
 
 pub mod battle;
 pub mod bundle;
@@ -12,13 +12,16 @@ pub mod force;
 pub mod gamedata;
 pub mod gameicon;
 pub mod gamemessage;
+pub mod gamesound;
 pub mod gametime;
 pub mod gameuserdata;
 pub mod gameuserglobaldata;
 pub mod gamevariable;
+pub mod gmapspotmanager;
 pub mod godpool;
 pub mod language;
 pub mod loadingmanager;
+pub mod map;
 pub mod mapmind;
 pub mod menu;
 pub mod mess;
@@ -29,6 +32,7 @@ pub mod resourcemanager;
 pub mod script;
 pub mod sequence;
 pub mod singleton;
+pub mod soundmanager;
 pub mod spriteatlasmanager;
 pub mod stream;
 pub mod titlebar;

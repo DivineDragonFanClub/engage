@@ -5,8 +5,9 @@ use unity::{prelude::*, system::List};
 
 use crate::proc::{desc::ProcDesc, Bindable, ProcInst, ProcInstFields};
 
-pub mod config;
 pub mod content;
+pub mod config;
+pub mod mapunitcommand;
 pub mod savedata;
 
 /// Represents the base Menu from which every other inherits.
@@ -121,14 +122,11 @@ pub trait MenuSequence {
     fn bind(parent: &impl Bindable) {
         let proc = ProcInst::instantiate().unwrap();
         let descs = Il2CppArray::from_slice(Self::get_proc_desc(proc)).unwrap();
-        println!("CobaltMenuSequence before create_bind");
 
         proc.create_bind(parent, descs, Self::proc_name());
-        // unsafe { procinst_createbind(proc, parent, descs, Self::proc_name().into(), None) }
-        println!("CobaltMenuSequence after create_bind");
     }
 
-    fn get_proc_desc(_this: &'static impl Bindable) -> Vec<&mut ProcDesc> {
+    fn get_proc_desc(_this: &'static ProcInst) -> Vec<&'static mut ProcDesc> {
         vec![ProcDesc::end()]
     }
 

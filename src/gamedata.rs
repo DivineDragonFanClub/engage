@@ -16,9 +16,11 @@ pub mod item;
 pub mod cook;
 pub mod animal;
 pub mod god;
+pub mod ring;
 pub mod assettable;
 pub mod terrain;
 pub mod shop;
+pub mod ai;
 
 #[unity::class("App", "HubFacilityData")]
 pub struct HubFacilityData {
@@ -29,12 +31,18 @@ pub struct HubFacilityData {
     pub icon_name: &'static Il2CppString,
 }
 impl Gamedata for HubFacilityData { }
+
 impl HubFacilityData {
     pub fn is_complete(&self) -> bool { unsafe { hubdatafacility_iscomplete(self, None) } }
+
+    pub fn set_first_access_flag(&self) { unsafe { hubdatafacility_set_first_access_flag(self, None); } }
 }
 
 #[skyline::from_offset(0x28a80d0)]
 fn hubdatafacility_iscomplete(this: &HubFacilityData, _method_info: OptionalMethod) -> bool;
+
+#[skyline::from_offset(0x28a7b30)]
+fn hubdatafacility_set_first_access_flag(this: &HubFacilityData, _method_info: OptionalMethod);
 
 #[unity::class("App", "JobData")]
 pub struct JobData {
@@ -418,8 +426,7 @@ pub trait Gamedata: Il2CppClassData + Sized {
     }
     
     fn try_index_get_mut(index: i32) -> Option<&'static mut Self> {
-
-        let mut method = if Self::class()._1.parent.get_methods().len() < 9 {
+        let mut method = if Self::class()._1.parent.get_methods().len() < 9 {   //SkillData's Get method is one level lower
             Self::class()._1.parent._1.parent.get_methods()[9]
         } else {
             Self::class()._1.parent.get_methods()[9]
@@ -548,7 +555,7 @@ pub trait GamedataArray: Il2CppClassData + Sized {
         unload(method.unwrap());
     }
     fn load() {
-        let mut method = Self::class().get_methods().iter().find(|method| method.get_name() == Some(String::from("Load")));
+        let method = Self::class().get_methods().iter().find(|method| method.get_name() == Some(String::from("Load")));
         if method.is_none() { return; }
         let load = unsafe { std::mem::transmute::<_, extern "C" fn(&MethodInfo) -> ()> ( method.unwrap().method_ptr, )  };
         load(method.unwrap());

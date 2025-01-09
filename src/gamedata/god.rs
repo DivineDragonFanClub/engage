@@ -3,6 +3,7 @@ use crate::gamedata::{*, item::ItemData, skill::SkillArray, WeaponMask};
 use super::GodData;
 
 impl GodData {
+    pub fn get_gid(&self) -> Option<&'static Il2CppString> { unsafe { god_data_get_gid(self, None) }}
     pub fn get_engage_attack(&self) -> &'static Il2CppString { unsafe { goddata_get_engage_attack(self, None) }}
     pub fn get_engrave_avoid(&self) -> i8 { unsafe{ goddata_get_engrave_avoid(self, None) }}
     pub fn get_engage_attack_link(&self) -> Option<&'static Il2CppString> { unsafe { god_data_get_engage_link(self, None)}}
@@ -134,42 +135,29 @@ impl Deref for GodGrowthDataStyleItemsFields {
     }
 }
 
-#[unity::class("App", "RingData")]
-pub struct RingData {
-    pub parent: StructBaseFields,
-    pub rid: &'static Il2CppString,
-    pub name: &'static Il2CppString,
-    pub help: &'static Il2CppString,
-    pub gid: Option<&'static Il2CppString>,
-    ring_model: &'static Il2CppString,
-    pub kind: i32,
-    pub rank: i32,
-<<<<<<< HEAD
-=======
-    pub icon: &'static Il2CppString,
->>>>>>> b1663cdbfb8ebf32ed94186ae90cf3f014dc8b00
+#[unity::class("App", "GodBond")]
+pub struct GodBond {
+    pub god: &'static GodData,
+    reliance_s: u64,
+    pub pid: &'static Il2CppString,
+    pub level: u8,
+    __: u8,
+    pub exp: u16,
 }
-impl Gamedata for RingData {}
-
-impl RingData {
-    pub fn get_equip_skills(&self) -> &'static SkillArray { unsafe { ringdata_get_skill_array(self, None)}}
+impl GodBond {
+    pub fn level_up(&self) { unsafe { level_up_bond(self, None);} }
 }
 
-// GodData 
+#[skyline::from_offset(0x02b4dff0)]
+fn level_up_bond(this: &GodBond, method_info: OptionalMethod);
+// GodData
+#[unity::from_offset("App", "GodData", "get_Gid")]
+fn god_data_get_gid(this: &GodData, method_info: OptionalMethod) -> Option<&'static Il2CppString>;
+
 #[unity::from_offset("App", "GodData", "get_GrowTable")]
 fn god_data_get_grow_table(this: &GodData, method_info: OptionalMethod) -> Option<&'static Il2CppString>;
-<<<<<<< HEAD
 #[unity::from_offset("App", "GodData", "set_AsciiName")]
 fn god_data_set_ascii(this: &GodData, value: &Il2CppString, method_info: OptionalMethod);
-=======
-
-#[unity::from_offset("App", "GodData", "get_AsciiName")]
-fn god_data_get_ascii(this: &GodData, method_info: OptionalMethod) -> Option<&'static Il2CppString>;
-
-#[unity::from_offset("App", "GodData", "set_AsciiName")]
-fn god_data_set_ascii(this: &GodData, value: &Il2CppString, method_info: OptionalMethod);
-
->>>>>>> b1663cdbfb8ebf32ed94186ae90cf3f014dc8b00
 #[unity::from_offset("App", "GodData", "get_Flag")]
 fn god_data_get_flag(this: &GodData, method_info: OptionalMethod) -> &'static mut WeaponMask;
 
@@ -262,21 +250,14 @@ fn ggd_try_get_from_god(god: &GodData, method_info: OptionalMethod) -> Option<&'
 #[skyline::from_offset(0x02332320)]
 fn god_growth_on_completed_end(this: Option<&GodGrowthData>, method_info: OptionalMethod);
 
-//Ring
-#[skyline::from_offset(0x024246f0)]
-fn ringdata_get_skill_array(this: &RingData, method_info: OptionalMethod) -> &'static SkillArray;
-
 // God Growth Data Style Item
 #[skyline::from_offset(0x01cd8cd0)]
 fn ggd_style_clear(this: &GodGrowthDataStyleItems, method_info: OptionalMethod);
 
 #[skyline::from_offset(0x01cd8aa0)]
 fn ggd_style_add_item(this: &GodGrowthDataStyleItems, style: i32, item: &ItemData, method_info: OptionalMethod);
-<<<<<<< HEAD
 
 #[skyline::from_offset(0x01cd8db0)]
 fn ggd_get_style_items(this: &GodGrowthDataStyleItems, style: i32, method_info: OptionalMethod) -> &'static List<ItemData>;
 #[unity::from_offset("App", "GodData", "set_Link")]
 fn god_data_set_link(this: &GodData, value: &Il2CppString, method_info: OptionalMethod);
-=======
->>>>>>> b1663cdbfb8ebf32ed94186ae90cf3f014dc8b00

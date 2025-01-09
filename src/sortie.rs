@@ -27,8 +27,5 @@ impl SortieSelectionUnitManager {
 #[skyline::from_offset(0x01fe8c00)]
 fn sortie_is_sortie_mode(this: &SortieSelectionUnitManager, method_info: OptionalMethod) -> bool;
 
-//#[skyline::from_offset(0x01c62380)]
-//fn unit_sub_menu_create_bind(menu: &BasicMenu<BasicMenuItem>, parent_menu_item: &BasicMenuItem, method_info: OptionalMethod);
-
 #[skyline::from_offset(0x01fe8db0)]
 fn sortie_get_unit(this: &SortieSelectionUnitManager, method_info: OptionalMethod) -> &'static mut Unit;

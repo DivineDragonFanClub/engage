@@ -1,12 +1,7 @@
 pub use unity::prelude::*;
 use unity::il2cpp::object::Array;
-<<<<<<< HEAD
-use super::{*, GodData, unit::GodUnit, person::CapabilitySbyte, skill::SkillArray};
-=======
 use super::{*, GodData, unit::GodUnit, skill::SkillArray};
->>>>>>> b1663cdbfb8ebf32ed94186ae90cf3f014dc8b00
 use crate::gamedata::StructBaseFields;
-
 
 #[unity::class("App", "ItemData")]
 pub struct ItemData {
@@ -33,8 +28,7 @@ pub struct ItemData {
 	pub secure: i16,
 	__: i16,	//
 	pub price: i32, 
-<<<<<<< HEAD
-	weapon_level: &'static Il2CppString,
+	pub weapon_level: &'static Il2CppString,
 	pub rod_type: i32, 
 	pub rod_exp: u8,
 	pub rate_arena: u8,
@@ -42,14 +36,17 @@ pub struct ItemData {
 	pub hit_effect: Option<&'static Il2CppString>, 
 	pub cannon_effect: Option<&'static Il2CppString>,
 	pub overlap_terrain: Option<&'static Il2CppString>,
-	pub flag: &'static ItemDataFlag,
+	pub flag: &'static mut ItemDataFlag,
 	pub enchance: &'static CapabilitySbyte,
 	pub grow_ratio: &'static CapabilitySbyte,
 	pub equip_condition: Option<&'static Il2CppString>,
-=======
->>>>>>> b1663cdbfb8ebf32ed94186ae90cf3f014dc8b00
 }
 impl Gamedata for ItemData { }
+
+#[unity::class("App", "ItemDataFlag")]
+pub struct ItemDataFlag {
+    pub value: i32,
+}
 
 #[unity::class("App", "UnitItem")]
 pub struct UnitItem {
@@ -67,7 +64,6 @@ pub struct UnitItemList {
 	pub unit_items: &'static Array<&'static UnitItem>
 }
 
-
 #[unity::class("App", "RewardData")]
 pub struct RewardData {
 	pub parent: StructDataArrayFields,
@@ -78,7 +74,20 @@ pub struct RewardData {
 	pub max: f32, 
 	pub is_show: bool,
 }
+
 impl GamedataArray for RewardData {}
+
+#[unity::class("App", "ItemEvolveData")]
+pub struct ItemEvolveData {
+    pub parent: StructDataArrayFields,
+    pub iid: &'static Il2CppString,
+    pub iron: u16,
+    pub steel: u16,
+    pub silver: u16,
+    pub price: u16,
+    pub refine_level: u8,
+}
+impl GamedataArray for ItemEvolveData  {}
 
 impl RewardData {
 	pub fn ctor(&self) { unsafe { rewarddata_ctor(self, None); }}
@@ -93,11 +102,7 @@ impl ItemData {
 	pub fn on_complete(&self) { unsafe { item_on_complete(self, None); }}
 	pub fn set_cannon_effect(&self, value: &Il2CppString) { unsafe { item_set_cannon_effect(self, value, None); }}
 	pub fn set_hit_effect(&self, value: &Il2CppString) { unsafe { item_set_hit_effect(self, value, None); }}
-<<<<<<< HEAD
-	pub fn get_flag(&self) -> &'static mut ItemDataFlag { unsafe { item_data_flag(self, None)}}
-=======
 	pub fn get_flag(&self) -> &'static ItemDataFlag { unsafe { item_data_flag(self, None)}}
->>>>>>> b1663cdbfb8ebf32ed94186ae90cf3f014dc8b00
 
 	pub fn is_inventory(&self) -> bool  {unsafe { item_data_is_inventory(self, None) } }
 	pub fn is_material(&self) -> bool { unsafe { item_data_is_material(self, None)}}
@@ -126,10 +131,7 @@ impl UnitItem {
 	pub fn set_engrave(&self, engrave: &GodData) -> bool { unsafe { unititem_set_engrave(self, engrave, None)}}
 	pub fn set_refine_level(&self, level: i32) { unsafe { unititem_set_refine_level(self, level, None); }}
 	pub fn set_flags(&self, value: i32) { unsafe { unititem_set_flags(self, value, None);}}
-<<<<<<< HEAD
 	pub fn set_endurance(&self, value: i32) { unsafe { unititem_set_endurance(self, value, None) } }
-=======
->>>>>>> b1663cdbfb8ebf32ed94186ae90cf3f014dc8b00
 }
 
 impl UnitItemList {
@@ -154,18 +156,15 @@ impl UnitItemList {
 	pub fn move_item(&self, from: i32, to: i32) { unsafe { unititemlist_move(self, from, to, None) } }
 	pub fn put_off_all_item(&self) { unsafe { unititemlist_putoffall(self, None); } }
 }
-
-#[unity::class("App", "ItemDataFlag")]
-pub struct ItemDataFlag {
-    pub value: i32,
+impl ItemEvolveData {
+	pub fn register() { unsafe { regist_evolve_flags(None);} }
 }
 
+#[skyline::from_offset(0x0203dfd0)]
+fn regist_evolve_flags(method_info: OptionalMethod);
+
 #[unity::from_offset("App", "ItemData", "get_Flag")]
-<<<<<<< HEAD
-pub fn item_data_flag(this: &ItemData, method_info: OptionalMethod) -> &'static mut ItemDataFlag;
-=======
 pub fn item_data_flag(this: &ItemData, method_info: OptionalMethod) -> &'static ItemDataFlag;
->>>>>>> b1663cdbfb8ebf32ed94186ae90cf3f014dc8b00
 
 #[unity::from_offset("App", "ItemData", "IsWeapon")]
 pub fn item_data_is_weapon(this: &ItemData, method_info: OptionalMethod) -> bool;

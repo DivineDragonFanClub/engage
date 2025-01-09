@@ -26,7 +26,7 @@ use super::{Bindable, ProcDesc, RawValueStack};
 #[repr(C)]
 #[unity::class("App", "ProcInst")]
 pub struct ProcInst {
-    descs: &'static mut UnsafeCell<Il2CppArray<&'static mut ProcDesc>>,
+    pub descs: &'static mut UnsafeCell<Il2CppArray<&'static mut ProcDesc>>,
     pub desc_index: i32,
     pub name: Option<&'static Il2CppString>,
     /// Unique ID derived from the name of the ProcInst.
@@ -49,13 +49,31 @@ pub struct ProcInst {
     stack: &'static Il2CppObject<RawValueStack>,
 }
 
-impl Drop for ProcInst {
-    fn drop(&mut self) {
-        panic!("ProcInst dropped");
+impl ProcInst {
+    pub fn cast<T: AsRef<ProcInstFields>>(&self) -> &T {
+        unsafe { std::mem::transmute::<&ProcInst, &T>(self) }
+    }
+
+    pub fn cast_mut<T: AsMut<ProcInstFields>>(&mut self) -> &mut T {
+        unsafe { std::mem::transmute::<&mut ProcInst, &mut T>(self) }
+    }
+
+    pub fn jump<T: Bindable + ?Sized>(proc: &T, label: i32) {
+        unsafe { procinst_jump(proc, label, None) }
     }
 }
 
-impl ProcInst {
+impl ProcInstFields {
+    pub fn get_parent(&'static self) -> &'static ProcInst {
+        // Ray: yes, this'd crash if null. I'll fix later.
+        *self.parent.as_ref().unwrap()
+    }
+
+    pub fn get_parent_mut(&'static mut self) -> &'static mut ProcInst {
+        // Ray: yes, this'd crash if null. I'll fix later.
+        *self.parent.as_mut().unwrap()
+    }
+    
     pub fn get_child(&'static self) -> &'static ProcInst {
         // Ray: yes, this'd crash if null. I'll fix later.
         *self.child.as_ref().unwrap()
@@ -83,14 +101,6 @@ impl ProcInst {
     pub fn get_descs_mut(&self) -> &mut Il2CppArray<&'static mut ProcDesc> {
         unsafe {&mut *self.descs.get() }
     }
-
-    pub fn cast<T: AsRef<ProcInstFields>>(&self) -> &T {
-        unsafe { std::mem::transmute::<&ProcInst, &T>(self) }
-    }
-
-    pub fn cast_mut<T: AsMut<ProcInstFields>>(&mut self) -> &mut T {
-        unsafe { std::mem::transmute::<&mut ProcInst, &mut T>(self) }
-    }
 }
 
 impl Bindable for ProcInst { }
@@ -107,5 +117,5 @@ pub fn procinst_createbind<T: Bindable + ?Sized, P: Bindable>(
 #[unity::from_offset("App", "ProcInst", "OnDispose")]
 pub fn procinst_ondispose(this: &ProcInst, method_info: OptionalMethod);
 
-#[unity::from_offset("App", "ProcInst", "Jump")]
+#[skyline::from_offset(0x281E6F0)]
 pub fn procinst_jump<T: Bindable + ?Sized>(this: &T, label: i32, method_info: OptionalMethod);

@@ -100,19 +100,11 @@ impl GameVariableManager {
         let game_variable = GameUserData::get_variable();
         unsafe {get_string(game_variable, key.into(), None) }
     }
-<<<<<<< HEAD
     pub fn find_starts_with<'a>(string: impl Into<&'a Il2CppString>) -> &'static List<Il2CppString> {
         let game_variable = GameUserData::get_variable();
         unsafe { gamevariable_find_start_with(game_variable, string.into(), None)  }
     }
     pub fn exist<'a>(string: impl Into<&'a Il2CppString>) -> bool {
-=======
-    pub fn find_starts_with(string: &str) -> &'static List<Il2CppString> {
-        let game_variable = GameUserData::get_variable();
-        unsafe { gamevariable_find_start_with(game_variable, string.into(), None)  }
-    }
-    pub fn exist(string: &str) -> bool {
->>>>>>> b1663cdbfb8ebf32ed94186ae90cf3f014dc8b00
         let game_variable = GameUserData::get_variable();
         unsafe { gamevariable_is_exist(game_variable, string.into(), None)  }
     }
