@@ -216,7 +216,7 @@ pub struct WeaponMask {
 pub trait Gamedata: Il2CppClassData + Sized {
     fn ctor(&self) {
         let mut method = Self::class()._1.parent.get_methods().iter().find(|method| method.get_name() == Some(String::from(".ctor")));
-        if method.is_none() { println!("Cannot find method .ctor :("); return; }
+        if method.is_none() { return; }
         let ctor = unsafe {
             std::mem::transmute::<_, extern "C" fn(&Self, &MethodInfo) -> ()>(
                 method.unwrap().method_ptr,
@@ -370,7 +370,6 @@ pub trait Gamedata: Il2CppClassData + Sized {
             method = Self::class()._1.parent.get_methods().iter().find(|method| method.get_name() == Some(String::from("OnCompleted")));
         }
         if method.is_none() {
-            println!("Cannot find method OnCompleted for Class {}", Self::class().get_name());
             return; 
         }
         let fxn = unsafe {
@@ -385,10 +384,7 @@ pub trait Gamedata: Il2CppClassData + Sized {
         if method.is_none() {
             method = Self::class()._1.parent.get_methods().iter().find(|method| method.get_name() == Some(String::from("OnCompletedEnd")));
         }
-        if method.is_none() {
-            println!("Cannot find method OnCompletedEnd for Class {}", Self::class().get_name());
-            return;
-        }
+        if method.is_none() { return; }
         let fxn = unsafe {
             std::mem::transmute::<_, extern "C" fn(&Self, &MethodInfo) -> ()> (
                 method.unwrap().method_ptr,
@@ -400,7 +396,6 @@ pub trait Gamedata: Il2CppClassData + Sized {
         //From the class itself instead of StructData since StructData load requires arguments to load the xml data
         let mut method = Self::class().get_methods().iter().find(|method| method.get_name() == Some(String::from("Load")));
         if method.is_none() { 
-            println!("Cannot find method Load for Class {}", Self::class().get_name());
             return; 
         }
         let load = unsafe {

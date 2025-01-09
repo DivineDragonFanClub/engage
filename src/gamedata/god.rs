@@ -144,6 +144,10 @@ pub struct RingData {
     ring_model: &'static Il2CppString,
     pub kind: i32,
     pub rank: i32,
+<<<<<<< HEAD
+=======
+    pub icon: &'static Il2CppString,
+>>>>>>> b1663cdbfb8ebf32ed94186ae90cf3f014dc8b00
 }
 impl Gamedata for RingData {}
 
@@ -154,8 +158,18 @@ impl RingData {
 // GodData 
 #[unity::from_offset("App", "GodData", "get_GrowTable")]
 fn god_data_get_grow_table(this: &GodData, method_info: OptionalMethod) -> Option<&'static Il2CppString>;
+<<<<<<< HEAD
 #[unity::from_offset("App", "GodData", "set_AsciiName")]
 fn god_data_set_ascii(this: &GodData, value: &Il2CppString, method_info: OptionalMethod);
+=======
+
+#[unity::from_offset("App", "GodData", "get_AsciiName")]
+fn god_data_get_ascii(this: &GodData, method_info: OptionalMethod) -> Option<&'static Il2CppString>;
+
+#[unity::from_offset("App", "GodData", "set_AsciiName")]
+fn god_data_set_ascii(this: &GodData, value: &Il2CppString, method_info: OptionalMethod);
+
+>>>>>>> b1663cdbfb8ebf32ed94186ae90cf3f014dc8b00
 #[unity::from_offset("App", "GodData", "get_Flag")]
 fn god_data_get_flag(this: &GodData, method_info: OptionalMethod) -> &'static mut WeaponMask;
 
@@ -258,8 +272,11 @@ fn ggd_style_clear(this: &GodGrowthDataStyleItems, method_info: OptionalMethod);
 
 #[skyline::from_offset(0x01cd8aa0)]
 fn ggd_style_add_item(this: &GodGrowthDataStyleItems, style: i32, item: &ItemData, method_info: OptionalMethod);
+<<<<<<< HEAD
 
 #[skyline::from_offset(0x01cd8db0)]
 fn ggd_get_style_items(this: &GodGrowthDataStyleItems, style: i32, method_info: OptionalMethod) -> &'static List<ItemData>;
 #[unity::from_offset("App", "GodData", "set_Link")]
 fn god_data_set_link(this: &GodData, value: &Il2CppString, method_info: OptionalMethod);
+=======
+>>>>>>> b1663cdbfb8ebf32ed94186ae90cf3f014dc8b00

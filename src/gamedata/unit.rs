@@ -128,7 +128,7 @@ pub struct Unit {
     enhance_factors :u64,
     enhance_calculator :u64,
     pub internal_level :i8,
-    last_pick_voice :u8,
+    pub last_pick_voice :u8,
     attack_image :u64,
     rod_image :u64,
     heal_image :u64,
@@ -193,7 +193,7 @@ impl Unit {
     pub fn can_equip(&self, slot: i32, rod: bool, exp: bool) -> bool { unsafe { unit_can_equip_item(self, slot, rod, exp, None) } }
     // Getters 
     pub fn get_aptitude(&self) -> &'static mut WeaponMask { unsafe { get_unit_aptitude(self, None) } }
-    pub fn get_capability(&self, index: i32, enhance: bool) -> i32 { unsafe { unit_getcapability(self, index, enhance, None)} }
+    pub fn get_capability(&self, index: i32, calc_enhance: bool) -> i32 { unsafe { unit_getcapability(self, index, calc_enhance, None)} }
     pub fn get_capability_grow(&self, index: i32, auto_level: bool) -> i32 { unsafe { unit_get_capability_grow(self, index, auto_level, None)}}
     pub fn get_enchanced_level(&self) -> i32 { unsafe { unit_get_enhance_level(self, None)}}
     pub fn get_hp(&self) -> i32 { unsafe { unit_get_hp(self, None) } }
@@ -349,6 +349,12 @@ fn unit_set_job(this: &Unit, value: &JobData, method_info: OptionalMethod);
 
 #[skyline::from_offset(0x01a35520)]
 fn unit_has_skill(this: &Unit, skill: &SkillData, method_info: OptionalMethod) -> bool;
+
+#[skyline::from_offset(0x01a35ec0)]
+fn unit_has_skill_equip(this: &Unit, skill: &SkillData, method_info: OptionalMethod) -> bool;
+
+#[skyline::from_offset(0x01a37970)]
+fn unit_has_skill_private(this: &Unit, skill: &SkillData, method_info: OptionalMethod) -> bool;
 
 #[skyline::from_offset(0x01a35540)]
 fn unit_has_skill_sid(this: &Unit, sid: &Il2CppString, method_info: OptionalMethod) -> bool;

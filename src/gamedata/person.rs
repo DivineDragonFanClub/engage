@@ -9,6 +9,7 @@ use std::ops::DerefMut;
 pub struct Capability { 
     pub data: &'static mut Array<u8>, 
 }
+
 impl Capability {
     pub fn is_zero(&self) -> bool { unsafe { capability_is_zero(self, None)} }
     pub fn add(&self, index: i32, value: u8) { unsafe { capability_add(self, index, value, None); }}

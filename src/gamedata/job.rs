@@ -146,9 +146,12 @@ pub fn job_get_sort(this: &JobData, method_info: OptionalMethod) -> u16;
 
 #[unity::from_offset("App","JobData","GetEquipableWeaponKinds")]
 fn job_equipped_weapon_kinds(this: &JobData, method_info: OptionalMethod) -> &'static Array<i32>;
+<<<<<<< HEAD
 
 #[skyline::from_offset(0x020564f0)]
 pub fn job_get_selectable_weapon_mask(this: &JobData, select_count: &mut i32, method: OptionalMethod) -> &'static WeaponMask;
 
 #[skyline::from_offset(0x02056300)]
 fn job_get_weapon_mask(this: &JobData, weapon_mask: &WeaponMask, select: &WeaponMask, method: OptionalMethod) -> &'static WeaponMask;
+=======
+>>>>>>> b1663cdbfb8ebf32ed94186ae90cf3f014dc8b00
