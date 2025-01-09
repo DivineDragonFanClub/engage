@@ -20,7 +20,15 @@ pub struct BasicMenu<T: 'static> {
     pub menu_content: *const u8,
     pub menu_item_list: &'static mut List<T>,
     pub full_menu_item_list: &'static mut List<T>,
-    pad: [u8; 0x30],
+    pad: [u8; 0x10],
+    pub row_num: i32,
+    pub show_row_num: i32,
+    pub select_index: i32,
+    pub select_index_old: i32,
+    pub scroll_index: i32,
+    pub scroll_index_old: i32,
+    pub reserved_select_index: i32,
+    pub reserved_scroll_index: i32,
     pub reserved_show_row_num: i32,
     pub memory_display_index: i32,
     pub suspend: i32,
@@ -68,6 +76,11 @@ pub trait BasicMenuMethods {
             basicmenu_bindparentmenu(self, None);
         }
     }
+    fn set_transform_as_sub_menu<T: BasicMenuMethods + ?Sized>(&self, parent: &T, parent_menu_item: &BasicMenuItem) {
+        unsafe {
+            basicmenu_set_transform_as_sub_menu(self, parent, parent_menu_item, None);
+        }
+    }
 }
 
 impl<T> Bindable for BasicMenu<T> {}
@@ -94,6 +107,9 @@ fn basicmenu_bindparentmenu<P: BasicMenuMethods + ?Sized>(this: &P, method_info:
 
 #[unity::from_offset("App", "BasicMenu", "SetShowRowNum")]
 fn basicmenu_setshowrownum<P: BasicMenuMethods + ?Sized>(this: &P, max_row: i32, method_info: OptionalMethod);
+
+#[unity::from_offset("App", "BasicMenu", "SetTransformAsSubMenu")]
+fn basicmenu_set_transform_as_sub_menu<P: BasicMenuMethods + ?Sized, T: BasicMenuMethods + ?Sized>(this: &P, parent: &T, parent_item: &BasicMenuItem, method_info: OptionalMethod);
 
 #[unity::from_offset("App", "BasicMenu", "CreateDefaultDesc")]
 fn basicmenu_createdefaultdesc<P: BasicMenuMethods + ?Sized>(
@@ -131,7 +147,7 @@ pub struct BasicMenuItem {
     pub menu: &'static mut BasicMenu<BasicMenuItem>,
     menu_item_content: *const u8,
     name: &'static Il2CppString,
-    index: i32,
+    pub index: i32,
     full_index: i32,
     attribute: i32,
     cursor_color: unity::engine::Color,
@@ -184,6 +200,9 @@ impl BasicMenuItem {
             basicmenuitem_is_attribute_disable(self, None)
         }
     }
+    pub fn rebuild_text(&self) {    // Updates the text in BasicMenuItemContent
+        unsafe { build_content_text(self.menu_item_content, None); }
+    }
 }
 
 pub trait BasicMenuItemMethods {
@@ -206,6 +225,9 @@ pub trait BasicMenuItemMethods {
 fn basicmenuitem_ctor(this: &BasicMenuItem, method_info: OptionalMethod);
 #[skyline::from_offset(0x2457540)]
 fn basicmenuitem_is_attribute_disable(this: &BasicMenuItem, method_info: OptionalMethod) -> bool;
+
+#[skyline::from_offset(0x02467490)]
+fn build_content_text(this: *const u8, method_info: OptionalMethod);
 
 #[unity::class("App", "BasicMenuContent")]
 pub struct BasicMenuContent {
@@ -290,7 +312,15 @@ pub struct ConfigMenu<T: 'static> {
     pub menu_content: *const u8,
     pub menu_item_list: &'static mut List<T>,
     pub full_menu_item_list: &'static mut List<T>,
-    pad: [u8; 0x30],
+    pad: [u8; 0x10],
+    pub row_num: i32,
+    pub show_row_num: i32,
+    pub select_index: i32,
+    pub select_index_old: i32,
+    pub scroll_index: i32,
+    pub scroll_index_old: i32,
+    pub reserved_select_index: i32,
+    pub reserved_scroll_index: i32,
     pub reserved_show_row_num: i32,
     pub memory_display_index: i32,
     pub suspend: i32,

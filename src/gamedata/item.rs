@@ -1,6 +1,6 @@
 pub use unity::prelude::*;
 use unity::il2cpp::object::Array;
-use super::{*, GodData, unit::GodUnit, skill::SkillArray};
+use super::{*, GodData, unit::GodUnit, person::CapabilitySbyte, skill::SkillArray};
 use crate::gamedata::StructBaseFields;
 
 
@@ -29,6 +29,18 @@ pub struct ItemData {
 	pub secure: i16,
 	__: i16,	//
 	pub price: i32, 
+	weapon_level: &'static Il2CppString,
+	pub rod_type: i32, 
+	pub rod_exp: u8,
+	pub rate_arena: u8,
+	pub shoot_effect: Option<&'static Il2CppString>,
+	pub hit_effect: Option<&'static Il2CppString>, 
+	pub cannon_effect: Option<&'static Il2CppString>,
+	pub overlap_terrain: Option<&'static Il2CppString>,
+	pub flag: &'static ItemDataFlag,
+	pub enchance: &'static CapabilitySbyte,
+	pub grow_ratio: &'static CapabilitySbyte,
+	pub equip_condition: Option<&'static Il2CppString>,
 }
 impl Gamedata for ItemData { }
 
@@ -74,7 +86,7 @@ impl ItemData {
 	pub fn on_complete(&self) { unsafe { item_on_complete(self, None); }}
 	pub fn set_cannon_effect(&self, value: &Il2CppString) { unsafe { item_set_cannon_effect(self, value, None); }}
 	pub fn set_hit_effect(&self, value: &Il2CppString) { unsafe { item_set_hit_effect(self, value, None); }}
-	pub fn get_flag(&self) -> &'static ItemDataFlag { unsafe { item_data_flag(self, None)}}
+	pub fn get_flag(&self) -> &'static mut ItemDataFlag { unsafe { item_data_flag(self, None)}}
 
 	pub fn is_inventory(&self) -> bool  {unsafe { item_data_is_inventory(self, None) } }
 	pub fn is_material(&self) -> bool { unsafe { item_data_is_material(self, None)}}
@@ -103,6 +115,7 @@ impl UnitItem {
 	pub fn set_engrave(&self, engrave: &GodData) -> bool { unsafe { unititem_set_engrave(self, engrave, None)}}
 	pub fn set_refine_level(&self, level: i32) { unsafe { unititem_set_refine_level(self, level, None); }}
 	pub fn set_flags(&self, value: i32) { unsafe { unititem_set_flags(self, value, None);}}
+	pub fn set_endurance(&self, value: i32) { unsafe { unititem_set_endurance(self, value, None) } }
 }
 
 impl UnitItemList {
@@ -120,6 +133,10 @@ impl UnitItemList {
 	pub fn add_item_no_duplicate(&self, item: &ItemData){
 		if !self.has_item(item) { self.add(item); }
 	}
+	pub fn add_iid_no_duplicate(&self, iid: &str){
+		let item = ItemData::get(iid);
+		if !self.has_item_iid(iid) && item.is_some() { self.add(item.unwrap()); }
+	}
 	pub fn move_item(&self, from: i32, to: i32) { unsafe { unititemlist_move(self, from, to, None) } }
 	pub fn put_off_all_item(&self) { unsafe { unititemlist_putoffall(self, None); } }
 }
@@ -130,7 +147,7 @@ pub struct ItemDataFlag {
 }
 
 #[unity::from_offset("App", "ItemData", "get_Flag")]
-pub fn item_data_flag(this: &ItemData, method_info: OptionalMethod) -> &'static ItemDataFlag;
+pub fn item_data_flag(this: &ItemData, method_info: OptionalMethod) -> &'static mut ItemDataFlag;
 
 #[unity::from_offset("App", "ItemData", "IsWeapon")]
 pub fn item_data_is_weapon(this: &ItemData, method_info: OptionalMethod) -> bool;
@@ -209,6 +226,8 @@ pub fn unititem_is_weapon(this: &UnitItem, method_info: OptionalMethod) -> bool;
 #[unity::from_offset("App", "UnitItem", "get_IsDrop")]
 pub fn unititem_get_is_drop(this: &UnitItem, method_info: OptionalMethod) -> bool;
 
+#[skyline::from_offset(0x01fb2df0)]
+fn unititem_set_endurance(this: &UnitItem, value: i32, method_info: OptionalMethod);
 #[unity::from_offset("App", "UnitItem", "GetPower")]
 pub fn unititem_get_power(this: &UnitItem, method_info: OptionalMethod) -> i32;
 

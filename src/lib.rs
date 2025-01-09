@@ -38,3 +38,4 @@ pub mod util;
 pub mod vibrationmanager;
 pub mod random;
 pub mod hub;
+pub mod sortie;

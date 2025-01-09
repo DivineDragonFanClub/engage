@@ -13,6 +13,10 @@ use super::{JobData, WeaponMask, PersonData,
 pub struct GodUnit {
     parent: [u8; 0x10],
     pub data: &'static GodData,
+    pub parent_unit: Option<&'static Unit>,
+    pub child: Option<&'static Unit>,
+    bonds: u64,
+    pub saved_parent: Option<&'static Unit>,
 }
 
 #[unity::class("App", "UnitRing")]
@@ -79,7 +83,7 @@ pub struct Unit {
     pub grow_capability: &'static mut Capability,
     pub level_capability: &'static mut UnitBaseCapability,
     pub grow_ssed :i32,
-    drop_seed :i32,
+    pub drop_seed :i32,
     actor :u64,
     info :u64,
     pub index :u8,
@@ -95,10 +99,10 @@ pub struct Unit {
     engage_turn :u8,
     engage_count_view :u8,
     god_states :u64,
-    x :u8,
-    z :u8,
-    dispos_y :u8,
-    dispos_z :u8,
+    pub x :u8,
+    pub z :u8,
+    pub dispos_y :u8,
+    pub dispos_z :u8,
     angle :f32,
     dont_attack_person :u64,
     dont_attack_force_mask :i32,
@@ -136,7 +140,7 @@ pub struct Unit {
     map_history_index :u8,
     mask_skill_lock :u64,
     fortune_target :u64,
-    fortune_seed :i32,
+    pub fortune_seed :i32,
     relay_player_index :u8,
     skill_point :u8,
     owner_unit :u16,
@@ -185,6 +189,8 @@ impl Unit {
     pub fn is_enchantment(&self) -> bool {
         unsafe { unit_is_enchantment(self, None) }
     }
+    pub fn auto_equip(&self) { unsafe { unit_update_auto_equip(self, None); } }
+    pub fn can_equip(&self, slot: i32, rod: bool, exp: bool) -> bool { unsafe { unit_can_equip_item(self, slot, rod, exp, None) } }
     // Getters 
     pub fn get_aptitude(&self) -> &'static mut WeaponMask { unsafe { get_unit_aptitude(self, None) } }
     pub fn get_capability(&self, index: i32, enhance: bool) -> i32 { unsafe { unit_getcapability(self, index, enhance, None)} }
@@ -234,6 +240,7 @@ impl Unit {
 
     pub fn transfer(&self, force: i32, is_last: bool) { unsafe { unit_transfer(self, force, is_last, None); }}
     pub fn try_create_actor(&self) -> bool { unsafe { unit_try_create_actor(self, None) } }
+    pub fn reload_actor(&self) { unsafe { unit_reload_actor(self, None);}}
     pub fn update_weapon_mask(&self) { unsafe { unit_update_weapon_mask(self, None); }}
 }
 
@@ -245,6 +252,8 @@ impl UnitEdit {
 
 impl GodUnit {
     pub fn get_escape(&self) -> bool { unsafe { god_unit_escaped(self, None)}}
+    pub fn set_parent(&self, unit: Option<&Unit>, state: i32) { unsafe { god_unit_set_parent(self, unit, state, None); }}
+    pub fn set_child(&self, unit: Option<&Unit>) { unsafe { god_unit_set_child(self, unit, None); }}
 }
 
 
@@ -362,6 +371,10 @@ fn unit_transfer(this: &Unit, force: i32, is_last: bool, method_info: OptionalMe
 #[unity::from_offset("App", "Unit", "TryCreateActor")]
 fn unit_try_create_actor(this: &Unit, method_info: OptionalMethod) -> bool;
 
+#[skyline::from_offset(0x01a19ed0)]
+fn unit_reload_actor(this: &Unit, method_info: OptionalMethod);
+
+
 #[unity::from_offset("App", "Unit", "SetGodUnit")]
 fn unit_set_god_unit(this: &Unit, god: &GodUnit, method_info: OptionalMethod);
 
@@ -395,6 +408,13 @@ fn unit_inference_rod(this: &Unit, method_info: OptionalMethod) -> bool;
 #[unity::from_offset("App", "Unit", "HasHealRod")]
 fn unit_heal_rod(this: &Unit, method_info: OptionalMethod) -> bool;
 
+#[unity::from_offset("App", "Unit", "UpdateStateWithAutoEquip")]
+pub fn unit_update_auto_equip(this: &Unit, method_info: OptionalMethod);
+
+#[skyline::from_offset(0x01a436b0)]
+fn unit_can_equip_item(unit: &Unit, index: i32, rod: bool, exp: bool, method_info: OptionalMethod) -> bool;
+
+
 // UnitEdit 
 #[skyline::from_offset(0x01f73e50)]
 fn unit_edit_set_gender(this: &UnitEdit, gender: i32, method_info: OptionalMethod);
@@ -409,3 +429,8 @@ pub fn unit_edit_is_enable(this: &UnitEdit, method_info: OptionalMethod) -> bool
 #[skyline::from_offset(0x0233eae0)]
 pub fn god_unit_escaped(this: &GodUnit, method_info: OptionalMethod) -> bool;
 
+#[skyline::from_offset(0x0233ffd0)]
+fn god_unit_set_parent(this: &GodUnit, unit: Option<&Unit>, god_state: i32, method_info: OptionalMethod);
+
+#[skyline::from_offset(0x02340140)]
+fn god_unit_set_child(this: &GodUnit, unit: Option<&Unit>, method_info: OptionalMethod);
