@@ -1,6 +1,6 @@
 pub use unity::prelude::*;
 use unity::il2cpp::object::Array;
-use super::{JobData, PersonData, skill::*, WeaponMask};
+use super::{JobData, GodData, PersonData, skill::*, WeaponMask};
 use std::ops::Deref;
 use std::ops::DerefMut;
 // Structs, methods required for PersonData, JobData, SkillArray
@@ -88,6 +88,9 @@ impl PersonData {
     pub fn get_engage_sid(&self ) -> Option<&'static Il2CppString> { unsafe { person_get_engage_sid(self, None)} }
     pub fn get_items(&self) -> Option<&'static mut Array<&'static Il2CppString>> { unsafe { person_get_items(self, None)}}
     pub fn get_aid(&self) -> Option<&'static Il2CppString> { unsafe { person_get_aid(self, None)}}
+
+    pub fn get_exist_die_cid(&self) -> Option<&'static Il2CppString> { unsafe { person_cid_exist(self, None) }}
+    pub fn get_exist_timing(&self) -> i32 { unsafe { person_cid_timing(self, None)}}
     pub fn load() { unsafe { persondata_load(None); }}
     pub fn on_complete(&self) { unsafe { person_on_release(self, None); }}
 
@@ -120,6 +123,7 @@ impl PersonData {
     pub fn set_name(&self, name: &Il2CppString) { unsafe { person_set_name(self, name, None); }}
     pub fn set_unit_icon_id(&self, icon_id: &Il2CppString) { unsafe { person_set_uniticonid(self, icon_id, None ); }}
     pub fn set_sp(&self, value: i32) { unsafe { person_set_sp(self, value, None)}; }
+    pub fn set_link_god(&self, god: Option<&GodData>) { unsafe { person_set_link_god(self, god, None); }}
 }
 
 
@@ -282,8 +286,14 @@ fn person_get_offset_l(this: &PersonData, method_info: OptionalMethod) -> &'stat
 
 #[unity::from_offset("App", "PersonData", "set_CommonSids")]
 fn person_set_common_sids(this: &PersonData, sids: &Array<&Il2CppString>, method_info: OptionalMethod);
-//Capability
 
+#[unity::from_offset("App", "PersonData", "get_ExistDieCid")]
+fn person_cid_exist(this: &PersonData, method_info: OptionalMethod) -> Option<&'static Il2CppString>;
+
+#[unity::from_offset("App", "PersonData", "get_ExistDieTiming")]
+fn person_cid_timing(this: &PersonData, method_info: OptionalMethod) -> i32;
+
+//Capability
 #[skyline::from_offset(0x25bcda0)]
 fn capability_is_zero(this: &Capability, method_info: OptionalMethod) -> bool;
 
@@ -298,6 +308,9 @@ fn capabilitysbyte_add(this: &CapabilitySbyte, i: i32, v: i8,  method_info: Opti
 
 #[unity::from_offset("App", "PersonData", "set_EngageSid")]
 fn person_set_engage_sid(this: &PersonData, value: Option<&Il2CppString>, method_info: OptionalMethod);
+
+#[unity::from_offset("App", "PersonData", "set_LinkGod")]
+fn person_set_link_god(this: &PersonData, value: Option<&GodData>, method_info: OptionalMethod);
 
 #[unity::from_offset("App", "PersonData", "get_EngageSid")]
 fn person_get_engage_sid(this: &PersonData, method_info: OptionalMethod) -> Option<&'static Il2CppString>;

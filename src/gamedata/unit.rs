@@ -9,6 +9,7 @@ use super::{JobData, WeaponMask, PersonData,
     GodData,
     god::GodBond,
     ring::RingData,
+    ai::UnitAI,
 };
 
 #[unity::class("App", "GodUnit")]
@@ -17,7 +18,7 @@ pub struct GodUnit {
     pub data: &'static GodData,
     pub parent_unit: Option<&'static Unit>,
     pub child: Option<&'static Unit>,
-    bonds: u64,
+    pub bonds: u64,
     pub saved_parent: Option<&'static Unit>,
 }
 
@@ -80,7 +81,7 @@ pub struct Unit {
     pub status: &'static mut UnitStatus,
     pub prev: Option<&'static Unit>,
     pub next: Option<&'static Unit>,
-    ai: &'static (),
+    pub ai: &'static mut UnitAI,
     pub edit: &'static UnitEdit,
     pub ident: i32,
     pub person: &'static mut PersonData,
@@ -168,6 +169,14 @@ impl Unit {
     pub fn learn_job_skill(&self, job: &JobData) {
         unsafe {  unit_learnjobskill(self, job, None); }
     }
+    /// Checks if unit is at correct level first before learning the skill for the job
+    pub fn try_learn_job_skill(&self) -> Option<&'static SkillData> {   
+        unsafe { unit_learn_job(&self, None) }
+    }
+    /// Manually sets learn skill by SkillData
+    pub fn set_learn_skill(&self, skill: Option<&SkillData>) {
+        unsafe { unit_set_learned_job_skill(self, skill, None); }
+    }
     /// Performs a class change on the unit without playing the sequence
     pub fn class_change(&self, job: &JobData) {
         unsafe { unit_classchange(self, job, 0 as _, None);  }
@@ -245,6 +254,8 @@ impl Unit {
     pub fn has_private_skill(&self, sid: &Il2CppString) -> bool { unsafe { unit_has_private_skill(self, sid, None) } }
     pub fn has_sid(&self, sid: &Il2CppString) -> bool { unsafe { unit_has_skill_sid(self, sid, None) }}
     pub fn has_skill(&self, skill: &SkillData) -> bool { unsafe { unit_has_skill(self, skill, None)}}
+    pub fn has_skill_equip(&self, skill: &SkillData) -> bool { unsafe { unit_has_skill_equip(self, skill, None)}}
+    
     pub fn has_interfence_rod(&self) -> bool { unsafe { unit_inference_rod(self, None)}}
     pub fn has_heal_rod(&self) -> bool { unsafe { unit_heal_rod(self, None)}}
     
@@ -274,6 +285,7 @@ impl GodUnit {
     pub fn set_parent(&self, unit: Option<&Unit>, state: i32) { unsafe { god_unit_set_parent(self, unit, state, None); }}
     pub fn set_child(&self, unit: Option<&Unit>) { unsafe { god_unit_set_child(self, unit, None); }}
     pub fn get_bond(&self, unit: &Unit) -> Option<&'static mut GodBond> { unsafe { god_unit_get_bond(self, unit, None)}}
+    pub fn set_god_level(&self, unit: &Unit, level: i32) { unsafe { godunit_set_god_level(self, unit, level, None); }} 
 }
 
 pub struct UnitUtil;
@@ -471,6 +483,9 @@ fn unit_clear_parent(this: &Unit, method_info: OptionalMethod);
 #[skyline::from_offset(0x01a0c730)]
 fn unit_update(this: &Unit, method_info: OptionalMethod);
 
+#[unity::from_offset("App", "Unit", "set_LearnedJobSkill")]
+fn unit_set_learned_job_skill(this: &Unit, value: Option<&SkillData>, method_info: OptionalMethod);
+
 // UnitEdit 
 #[skyline::from_offset(0x01f73e50)]
 fn unit_edit_set_gender(this: &UnitEdit, gender: i32, method_info: OptionalMethod);
@@ -484,12 +499,18 @@ pub fn unit_edit_is_enable(this: &UnitEdit, method_info: OptionalMethod) -> bool
 #[unity::from_offset("App", "Unit", "TryConnectGodUnit")]
 pub fn unit_connect_god_unit(this: &Unit, god_unit: &GodUnit, method_info: OptionalMethod) -> Option<&'static GodUnit>;
 
+#[skyline::from_offset(0x01a3c290)]
+fn unit_learn_job(this: &Unit, method_info: OptionalMethod) -> Option<&'static SkillData>; 
+
 // God Unit
 #[skyline::from_offset(0x0233eae0)]
 pub fn god_unit_escaped(this: &GodUnit, method_info: OptionalMethod) -> bool;
 
 #[skyline::from_offset(0x02340140)]
 fn god_unit_set_child(this: &GodUnit, unit: Option<&Unit>, method_info: OptionalMethod);
+
+#[skyline::from_offset(0x02340a30)]
+fn godunit_set_god_level(this: &GodUnit, unit: &Unit, level: i32, method_info: OptionalMethod);
 
 #[skyline::from_offset(0x0233ffd0)]
 fn god_unit_set_parent(this: &GodUnit, unit: Option<&Unit>, state: i32, method_info: OptionalMethod); 

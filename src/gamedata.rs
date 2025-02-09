@@ -21,6 +21,7 @@ pub mod assettable;
 pub mod terrain;
 pub mod shop;
 pub mod ai;
+pub mod achieve;
 
 #[unity::class("App", "HubFacilityData")]
 pub struct HubFacilityData {
