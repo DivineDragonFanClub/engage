@@ -236,8 +236,3 @@ fn skilldata_oncomplete(this: &SkillData,method_info: OptionalMethod);
 
 #[unity::from_offset("App", "SkillData", "set_EfficacyValue")]
 fn skilldata_set_efficacy_value(this: &SkillData, value: i32, method_info: OptionalMethod);
-
-#[unity::from_offset("App", "SkillData", "set_Priority")]
-fn skilldata_set_priority(this: &SkillData, value: i32, method_info: OptionalMethod);
-#[unity::from_offset("App", "SkillData", "GetStyleSkill")]
-fn skilldata_get_style_skill(this: &mut SkillData, value: i32, method_info: OptionalMethod) -> Option<&'static mut SkillData>;

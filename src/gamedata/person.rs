@@ -60,7 +60,6 @@ impl PersonData {
     pub fn get_ascii_name(&self) -> Option<&Il2CppString> { unsafe {person_get_ascii_name(self, None) } }
     pub fn get_asset_force(&self) -> i32 { unsafe { person_get_asset_force(self, None) }  }
     pub fn get_attrs(&self) -> i32 { unsafe { person_get_attrs(self, None)} }
-    pub fn get_bmap_size(&self) -> u8 { unsafe { get_bmap_size(self, None)}}
     pub fn get_combat_bgm(&self) -> Option<&Il2CppString> { unsafe { person_get_combat_bgm(self, None)}}
     pub fn get_common_skills(&self) -> &mut SkillArray { unsafe { person_get_commonskill(self, None) }  }
 
@@ -287,11 +286,8 @@ fn person_get_offset_l(this: &PersonData, method_info: OptionalMethod) -> &'stat
 #[unity::from_offset("App", "PersonData", "set_CommonSids")]
 fn person_set_common_sids(this: &PersonData, sids: &Array<&Il2CppString>, method_info: OptionalMethod);
 
-#[unity::from_offset("App", "PersonData", "get_ExistDieCid")]
-fn person_cid_exist(this: &PersonData, method_info: OptionalMethod) -> Option<&'static Il2CppString>;
-
-#[unity::from_offset("App", "PersonData", "get_ExistDieTiming")]
-fn person_cid_timing(this: &PersonData, method_info: OptionalMethod) -> i32;
+#[unity::from_offset("App", "PersonData", "get_BmapSize")]
+fn person_get_bmapsize(this: &PersonData, method_info: OptionalMethod) -> u8;
 
 //Capability
 #[skyline::from_offset(0x25bcda0)]
@@ -320,6 +316,3 @@ fn person_set_sp(this: &PersonData, value: i32, method_info: OptionalMethod);
 
 #[unity::from_offset("App", "PersonData", "get_Aid")]
 fn person_get_aid(this: &PersonData, method_info: OptionalMethod) -> Option<&'static Il2CppString>;
-
-#[skyline::from_offset(0x01f25ec0)]
-pub fn get_bmap_size(this: &PersonData, method_info: OptionalMethod) -> u8;

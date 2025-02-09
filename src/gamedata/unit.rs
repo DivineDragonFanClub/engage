@@ -101,8 +101,8 @@ pub struct Unit {
     pub hp_display: u8,
     pub hp_stock_count :u8,
     pub hp_stock_count_max :u8,
-    extra_hp_stock_count :u8,
-    extra_hp_stock_count_max :u8,
+    pub extra_hp_stock_count :u8,
+    pub extra_hp_stock_count_max :u8,
     engage_count :u8,
     engage_turn :u8,
     engage_count_view :u8,
@@ -114,7 +114,7 @@ pub struct Unit {
     angle :f32,
     dont_attack_person :u64,
     dont_attack_force_mask :i32,
-    pub item_list : &'static UnitItemList,
+    pub item_list : &'static mut UnitItemList,
     pub item_selected :u64,
     pub accessory_list : &'static mut UnitAccessoryList,
     pub god_unit :Option<&'static GodUnit>,
@@ -133,8 +133,8 @@ pub struct Unit {
     pub aptitude : &'static mut WeaponMask,
     pub weapon_mask :&'static mut WeaponMask,
     pub selected_weapon_mask :&'static mut WeaponMask,
-    enhance_factors :u64,
-    enhance_calculator :u64,
+    enhance_factors : Option<&'static UnitEnhanceFactors>,
+    pub enhance_calculator : Option<&'static UnitEnhanceCalculator>,
     pub internal_level :i8,
     pub last_pick_voice :u8,
     attack_image :u64,
@@ -218,6 +218,7 @@ impl Unit {
     pub fn get_capability(&self, index: i32, calc_enhance: bool) -> i32 { unsafe { unit_getcapability(self, index, calc_enhance, None)} }
     pub fn get_capability_grow(&self, index: i32, auto_level: bool) -> i32 { unsafe { unit_get_capability_grow(self, index, auto_level, None)}}
     pub fn get_enchanced_level(&self) -> i32 { unsafe { unit_get_enhance_level(self, None)}}
+    pub fn get_enhance_factor(&self) -> Option<& mut UnitEnhanceFactors> { unsafe { unit_get_enhance_factors(self, None) }}
     pub fn get_hp(&self) -> i32 { unsafe { unit_get_hp(self, None) } }
     pub fn get_learn_job_skill(&self) -> Option<&SkillData> { unsafe { learn_job_kill_unit(self, None)}}
     pub fn get_pid(&self) -> &'static Il2CppString {  unsafe { unit_get_pid(self, None)} }
@@ -528,3 +529,37 @@ fn join_unit(pid: &Il2CppString, method_info: OptionalMethod) -> Option<&'static
 #[skyline::from_offset(0x01c73960)]
 fn join_unit_person(person: &PersonData, method_info: OptionalMethod) -> Option<&'static mut Unit>;
 
+#[unity::class("App", "UnitEnhanceCalculator")]
+pub struct UnitEnhanceCalculator {
+    pub values: Option<&'static UnitEnhanceValues>,
+    pub temp:   Option<&'static UnitEnhanceValues>,
+}
+
+#[unity::class("App", "UnitEnhanceFactors")]
+pub struct UnitEnhanceFactors {
+    pub hub_values:  Option<&'static UnitEnhanceValues>,
+    pub food_values: Option<&'static UnitEnhanceValues>,
+    pub item_values: Option<&'static UnitEnhanceValues>,
+}
+
+#[unity::class("App", "UnitEnhanceValues")]
+pub struct UnitEnhanceValues {
+    pub values: &'static mut Array<i32>,
+}
+
+impl UnitEnhanceValues {
+    pub fn get_item(&self, index: i32) -> i32 { unsafe { return unit_enhance_values_get_item(self, index, None); } }
+}
+
+impl UnitEnhanceFactors {
+    pub fn get_food_values(&self) -> Option<&'static mut UnitEnhanceValues> { unsafe { return unit_enhance_factors_get_food_values(self, None); } }
+}
+
+#[skyline::from_offset(0x01a54f90)]
+pub fn unit_get_enhance_factors(this: &Unit, method_info: OptionalMethod) -> Option<&'static mut UnitEnhanceFactors>;
+
+#[skyline::from_offset(0x01f781b0)]
+pub fn unit_enhance_values_get_item(this: &UnitEnhanceValues, index: i32, method_info: OptionalMethod) -> i32;
+
+#[skyline::from_offset(0x01f7aff0)]
+pub fn unit_enhance_factors_get_food_values(this: &UnitEnhanceFactors, _method_info : OptionalMethod) -> Option<&'static mut UnitEnhanceValues>;
