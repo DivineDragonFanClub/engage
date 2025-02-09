@@ -42,15 +42,6 @@ pub struct HubRandomSet {
 }
 impl GamedataArray for HubRandomSet {}
 
-#[unity::class("App", "HubRandomSet")]
-pub struct HubRandomSet {
-    pub parent: StructDataArrayFields,
-    pub iid: &'static Il2CppString,
-    pub rate: i32,
-    pub count: i32,
-}
-impl GamedataArray for HubRandomSet {}
-
 #[unity::class("App", "HubAccessManager")]
 pub struct HubAccessManager {
     pub scene_name: &'static Il2CppString,

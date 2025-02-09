@@ -87,7 +87,7 @@ impl PersonData {
     pub fn get_engage_sid(&self ) -> Option<&'static Il2CppString> { unsafe { person_get_engage_sid(self, None)} }
     pub fn get_items(&self) -> Option<&'static mut Array<&'static Il2CppString>> { unsafe { person_get_items(self, None)}}
     pub fn get_aid(&self) -> Option<&'static Il2CppString> { unsafe { person_get_aid(self, None)}}
-
+    pub fn get_bmap_size(&self) -> u8 { unsafe { person_get_bmapsize(self, None)}}
     pub fn get_exist_die_cid(&self) -> Option<&'static Il2CppString> { unsafe { person_cid_exist(self, None) }}
     pub fn get_exist_timing(&self) -> i32 { unsafe { person_cid_timing(self, None)}}
     pub fn load() { unsafe { persondata_load(None); }}
@@ -316,3 +316,9 @@ fn person_set_sp(this: &PersonData, value: i32, method_info: OptionalMethod);
 
 #[unity::from_offset("App", "PersonData", "get_Aid")]
 fn person_get_aid(this: &PersonData, method_info: OptionalMethod) -> Option<&'static Il2CppString>;
+
+#[unity::from_offset("App", "PersonData", "get_ExistDieCid")]
+fn person_cid_exist(this: &PersonData, method_info: OptionalMethod) -> Option<&'static Il2CppString>;
+
+#[unity::from_offset("App", "PersonData", "get_ExistDieTiming")]
+fn person_cid_timing(this: &PersonData, method_info: OptionalMethod) -> i32;
