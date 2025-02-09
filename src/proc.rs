@@ -96,9 +96,6 @@ fn proc_end(
     method_info: OptionalMethod,
 ) -> &'static mut ProcDesc;
 
-#[skyline::from_offset(0x0281b6b0)]
-fn proc_tick() -> &'static mut ProcDesc;
-
 /// A structure representing a call to a method that returns nothing.
 #[repr(C)]
 #[unity::class("App", "ProcVoidMethod")]

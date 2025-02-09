@@ -15,6 +15,7 @@ impl GodData {
     pub fn get_force_type(&self) -> i32 { unsafe {  god_data_force_type(self, None)}}
     pub fn get_link_gid(&self) -> Option<&'static Il2CppString> { unsafe { god_data_get_link_gid(self, None)}}
     pub fn get_link(&self) -> Option<&'static Il2CppString> { unsafe { god_data_get_link(self, None) }}
+    pub fn get_ascii_name(&self) -> Option<&'static Il2CppString> { unsafe { god_data_get_ascii(self, None) }}
     pub fn get_flag(&self) -> &'static mut WeaponMask { unsafe { god_data_get_flag(self, None)}}
     pub fn get_grow_table(&self) -> Option<&'static Il2CppString> { unsafe { god_data_get_grow_table(self, None)}}
     pub fn load() { unsafe { goddata_load(None); }}
@@ -156,6 +157,10 @@ fn god_data_get_gid(this: &GodData, method_info: OptionalMethod) -> Option<&'sta
 
 #[unity::from_offset("App", "GodData", "get_GrowTable")]
 fn god_data_get_grow_table(this: &GodData, method_info: OptionalMethod) -> Option<&'static Il2CppString>;
+
+#[unity::from_offset("App", "GodData", "get_AsciiName")]
+fn god_data_get_ascii(this: &GodData, method_info: OptionalMethod) -> Option<&'static Il2CppString>;
+
 #[unity::from_offset("App", "GodData", "set_AsciiName")]
 fn god_data_set_ascii(this: &GodData, value: &Il2CppString, method_info: OptionalMethod);
 #[unity::from_offset("App", "GodData", "get_Flag")]
