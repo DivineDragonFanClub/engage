@@ -208,6 +208,17 @@ impl Unit {
     pub fn try_connect_god(&self, god: &GodUnit) -> Option<&'static GodUnit> {
         unsafe { unit_connect_god_unit(self, god, None)}
     }
+    pub fn set_engage(&self, enable: bool, link: Option<&Unit>) {
+        unsafe { unit_set_engage(self, enable, link, None); }
+    }
+    /// Plays engage on/off map effect
+    pub fn play_engage(&self, enable: bool ) {
+        unsafe { unit_play_engage(self, enable, None); }
+    }
+
+    pub fn play_set_damage(&self, damage :i32, can_die: bool, multi: bool) {
+        unsafe { unit_play_set_damage(self, damage, can_die, multi, None);}
+    }
     pub fn auto_equip(&self) { unsafe { unit_update_auto_equip(self, None); } }
     pub fn can_equip(&self, slot: i32, rod: bool, exp: bool) -> bool { unsafe { unit_can_equip_item(self, slot, rod, exp, None) } }
     // GodUnit Related
@@ -240,7 +251,7 @@ impl Unit {
     pub fn set_god_unit(&self, god: &GodUnit) { unsafe { unit_set_god_unit(self, god, None); } }
     pub fn set_ring(&self, ring: &UnitRing) { unsafe { unit_set_ring(self, ring, None); } }
     pub fn set_status(&self, status: i64) { unsafe { unit_set_status(self, status, None); }}
-
+    pub fn clear_status(&self, status: i64) { unsafe { unit_clear_status(self, status, None); }}
     // Others
     pub fn add_aptitude_from_weapon_mask(&self) { unsafe { unit_add_apt_from_weapon_mask(self, None); } } 
     pub fn add_sp(&self, added_sp: i32) {  unsafe { unit_add_sp(self, added_sp, None); }  }
@@ -256,7 +267,8 @@ impl Unit {
     pub fn has_sid(&self, sid: &Il2CppString) -> bool { unsafe { unit_has_skill_sid(self, sid, None) }}
     pub fn has_skill(&self, skill: &SkillData) -> bool { unsafe { unit_has_skill(self, skill, None)}}
     pub fn has_skill_equip(&self, skill: &SkillData) -> bool { unsafe { unit_has_skill_equip(self, skill, None)}}
-    
+    pub fn add_to_equip_skill_pool(&self, skill: &SkillData) { unsafe { unit_add_to_equip_skill_pool(self, skill, None ); }}
+
     pub fn has_interfence_rod(&self) -> bool { unsafe { unit_inference_rod(self, None)}}
     pub fn has_heal_rod(&self) -> bool { unsafe { unit_heal_rod(self, None)}}
     
@@ -297,6 +309,9 @@ impl UnitUtil {
     }
     pub fn join_unit_person(person: &PersonData) -> Option<&'static mut Unit> {
         unsafe { join_unit_person(person, None) }
+    }
+    pub fn get_vision_owner(vision_unit: &Unit) -> Option<&'static Unit> {
+        unsafe { unit_utils_get_vision_owner(vision_unit, None)}
     }
 }
 
@@ -423,6 +438,8 @@ fn unit_try_create_actor(this: &Unit, method_info: OptionalMethod) -> bool;
 #[skyline::from_offset(0x01a19ed0)]
 fn unit_reload_actor(this: &Unit, method_info: OptionalMethod);
 
+#[skyline::from_offset(0x01a19ba0)]
+fn unit_set_engage(this: &Unit, enable: bool, link: Option<&Unit>, method_info: OptionalMethod);
 
 #[unity::from_offset("App", "Unit", "SetGodUnit")]
 fn unit_set_god_unit(this: &Unit, god: &GodUnit, method_info: OptionalMethod);
@@ -487,6 +504,9 @@ fn unit_update(this: &Unit, method_info: OptionalMethod);
 #[unity::from_offset("App", "Unit", "set_LearnedJobSkill")]
 fn unit_set_learned_job_skill(this: &Unit, value: Option<&SkillData>, method_info: OptionalMethod);
 
+#[unity::from_offset("App", "Unit", "PlayEngage")]
+fn unit_play_engage(this: &Unit, enable: bool, method_info: OptionalMethod);
+
 // UnitEdit 
 #[skyline::from_offset(0x01f73e50)]
 fn unit_edit_set_gender(this: &UnitEdit, gender: i32, method_info: OptionalMethod);
@@ -503,6 +523,14 @@ pub fn unit_connect_god_unit(this: &Unit, god_unit: &GodUnit, method_info: Optio
 #[skyline::from_offset(0x01a3c290)]
 fn unit_learn_job(this: &Unit, method_info: OptionalMethod) -> Option<&'static SkillData>; 
 
+#[unity::from_offset("App", "Unit", "PlaySetDamage")]
+fn unit_play_set_damage(this: &Unit, damage: i32, can_die: bool, is_multi: bool, method_info: OptionalMethod);
+
+#[unity::from_offset("App", "Unit", "AddToEquipSkillPool")]
+fn unit_add_to_equip_skill_pool(this: &Unit, skill: &SkillData, method_info: OptionalMethod);
+
+#[unity::from_offset("App", "Unit", "ClearStatus")]
+fn unit_clear_status(this: &Unit, status: i64, method_info: OptionalMethod);
 // God Unit
 #[skyline::from_offset(0x0233eae0)]
 pub fn god_unit_escaped(this: &GodUnit, method_info: OptionalMethod) -> bool;
@@ -528,6 +556,9 @@ fn join_unit(pid: &Il2CppString, method_info: OptionalMethod) -> Option<&'static
 
 #[skyline::from_offset(0x01c73960)]
 fn join_unit_person(person: &PersonData, method_info: OptionalMethod) -> Option<&'static mut Unit>;
+
+#[skyline::from_offset(0x01c764b0)]
+fn unit_utils_get_vision_owner(this: &Unit, method_info: OptionalMethod) -> Option<&'static Unit>;
 
 #[unity::class("App", "UnitEnhanceCalculator")]
 pub struct UnitEnhanceCalculator {

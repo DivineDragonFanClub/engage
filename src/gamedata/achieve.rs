@@ -18,6 +18,11 @@ pub struct AchieveData {
     pub category: i32,
     pub kind: i32,
     pub count: i32,
+    arg: &'static Il2CppString,
+    count_unit: &'static Il2CppString,
+    pub kizuna_rewards: i32,
+    pub chapter: &'static Il2CppString,
+    pub flagname: &'static Il2CppString,
 }
 
 impl AchieveData {
@@ -53,7 +58,6 @@ fn achieve_add_god_battle_count(method_info: OptionalMethod);
 #[skyline::from_offset(0x027cb1b0)]
 fn achieve_add_god_battle_win(method_info: OptionalMethod);
 
-
 #[skyline::from_offset(0x027c7380)]
 fn achieve_status(this: &AchieveData, method_info: OptionalMethod) -> AchieveDataStatus;
 
@@ -68,7 +72,6 @@ pub fn add_a_reliance_count(method_info: OptionalMethod);
 
 #[unity::from_offset("App", "AchieveData","AddCountRelianceB")]
 pub fn add_b_reliance_count(method_info: OptionalMethod);
-
 
 #[unity::from_offset("App", "AchieveData","AddCountRelianceS")]
 pub fn add_s_reliance_count(method_info: OptionalMethod);

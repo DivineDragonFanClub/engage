@@ -229,7 +229,6 @@ fn goddata_set_engrave_secure(this: &GodData, value: i8, method_info: OptionalMe
 #[unity::from_offset("App","GodData","set_EngraveWeight")]
 fn goddata_set_engrave_weight(this: &GodData, value: i8, method_info: OptionalMethod);
 
-
 #[unity::from_offset("App","GodData","Load")]
 fn goddata_load(method_info: OptionalMethod);
 

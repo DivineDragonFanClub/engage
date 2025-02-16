@@ -80,7 +80,7 @@ impl PersonData {
     pub fn get_sp(&self) -> i32 { unsafe { person_get_sp(self, None)}}
     pub fn get_summon_color(&self) -> i32 { unsafe { person_get_summoncolor(self, None)}}
     pub fn get_summon_rank(&self) -> i32 { unsafe { person_get_summon_rank(self, None)}}
-    pub fn get_unit_icon_id(&self) -> &'static Il2CppString { unsafe { get_uniticonid(self, None )}}
+    pub fn get_unit_icon_id(&self) -> Option<&'static Il2CppString> { unsafe { get_uniticonid(self, None )}}
     pub fn get_offset_n(&self) -> &'static CapabilitySbyte { unsafe { person_get_offset_n(self, None) }}
     pub fn get_offset_h(&self) -> &'static CapabilitySbyte { unsafe { person_get_offset_h(self, None) }}
     pub fn get_offset_l(&self) -> &'static CapabilitySbyte { unsafe { person_get_offset_l(self, None) }}
@@ -137,7 +137,7 @@ fn person_set_fid(this: &PersonData, fid: &Il2CppString, method_info: OptionalMe
 fn person_get_name(this: &PersonData, method_info: OptionalMethod) -> Option<&Il2CppString>;
 
 #[unity::from_offset("App", "PersonData", "get_UnitIconID")] //#[skyline::from_offset(0x1f25d20)]
-fn get_uniticonid(this: &PersonData, method_info: OptionalMethod) -> &'static Il2CppString;
+fn get_uniticonid(this: &PersonData, method_info: OptionalMethod) -> Option<&'static Il2CppString>;
 
 #[unity::from_offset("App", "PersonData", "get_Gender")] //#[skyline::from_offset(0x1f25da0)]
 fn person_get_gender(this: &PersonData, method_info: OptionalMethod) -> i32;

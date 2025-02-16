@@ -62,6 +62,7 @@ pub struct AIValue {
 impl UnitAI {
     pub fn setup_versus_ai(&self) { unsafe { set_up_versus_ai(self, None) }  }
     pub fn set_versus_ai_type(&self, value: i32) { unsafe { set_versus_type(self, value, None) } }
+    pub fn set_active(&self, value: u8) { unsafe { unitai_set_active(self, value, None); }}
 }
 
 #[skyline::from_offset(0x01f60810)]
@@ -69,3 +70,6 @@ pub fn set_up_versus_ai(this: &UnitAI, method_info: OptionalMethod);
 
 #[skyline::from_offset(0x01f5f4c0)]
 pub fn set_versus_type(this: &UnitAI, value: i32, method_info: OptionalMethod);
+
+#[unity::from_offset("App", "UnitAI", "set_Active")]
+fn unitai_set_active(this: &UnitAI, value: u8, method_info: OptionalMethod);
