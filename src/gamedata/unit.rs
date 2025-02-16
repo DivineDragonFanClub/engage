@@ -12,6 +12,16 @@ use super::{JobData, WeaponMask, PersonData,
     ai::UnitAI,
 };
 
+#[repr(C)]
+#[derive(Debug)]
+pub enum Gender
+{
+	None = 0,
+	Male = 1,
+	Female = 2,
+	Other = 3,
+}
+
 #[unity::class("App", "GodUnit")]
 pub struct GodUnit {
     parent: [u8; 0x10],
@@ -195,6 +205,10 @@ impl Unit {
         unsafe { unit_get_job(self, None) }
     }
 
+    pub fn get_gender(&self) -> Gender {
+        unsafe { unit_getgender(self, None) }
+    }
+
     pub fn is_engaging(&self) -> bool {
         unsafe { unit_is_engaging(self, None) }
     }
@@ -323,6 +337,10 @@ extern "C" fn unit_classchange(this: &Unit, job: &JobData, item: *const u8, meth
 
 #[unity::from_offset("App", "Unit", "LearnJobSkill")]
 extern "C" fn unit_learnjobskill(this: &Unit, job: &JobData, method_info: OptionalMethod);
+
+// int32_t App.Unit$$GetGender(App_Unit_o *__this,MethodInfo *method)
+#[unity::from_offset("App", "Unit", "GetGender")]
+extern fn unit_getgender(this: &Unit,  method_info: OptionalMethod) -> Gender;
 
 #[unity::from_offset("App", "Unit", "set_Level")]
 extern fn unit_set_level(this: &Unit, level: i32, method_info: OptionalMethod);

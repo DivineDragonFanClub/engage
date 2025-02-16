@@ -9,6 +9,10 @@ impl GameSound {
     pub fn post_event<'a>(event_name: impl Into<&'a Il2CppString>, character: Option<&Character>) -> *const u8 {
         unsafe { gamesound_postevent(event_name.into(), character, None) }
     }
+
+    pub fn is_event_loaded<'a>(event_name: impl Into<&'a Il2CppString>) -> bool {
+        unsafe { gamesound_iseventloaded(event_name.into(), None) }
+    }
 }
 
 #[unity::class("", "Handle")]
@@ -32,3 +36,6 @@ extern "C" fn gamesound_postevent(event_name: &Il2CppString, character: Option<&
 
 #[skyline::from_offset(0x1e6db20)]
 extern "C" fn gamesound_handle_ctor(this: &GameSoundHandle, sound_handle: &SoundSystemSoundHandle, method_info: OptionalMethod);
+
+#[unity::from_offset("App", "GameSound", "IsEventLoaded")]
+extern "C" fn gamesound_iseventloaded(event_name: &Il2CppString, method_info: OptionalMethod) -> bool;
