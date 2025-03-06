@@ -237,7 +237,7 @@ impl Unit {
     pub fn can_equip(&self, slot: i32, rod: bool, exp: bool) -> bool { unsafe { unit_can_equip_item(self, slot, rod, exp, None) } }
     // GodUnit Related
     pub fn inherit_apt(&self, god: &GodUnit) { unsafe { inherit_apt_from_god(self, god, None);}}
-    pub fn clear_parent(&self) { unsafe { unit_clear_parent(self, None);}}
+    pub fn clear_god_unit(&self) { unsafe { unit_god_unit(self, None);}}
     // Getters 
     pub fn get_aptitude(&self) -> &'static mut WeaponMask { unsafe { get_unit_aptitude(self, None) } }
     pub fn get_capability(&self, index: i32, calc_enhance: bool) -> i32 { unsafe { unit_getcapability(self, index, calc_enhance, None)} }
@@ -515,7 +515,7 @@ fn unit_get_z(unit: &Unit, method_info: OptionalMethod) -> i32;
 fn inherit_apt_from_god(this: &Unit, god: &GodUnit, method_info: OptionalMethod);
 
 #[skyline::from_offset(0x01a4f4c0)]
-fn unit_clear_parent(this: &Unit, method_info: OptionalMethod);
+fn unit_god_unit(this: &Unit, method_info: OptionalMethod);
 
 #[skyline::from_offset(0x01a0c730)]
 fn unit_update(this: &Unit, method_info: OptionalMethod);
