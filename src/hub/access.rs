@@ -16,8 +16,16 @@ pub struct HubAccess {
 pub struct HubAccessData {
     pub aid: Option<&'static Il2CppString>,
     pub dispos_data: &'static HubDisposData,
-
-    //
+    pub is_story: bool,
+    pub is_reliance: bool,
+    pub is_god: bool,
+    pub is_unit: bool,
+    pub is_animal: bool,
+    pub is_person: bool,
+    pub result_talk_index: i32, 
+    pub is_hero_birthday: bool,
+    pub talk_item: Option<&'static Il2CppString>,
+    pub item_count: i32,
 }
 
 #[unity::class("App", "HubDisposData")]

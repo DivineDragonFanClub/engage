@@ -11,6 +11,9 @@ impl GameIcon {
     pub fn try_get_system<'a>(icon_name: impl Into<&'a Il2CppString>) -> Option<&'static mut Sprite> {
         unsafe { gameicon_trygetsystem(icon_name.into(), None) }
     }
+    pub fn try_get_skill<'a>(icon_name: impl Into<&'a Il2CppString>) -> Option<&'static mut Sprite> {
+        unsafe { gameicon_trygetskill(icon_name.into(), None) }
+    }
 }
 
 #[allow(dead_code)]
@@ -30,3 +33,6 @@ pub struct GameIconStaticFields {
 
 #[unity::from_offset("App", "GameIcon", "TryGetSystem")]
 extern "C" fn gameicon_trygetsystem(icon_name: &Il2CppString, method_info: OptionalMethod) -> Option<&'static mut Sprite>;
+
+#[unity::from_offset("App", "GameIcon", "TryGetSkill")]
+extern "C" fn gameicon_trygetskill(icon_name: &Il2CppString, method_info: OptionalMethod) -> Option<&'static mut Sprite>;

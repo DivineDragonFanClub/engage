@@ -7,8 +7,8 @@ use crate::{gamedata::{unit::Unit, PersonData}, force::Force};
 pub struct UnitPool { }
 
 pub struct UnitPoolStaticFields {
-    pub s_unit: &'static Array<&'static Unit>,
-    pub forces: &'static Array<&'static Force>,
+    pub s_unit: &'static Array<&'static mut Unit>,
+    pub forces: &'static Array<&'static mut Force>,
 }
 
 impl UnitPool {
@@ -24,6 +24,9 @@ impl UnitPool {
     pub fn get_from_person_force_mask(person: &PersonData, mask: i32) -> Option<&'static mut Unit> {
         unsafe { unit_pool_get_force_mask(person, mask, None)}
     }
+    pub fn get_count(force_mask: i32) -> i32 {
+        unsafe { unit_pool_get_count(force_mask, None) }
+    }
 }
 
 
@@ -38,3 +41,6 @@ fn unit_pool_get(index:i32, method_info: OptionalMethod) -> Option<&'static mut 
 
 #[skyline::from_offset(0x01c55030)]
 fn unit_pool_get_force_mask(person: &PersonData, force_mask: i32, method_info: OptionalMethod) -> Option<&'static mut Unit>;
+
+#[skyline::from_offset(0x01c53ba0)]
+fn unit_pool_get_count(force_mask: i32, method_info: OptionalMethod) -> i32;

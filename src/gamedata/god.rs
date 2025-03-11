@@ -32,6 +32,7 @@ impl GodData {
     pub fn set_link_gid(&self, value: &Il2CppString) { unsafe { god_data_set_link_gid(self, value, None); }}
     pub fn set_link(&self, value: &Il2CppString) { unsafe { god_data_set_link(self, value, None); }}
     pub fn set_ascii_name(&self, value: &Il2CppString) { unsafe { god_data_set_ascii(self, value, None); }}
+    pub fn set_main_data(&self, main_god: &GodData) { unsafe { goddata_set_main_data(self, main_god, None); }}
     pub fn set_engrave(&self, index: i32, value: i8){
         match index {
             0 => self.set_engrave_avoid(value),
@@ -231,6 +232,9 @@ fn goddata_set_engrave_weight(this: &GodData, value: i8, method_info: OptionalMe
 
 #[unity::from_offset("App","GodData","Load")]
 fn goddata_load(method_info: OptionalMethod);
+
+#[unity::from_offset("App","GodData","set_MainData")]
+fn goddata_set_main_data(this: &GodData, value: &GodData, method_info: OptionalMethod);
 
 #[unity::from_offset("App", "GodData", "OnCompleted")]
 fn god_data_on_complete(this: &GodData, method_info: OptionalMethod);

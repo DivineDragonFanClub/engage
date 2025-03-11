@@ -22,7 +22,7 @@ pub struct MainSequenceStaticFields {
 }
 
 #[repr(i32)]
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum MainSequenceLabel {
     None = 0,
     Startup = 1,
@@ -65,5 +65,43 @@ impl AsRef<ProcInstFields> for MainSequence {
 impl AsMut<ProcInstFields> for MainSequence {
     fn as_mut(&mut self) -> &mut ProcInstFields {
         &mut self.proc
+    }
+}
+
+impl From<i32> for MainSequenceLabel {
+    fn from(value: i32) -> Self {
+        match value {
+            0 => MainSequenceLabel::None, 
+            1 => MainSequenceLabel::Startup, 
+            2 => MainSequenceLabel::TitleLoop, 
+            3 => MainSequenceLabel::TitleLoopFromMainMenu, 
+            4 => MainSequenceLabel::MainMenu, 
+            5 => MainSequenceLabel::Chapter, 
+            6 => MainSequenceLabel::Gmap, 
+            7 => MainSequenceLabel::Kizuna, 
+            8 => MainSequenceLabel::Hub, 
+            9 => MainSequenceLabel::HubToSavePosition, 
+            10 => MainSequenceLabel::Ending, 
+            11 => MainSequenceLabel::NextChapter, 
+            12 => MainSequenceLabel::Map, 
+            13 => MainSequenceLabel::Complete, 
+            14 => MainSequenceLabel::GameOver, 
+            15 => MainSequenceLabel::ChapterSave, 
+            16 => MainSequenceLabel::AfterChapterSave, 
+            17 => MainSequenceLabel::SetSaveDataLoadTarget, 
+            18 => MainSequenceLabel::SaveDataLoad, 
+            19 => MainSequenceLabel::SaveDataLoadFailed, 
+            20 => MainSequenceLabel::SaveDataVersionFailed, 
+            21 => MainSequenceLabel::DataLoadFailed, 
+            22 => MainSequenceLabel::AfterLoadFailed, 
+            23 => MainSequenceLabel::ContentsResume, 
+            24 => MainSequenceLabel::RelayDebug, 
+            25 => MainSequenceLabel::Relay, 
+            26 => MainSequenceLabel::Versus, 
+            27 => MainSequenceLabel::Challenge, 
+            28 => MainSequenceLabel::BackToTitle, 
+            29 => MainSequenceLabel::End, 
+            _ => MainSequenceLabel::None,
+        }
     }
 }
