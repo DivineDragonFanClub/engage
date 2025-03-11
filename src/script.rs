@@ -34,6 +34,12 @@ impl EventScript {
     pub fn call<'a>(name: impl Into<&'a Il2CppString>, arg: &Il2CppArray<DynValue>) {
         unsafe { eventscript_call(Self::get_instance(), name.into(), arg, None) }
     }
+    /// Sets a DynValue in the Script's global table using a string key
+    /// Example: set("g_pid_lueur", DynValue::new_string("PID_Custom")
+    pub fn set<'a>(key: impl Into<&'a Il2CppString>, value: &DynValue) {
+        let script = Self::get_instance();
+        unsafe { moonsharp_interpreter_table_set(script.global_table, key.into(), value, None); }
+    }
 }
 
 pub trait EventScriptCommand {
@@ -221,6 +227,9 @@ fn eventscript_getinstance(method_info: OptionalMethod) -> &'static EventScript;
 
 #[unity::from_offset("MoonSharp.Interpreter", "Table", "Get")]
 pub fn moonsharp_interpreter_table_get(this: *const u8, name: &Il2CppString, method_info: OptionalMethod) -> &'static DynValue;
+
+#[skyline::from_offset(0x02d24990)]
+pub fn moonsharp_interpreter_table_set(this: *const u8, key: &Il2CppString, value: &DynValue, method_info: OptionalMethod);
 
 #[unity::from_offset("MoonSharp.Interpreter", "Script", "DoStream")]
 pub fn moonsharp_interpreter_script_dostream(

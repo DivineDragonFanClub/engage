@@ -89,6 +89,7 @@ impl From<i32> for MapSequenceLabel {
             26 => MapSequenceLabel::VersusLoad, 
             27 => MapSequenceLabel::VersusEdit, 
             28 => MapSequenceLabel::End, 
+            29 => MapSequenceLabel::Tail,
             _ => MapSequenceLabel::None,
         }
     }
