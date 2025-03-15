@@ -136,9 +136,9 @@ pub struct GodData {
     pub engrave_avoid: i8,
     pub engrave_secure: i8,
     pub syncho_enhance: &'static CapabilitySbyte,
-    main_data: &'static GodData,
-    change_data: Option<&'static Array<&'static GodData>>,
-    change_index: i32,
+    pub main_data: &'static GodData,
+    pub change_data: &'static Array<&'static GodData>,  // Defaults to size 1 if change is none
+    pub change_index: i32,
     pub ascii_name: Option<&'static Il2CppString>,
     pub flag: &'static WeaponMask,
 }

@@ -7,6 +7,7 @@ use super::{JobData, WeaponMask, PersonData,
     person::Capability, 
     skill::{SkillData, SkillArray},
     GodData,
+    dispos::ChapterData,
     god::GodBond,
     ring::RingData,
     ai::UnitAI,
@@ -154,7 +155,7 @@ pub struct Unit {
     pub interference_image :u64,
     pub engage_image :u64,
     pub move_image :u64,
-    pub record :u64,
+    pub record : &'static UnitRecord,
     pub map_history_index :u8,
     pub mask_skill_lock :u64,
     pub fortune_target :u64,
@@ -252,6 +253,7 @@ impl Unit {
     pub fn get_ring(&self) -> Option<&'static UnitRing> { unsafe { unit_get_ring(self, None)}}
     pub fn get_x(&self) -> i32 { unsafe { unit_get_x(self, None) } }
     pub fn get_z(&self) -> i32 { unsafe { unit_get_z(self, None) } }
+    pub fn get_dress_gender(&self) -> Gender { unsafe { unit_get_dress_gender(self, None )}}
     // Setters
     pub fn set_base_capability(&self, index: i32, value: i32) { unsafe { unit_set_base_capability(self, index, value, None);}}
     pub fn set_exp(&self, exp: i32){  unsafe { unit_set_exp(self, exp, None); }  }
@@ -526,6 +528,8 @@ fn unit_set_learned_job_skill(this: &Unit, value: Option<&SkillData>, method_inf
 #[unity::from_offset("App", "Unit", "PlayEngage")]
 fn unit_play_engage(this: &Unit, enable: bool, method_info: OptionalMethod);
 
+#[skyline::from_offset(0x01a232e0)]
+fn unit_get_dress_gender(this: &Unit, method_info: OptionalMethod) -> Gender;
 // UnitEdit 
 #[skyline::from_offset(0x01f73e50)]
 fn unit_edit_set_gender(this: &UnitEdit, gender: i32, method_info: OptionalMethod);
@@ -613,3 +617,19 @@ pub fn unit_enhance_values_get_item(this: &UnitEnhanceValues, index: i32, method
 
 #[skyline::from_offset(0x01f7aff0)]
 pub fn unit_enhance_factors_get_food_values(this: &UnitEnhanceFactors, _method_info : OptionalMethod) -> Option<&'static mut UnitEnhanceValues>;
+
+#[unity::class("App", "UnitRecord")]
+pub struct UnitRecord {
+    pub values: &'static mut Array<i32>,
+}
+
+impl UnitRecord {
+    pub fn add(&self, kind: i32, value: i32) { unsafe { unitrecord_add(self, kind, value, None) }; }
+    pub fn get_dead_chapter(&self) -> Option<&'static ChapterData> { unsafe { unitrecord_get_dead_chapter(self, None)}}
+}
+
+#[unity::from_offset("App", "UnitRecord", "Add")]
+fn unitrecord_add(this: &UnitRecord, kinds: i32, value: i32, method_info: OptionalMethod);
+
+#[unity::from_offset("App", "UnitRecord", "GetDeadChapter")]
+fn unitrecord_get_dead_chapter(this: &UnitRecord, method_info: OptionalMethod) -> Option<&'static ChapterData>;
