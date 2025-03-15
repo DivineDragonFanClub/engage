@@ -5,7 +5,7 @@ pub struct UnitIcon {
     parent: ImageFields,
     index_atlas: &'static (),
     pallete_atlas: &'static (),
-    pallete_sprite: Option<&'static Sprite>,
+    pub pallete_sprite: Option<&'static Sprite>,
     icon_name: &'static Il2CppString,
     pallete_name: &'static Il2CppString,
     brightness: f32,
