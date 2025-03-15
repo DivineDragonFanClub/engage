@@ -2,7 +2,7 @@ use unity::{prelude::*, engine::{ui::{IsImage, ImageFields}, Material, Sprite}};
 
 #[unity::class("App", "UnitIcon")]
 pub struct UnitIcon {
-    parent: ImageFields,
+    parent: [u8;0xF8],
     index_atlas: &'static (),
     pallete_atlas: &'static (),
     pub pallete_sprite: Option<&'static Sprite>,
