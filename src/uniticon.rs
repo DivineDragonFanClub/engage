@@ -6,7 +6,7 @@ pub struct UnitIcon {
     index_atlas: &'static (),
     pallete_atlas: &'static (),
     pub pallete_sprite: Option<&'static Sprite>,
-    icon_name: &'static Il2CppString,
+    pub icon_name: Option<&'static Il2CppString>,
     pallete_name: &'static Il2CppString,
     brightness: f32,
     material_instance: &'static Material,
