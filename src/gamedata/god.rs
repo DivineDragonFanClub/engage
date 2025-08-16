@@ -32,7 +32,6 @@ impl GodData {
     pub fn set_link_gid(&self, value: &Il2CppString) { unsafe { god_data_set_link_gid(self, value, None); }}
     pub fn set_link(&self, value: &Il2CppString) { unsafe { god_data_set_link(self, value, None); }}
     pub fn set_ascii_name(&self, value: &Il2CppString) { unsafe { god_data_set_ascii(self, value, None); }}
-    pub fn set_main_data(&self, main_god: &GodData) { unsafe { goddata_set_main_data(self, main_god, None); }}
     pub fn set_engrave(&self, index: i32, value: i8){
         match index {
             0 => self.set_engrave_avoid(value),
@@ -44,7 +43,7 @@ impl GodData {
             _ => {},
         }
     }
-    pub fn get_link_dictionary() -> &'static Dictionary<&'static Il2CppString, &'static GodData> {
+    pub fn get_link_dictionary() -> &'static Dictionary<'static, &'static Il2CppString, &'static GodData> {
         return Self::class().get_static_fields::<GodDataStaticFields>().link_dics;
     }
     pub fn try_get_link(person: &PersonData) -> Option<&'static GodData> {
@@ -92,7 +91,7 @@ impl GodGrowthData {
         .unwrap();
         let get_keys = unsafe {
             std::mem::transmute::<_,
-            extern "C" fn(&Dictionary<&'static Il2CppString, &'static mut List<GodGrowthDataLevelData>>, &Il2CppString, &MethodInfo)
+            extern "C" fn(&Dictionary<'static, &'static Il2CppString, &'static mut List<GodGrowthDataLevelData>>, &Il2CppString, &MethodInfo)
              -> Option<&'static mut List<GodGrowthDataLevelData>>>(
                 method.method_ptr,
             )
@@ -112,10 +111,10 @@ pub struct GodGrowthDataLevelData {
 }
 
 pub struct GodGrowthDataStaticFields {
-    pub level_list: &'static Dictionary<&'static Il2CppString, &'static mut List<GodGrowthDataLevelData>>,
+    pub level_list: &'static Dictionary<'static, &'static Il2CppString, &'static mut List<GodGrowthDataLevelData>>,
 }
 pub struct GodDataStaticFields{
-    pub link_dics: &'static Dictionary<&'static Il2CppString, &'static GodData>,
+    pub link_dics: &'static Dictionary<'static, &'static Il2CppString, &'static GodData>,
 }
 
 #[unity::class("App", "GodGrowthData.StyleItems")]
@@ -232,9 +231,6 @@ fn goddata_set_engrave_weight(this: &GodData, value: i8, method_info: OptionalMe
 
 #[unity::from_offset("App","GodData","Load")]
 fn goddata_load(method_info: OptionalMethod);
-
-#[unity::from_offset("App","GodData","set_MainData")]
-fn goddata_set_main_data(this: &GodData, value: &GodData, method_info: OptionalMethod);
 
 #[unity::from_offset("App", "GodData", "OnCompleted")]
 fn god_data_on_complete(this: &GodData, method_info: OptionalMethod);
