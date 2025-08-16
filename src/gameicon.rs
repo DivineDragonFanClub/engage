@@ -17,21 +17,21 @@ impl GameIcon {
 }
 
 pub struct GameIconStaticFields {
-    pub skill: &'static SpriteAlasManager,
-    pub item: &'static SpriteAlasManager,
+    pub skill: &'static SpriteAtlasManager,
+    pub item: &'static SpriteAtlasManager,
 
-    pub efficacy: &'static SpriteAlasManager,
-    pub efficacy_outline: &'static SpriteAlasManager,
+    pub efficacy: &'static SpriteAtlasManager,
+    pub efficacy_outline: &'static SpriteAtlasManager,
 
-    pub item_kinds: &'static SpriteAlasManager,
-    pub item_kinds_outline: &'static SpriteAlasManager,
+    pub item_kinds: &'static SpriteAtlasManager,
+    pub item_kinds_outline: &'static SpriteAtlasManager,
 
-    pub god_symbol: &'static SpriteAlasManager,
-    pub god_ring: &'static SpriteAlasManager,
+    pub god_symbol: &'static SpriteAtlasManager,
+    pub god_ring: &'static SpriteAtlasManager,
 
-    pub system: &'static SpriteAlasManager,
-    pub unit_icon_index: &'static SpriteAlasManager,
-    pub unit_icon_pallete: &'static SpriteAlasManager,
+    pub system: &'static SpriteAtlasManager,
+    pub unit_icon_index: &'static SpriteAtlasManager,
+    pub unit_icon_pallete: &'static SpriteAtlasManager,
 }
 
 
