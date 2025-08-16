@@ -1,6 +1,5 @@
 use unity::prelude::*;
 use unity::engine::Sprite;
-use unity::system::Dictionary;
 use crate::spriteatlasmanager::SpriteAtlasManager;
 
 #[unity::class("App", "GameIcon")]

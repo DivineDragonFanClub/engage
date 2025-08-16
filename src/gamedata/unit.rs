@@ -7,13 +7,14 @@ use super::{JobData, WeaponMask, PersonData,
     person::Capability, 
     skill::{SkillData, SkillArray},
     GodData,
+    dispos::ChapterData,
     god::GodBond,
     ring::RingData,
     ai::UnitAI,
 };
 
 #[repr(C)]
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum Gender
 {
 	None = 0,
@@ -154,7 +155,7 @@ pub struct Unit {
     pub interference_image :u64,
     pub engage_image :u64,
     pub move_image :u64,
-    pub record :u64,
+    pub record : &'static UnitRecord,
     pub map_history_index :u8,
     pub mask_skill_lock :u64,
     pub fortune_target :u64,
@@ -252,6 +253,10 @@ impl Unit {
     pub fn get_ring(&self) -> Option<&'static UnitRing> { unsafe { unit_get_ring(self, None)}}
     pub fn get_x(&self) -> i32 { unsafe { unit_get_x(self, None) } }
     pub fn get_z(&self) -> i32 { unsafe { unit_get_z(self, None) } }
+    pub fn get_dress_gender(&self) -> Gender { unsafe { unit_get_dress_gender(self, None )}}
+    pub fn get_engage_attack(&self) -> Option<&'static SkillData> { unsafe { unit_get_engage_attack(self, None )}}
+    pub fn get_god_state(&self) -> i32 { unsafe { unit_get_god_state(self, None)}}
+    pub fn get_engage_link(&self) -> Option<&'static Unit> { unsafe { unit_get_engage_link_unit(self, None)}}
     // Setters
     pub fn set_base_capability(&self, index: i32, value: i32) { unsafe { unit_set_base_capability(self, index, value, None);}}
     pub fn set_exp(&self, exp: i32){  unsafe { unit_set_exp(self, exp, None); }  }
@@ -314,6 +319,7 @@ impl GodUnit {
     pub fn set_child(&self, unit: Option<&Unit>) { unsafe { god_unit_set_child(self, unit, None); }}
     pub fn get_bond(&self, unit: &Unit) -> Option<&'static mut GodBond> { unsafe { god_unit_get_bond(self, unit, None)}}
     pub fn set_god_level(&self, unit: &Unit, level: i32) { unsafe { godunit_set_god_level(self, unit, level, None); }} 
+    pub fn get_engage_atk(&self) -> Option<&'static SkillData> { unsafe { god_unit_get_engage_atk(self, None)}}
 }
 
 pub struct UnitUtil;
@@ -526,6 +532,8 @@ fn unit_set_learned_job_skill(this: &Unit, value: Option<&SkillData>, method_inf
 #[unity::from_offset("App", "Unit", "PlayEngage")]
 fn unit_play_engage(this: &Unit, enable: bool, method_info: OptionalMethod);
 
+#[skyline::from_offset(0x01a232e0)]
+fn unit_get_dress_gender(this: &Unit, method_info: OptionalMethod) -> Gender;
 // UnitEdit 
 #[skyline::from_offset(0x01f73e50)]
 fn unit_edit_set_gender(this: &UnitEdit, gender: i32, method_info: OptionalMethod);
@@ -545,11 +553,21 @@ fn unit_learn_job(this: &Unit, method_info: OptionalMethod) -> Option<&'static S
 #[unity::from_offset("App", "Unit", "PlaySetDamage")]
 fn unit_play_set_damage(this: &Unit, damage: i32, can_die: bool, is_multi: bool, method_info: OptionalMethod);
 
-#[unity::from_offset("App", "Unit", "AddToEquipSkillPool")]
+#[skyline::from_offset(0x01a36560)]
 fn unit_add_to_equip_skill_pool(this: &Unit, skill: &SkillData, method_info: OptionalMethod);
 
 #[unity::from_offset("App", "Unit", "ClearStatus")]
 fn unit_clear_status(this: &Unit, status: i64, method_info: OptionalMethod);
+
+#[skyline::from_offset(0x01bb0100)]
+fn unit_get_god_state(this: &Unit, method_info: OptionalMethod) -> i32;
+
+#[skyline::from_offset(0x01a21460)]
+fn unit_get_engage_attack(this: &Unit, method_info: OptionalMethod) -> Option<&'static SkillData>;
+
+#[unity::from_offset("App", "Unit", "GetEngageLinkUnit")]
+fn unit_get_engage_link_unit(this: &Unit, method_info: OptionalMethod) -> Option<&'static Unit>;
+
 // God Unit
 #[skyline::from_offset(0x0233eae0)]
 pub fn god_unit_escaped(this: &GodUnit, method_info: OptionalMethod) -> bool;
@@ -568,6 +586,9 @@ fn god_unit_set_escape(this: &GodUnit, escape: bool, method_info: OptionalMethod
 
 #[skyline::from_offset(0x023405b0)]
 fn god_unit_get_bond(this: &GodUnit, unit: &Unit, method_info: OptionalMethod) -> Option<&'static mut GodBond>;
+
+#[skyline::from_offset(0x02341630)]
+fn god_unit_get_engage_atk(this: &GodUnit, method_info: OptionalMethod) -> Option<&'static SkillData>;
 
 // Unit Util
 #[unity::from_offset("App", "UnitUtil", "JoinUnit")]
@@ -613,3 +634,19 @@ pub fn unit_enhance_values_get_item(this: &UnitEnhanceValues, index: i32, method
 
 #[skyline::from_offset(0x01f7aff0)]
 pub fn unit_enhance_factors_get_food_values(this: &UnitEnhanceFactors, _method_info : OptionalMethod) -> Option<&'static mut UnitEnhanceValues>;
+
+#[unity::class("App", "UnitRecord")]
+pub struct UnitRecord {
+    pub values: &'static mut Array<i32>,
+}
+
+impl UnitRecord {
+    pub fn add(&self, kind: i32, value: i32) { unsafe { unitrecord_add(self, kind, value, None) }; }
+    pub fn get_dead_chapter(&self) -> Option<&'static ChapterData> { unsafe { unitrecord_get_dead_chapter(self, None)}}
+}
+
+#[unity::from_offset("App", "UnitRecord", "Add")]
+fn unitrecord_add(this: &UnitRecord, kinds: i32, value: i32, method_info: OptionalMethod);
+
+#[unity::from_offset("App", "UnitRecord", "GetDeadChapter")]
+fn unitrecord_get_dead_chapter(this: &UnitRecord, method_info: OptionalMethod) -> Option<&'static ChapterData>;

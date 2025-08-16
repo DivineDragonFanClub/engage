@@ -18,6 +18,7 @@ impl GodData {
     pub fn get_ascii_name(&self) -> Option<&'static Il2CppString> { unsafe { god_data_get_ascii(self, None) }}
     pub fn get_flag(&self) -> &'static mut WeaponMask { unsafe { god_data_get_flag(self, None)}}
     pub fn get_grow_table(&self) -> Option<&'static Il2CppString> { unsafe { god_data_get_grow_table(self, None)}}
+    pub fn get_link_god_data(&self) -> Option<&'static GodData> { unsafe { goddata_get_link_god_data(self, None)}}
     pub fn load() { unsafe { goddata_load(None); }}
     pub fn on_complete(&self) { unsafe{ god_data_on_complete(self, None); }}
 
@@ -105,7 +106,7 @@ pub struct GodGrowthDataLevelData {
     pub synchro_skills: &'static SkillArray,
     pub engaged_skills: &'static SkillArray,
     pub engage_skills: &'static SkillArray,
-    pub style_items: &'static GodGrowthDataStyleItems,
+    pub style_items: &'static mut GodGrowthDataStyleItems,
     pub aptitude: &'static mut WeaponMask,
     pub flags: &'static WeaponMask,
 }
@@ -119,7 +120,7 @@ pub struct GodDataStaticFields{
 
 #[unity::class("App", "GodGrowthData.StyleItems")]
 pub struct GodGrowthDataStyleItems {
-    pub items: &'static Array<&'static List<ItemData>>,
+    pub items: &'static mut Array<&'static mut List<ItemData>>,
     pub count: i32,
 }
 
@@ -130,11 +131,17 @@ impl GodGrowthDataStyleItems {
 }
 
 impl Deref for GodGrowthDataStyleItemsFields {
-    type Target = Array<&'static List<ItemData>>;
+    type Target = Array<&'static mut List<ItemData>>;
     fn deref(&self) -> &Self::Target {
         &self.items
     }
 }
+impl DerefMut for GodGrowthDataStyleItemsFields {
+    fn deref_mut(&mut self) -> &mut Array<&'static mut List<ItemData>> {
+        self.items
+    }
+}
+
 
 #[unity::class("App", "GodBond")]
 pub struct GodBond {
@@ -228,6 +235,9 @@ fn goddata_set_engrave_secure(this: &GodData, value: i8, method_info: OptionalMe
 
 #[unity::from_offset("App","GodData","set_EngraveWeight")]
 fn goddata_set_engrave_weight(this: &GodData, value: i8, method_info: OptionalMethod);
+
+#[unity::from_offset("App","GodData","GetLinkGodData")]
+fn goddata_get_link_god_data(this: &GodData, method_info: OptionalMethod) -> Option<&'static GodData>;
 
 #[unity::from_offset("App","GodData","Load")]
 fn goddata_load(method_info: OptionalMethod);

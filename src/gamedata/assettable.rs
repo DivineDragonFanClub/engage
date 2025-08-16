@@ -1,6 +1,10 @@
+use std::result;
+
 pub use unity::prelude::*;
 pub use unity::engine::Color;
-use super::{*, unit::*};
+pub use unity::system::*;
+use crate::bit::BitStruct;
+use super::{*, unit::*, item::ItemData};
 
 #[unity::class("App", "AssetTable")]
 pub struct AssetTable {
@@ -51,37 +55,59 @@ pub struct AssetTable {
     pub mask_color_025_b: u8,
     pub unity_colors: [Color; 8],
     pub accessories: [&'static mut AssetTableAccessory; 8],
-    pub accessory_list: &'static List<AssetTableAccessory>,
+    pub accessory_list: &'static AssetTableAccessoryList,
     pub scale_stuff: [f32; 19], 
     ___: i32,
     pub voice: Option<&'static Il2CppString>,
     pub foot_steps: Option<&'static Il2CppString>,
     pub material: Option<&'static Il2CppString>,
     pub comment: Option<&'static Il2CppString>,
-    //ConditionIndexes
+    pub condition_indexes: &'static mut AssetTableConditionIndexes,
 }
 impl Gamedata for AssetTable {}
 
+impl AssetTable {
+    pub fn add_condition_key<'a>(key: impl Into<&'a Il2CppString>) {
+        Self::class().get_static_fields::<AssetTableStaticFields>().condition_flags.add_by_key(key.into());
+    }
+}
+
 #[unity::class("App", "AsssetTable.ConditionFlags")]
-pub struct AssetTableConditionFlags {}
+pub struct AssetTableConditionFlags {
+    pub bits: BitStruct,
+    pub keys: &'static List<Il2CppString>,
+    pub hits: &'static SimpleList<i32>,
+    pub dic: &'static Dictionary<&'static Il2CppString, i32>,
+
+}
 
 impl AssetTableConditionFlags {
-    pub fn add_by_key<'a>(&self, key: impl Into<&'a Il2CppString>) {
-        unsafe { condition_add_by_key(self, key.into(), None);}
-    }
-    pub fn add_unit(&self, unit: &Unit ) {
-        unsafe { condition_add_unit(self, unit, None);}
-    }
-
+    pub fn add_by_key<'a>(&self, key: impl Into<&'a Il2CppString>) { unsafe { condition_add_by_key(self, key.into(), None);}  }
+    pub fn add_unit(&self, unit: &Unit ) { unsafe { condition_add_unit(self, unit, None);}  }
 }
 
 #[repr(C)]
 pub struct AssetTableStaticFields { 
-    preset_name: &'static List<Il2CppString>,
+    pub preset_name: &'static List<Il2CppString>,
     pub search_lists: &'static mut Array<&'static mut List<AssetTable>>,
-    condition_indexes: *const u8,
-    pub condition_flags: &'static AssetTableConditionFlags,
+    pub condition_indexes: &'static Dictionary<&'static Il2CppString, i32>,
+    pub condition_flags: &'static mut AssetTableConditionFlags,
+    pub null_sound: AssetTableSound,
+    pub null_color: Color,
+    pub shared: &'static AssetTableResult,
 }
+
+impl AssetTableStaticFields {
+    pub fn get() -> &'static mut Self {
+        AssetTable::class().get_static_fields_mut::<AssetTableStaticFields>()
+    }
+    pub fn get_condition_index(key: impl Into<&'static Il2CppString> ) -> i32 {
+        let mut return_value = 0;
+        let found =  Self::get().condition_indexes.try_get_value(key.into(), &mut return_value);
+        if found { return_value.clone() } else { -1 }
+    }
+}
+
 
 pub struct AssetTableSound {
     pub voice: Option<&'static Il2CppString>,
@@ -116,14 +142,92 @@ pub struct AssetTableResult {
     pub force_id: Option<&'static Il2CppString>,
     pub weapon_id: Option<&'static Il2CppString>,
     pub body_anims: &'static mut List<Il2CppString>,
-    pub accessory_list: &'static mut List<AssetTableAccessory>,
+    pub accessory_list: &'static mut AssetTableAccessoryList,
+    pub accessory_dictionary: &'static Dictionary<&'static Il2CppString, &'static AssetTableAccessory>,
+}
+
+impl AssetTableResult {
+    pub fn get_from_pid<'a>(mode: i32, pid: impl Into<&'a Il2CppString>, conditions: &Array<&Il2CppString>) -> &'static mut AssetTableResult { 
+        unsafe { result_get_from_pid(mode, pid.into(), conditions, None) } 
+    }
+    /// Generates a new result from GodUnit
+    /// 
+    /// Calls setup_from_god
+    pub fn get_from_god_unit(mode: i32, god_unit: &GodUnit, conditions: &Array<&Il2CppString>) -> &'static mut AssetTableResult {
+        unsafe { result_get_from_god(mode, god_unit, conditions, None) }
+    }
+    /// Generates a new result from an AssetTable Preset 
+    /// 
+    /// Used for Epharim in Twin Strike Engage Attack
+    pub fn get_from_preset<'a>(name: impl Into<&'a Il2CppString>) -> &'static mut AssetTableResult {
+        unsafe { asset_table_result_get_preset_name(name.into(), None) }
+    }
+
+    pub fn commit_asset_table(&self, data: &AssetTable) { unsafe { asset_table_commit_result(self, data, None); } }
+
+    pub fn setup_for_person(&self, mode: i32, person: Option<&PersonData>, conditions: &Array<&Il2CppString>) -> &'static mut AssetTableResult {
+        unsafe { result_setup_for_person(self, mode, person, conditions, None) }
+    }
+
+    /// Clears the current result and generates the result from PersonData
+    /// 
+    /// Used in Dragonstone transformation
+    /// 
+    /// Returns itself
+    pub fn setup_for_person_job_item(&self, mode: i32, person: Option<&PersonData>,  job: Option<&JobData>, equipped: Option<&ItemData>, conditions: &Array<&Il2CppString>) -> &'static mut AssetTableResult {
+        unsafe { asset_table_result_setup_person(self, mode, person, job, equipped, conditions, None) }
+    }
+    /// Clears the current result and generates the result from GodData
+    /// 
+    /// Used for Emblem UnitInfo / Emblem Kizuna / Emblem Hub
+    /// 
+    /// Returns itself
+    pub fn setup_for_god(&self, mode: i32, god: Option<&GodData>, is_darkness: bool,  conditions: &Array<&Il2CppString>) ->  &'static mut AssetTableResult {
+        unsafe { asset_table_result_god_setup(self, mode, god, is_darkness, conditions, None)}
+    }
+    
+    /// Clears the current result and generate the result from Unit and equipped items
+    /// Used in Combat/Hub/UnitInfo 
+    /// Return itself
+    pub fn setup_for_unit(&self, mode: i32, unit: Option<&Unit>, equipped: Option<&ItemData>, conditions: &Array<&Il2CppString>) -> &'static mut AssetTableResult {
+        unsafe { result_setup_from_unit(self, mode, unit, equipped, conditions, None) }
+    }
+    pub fn clear(&self) { unsafe { result_clear(self, None) } }
+    pub fn commit(&self, mode: i32, person: Option<&PersonData>, job: Option<&JobData>, equipped: Option<&ItemData>) { unsafe { result_commit(self, mode, person, job, equipped, None); }}
+    pub fn commit_accessory(&self, accessory: &AssetTableAccessory) { unsafe { result_commit_accessory(self, accessory, None); }}
+    pub fn commit_mode(&self, mode: i32) { unsafe { result_commit_mode(self, mode, None);}}
+    pub fn replace(&self, mode: i32) { unsafe { result_replace(self, mode, None);}}
 }
 
 
-#[unity::class("App", "AssetTable.Accessory")]
+#[unity::class("AssetTable", "Accessory")]
 pub struct AssetTableAccessory {
     pub locator: Option<&'static Il2CppString>,
     pub model: Option<&'static Il2CppString>, 
+}
+impl AssetTableAccessory {
+    pub fn to_string(&self) -> &'static Il2CppString { unsafe { accessory_to_string(self, None)}}
+}
+#[unity::class("AssetTable", "ConditionIndexes")]
+pub struct AssetTableConditionIndexes {
+    pub list: &'static mut List<SimpleList<i32>>,
+}
+
+#[unity::class("AssetTable", "AccessoryList")]
+pub struct AssetTableAccessoryList {
+    pub list: ListFields<AssetTableAccessory>,
+}
+
+impl AssetTableAccessoryList {
+    pub fn try_add(&self, accessory: &AssetTableAccessory) { unsafe { accessory_list_try_add(self, accessory, None)}}
+    pub fn clear(&self) {
+        if let Some(class) = AssetTable::class().get_nested_types().iter().find(|x| x.get_name() == "AccessoryList") {
+            let method = class.get_virtual_method("Clear").unwrap();
+            let clear = unsafe { std::mem::transmute::<_, extern "C" fn(&Self, &MethodInfo)>(method.method_ptr) };
+            clear(self, method.method_info);
+        }
+    }
+
 }
 
 #[unity::from_offset("App","AssetTable", "set_Conditions")]
@@ -147,3 +251,47 @@ fn condition_add_by_key(condition: &AssetTableConditionFlags, key: &Il2CppString
 #[skyline::from_offset(0x01bb0200)]
 fn condition_add_unit(condition: &AssetTableConditionFlags, unit: &Unit, method_info: OptionalMethod);
 
+#[skyline::from_offset(0x01bb7980)]
+fn result_get_from_god(mode: i32, god_unit: &GodUnit, conditions: &Array<&Il2CppString>, method_info: OptionalMethod) -> &'static mut AssetTableResult;
+
+#[skyline::from_offset(0x01bb5be0)]
+fn result_get_from_pid(mode: i32, pid: &Il2CppString, conditions: &Array<&Il2CppString>, method_info: OptionalMethod) -> &'static mut AssetTableResult;
+
+#[skyline::from_offset(0x01bb4180)]
+fn result_setup_for_person(this: &AssetTableResult, mode: i32, person: Option<&PersonData>, conditions: &Array<&Il2CppString>, method_info: OptionalMethod) -> &'static mut AssetTableResult;
+
+#[skyline::from_offset(0x01bb2430)]
+fn result_setup_from_unit(this: &AssetTableResult, mode: i32, unit: Option<&Unit>, equipped: Option<&ItemData>, conditions: &Array<&Il2CppString>, method_info: OptionalMethod) -> &'static mut AssetTableResult;
+
+#[skyline::from_offset(0x01bb4290)]
+fn asset_table_result_setup_person(this: &AssetTableResult, mode: i32, person: Option<&PersonData>, job: Option<&JobData>, equipped: Option<&ItemData>, conditions: &Array<&Il2CppString>, method_info: OptionalMethod) -> &'static mut AssetTableResult;
+
+#[skyline::from_offset(0x01bb2d80)]
+fn asset_table_result_god_setup(this: &AssetTableResult, mode: i32, god_data: Option<&GodData>, is_darkness: bool, conditions: &Array<&Il2CppString>, method_info: OptionalMethod) -> &'static mut AssetTableResult;
+
+#[skyline::from_offset(0x01bb44d0)]
+fn result_commit_mode(this: &AssetTableResult, mode: i32, method_info: OptionalMethod);
+
+#[skyline::from_offset(0x01bb7ca0)]
+fn asset_table_result_get_preset_name(preset_name: &Il2CppString, method_info: OptionalMethod) -> &'static mut AssetTableResult;
+
+#[skyline::from_offset(0x01bb2ee0)]
+fn asset_table_commit_result(this: &AssetTableResult, data: &AssetTable, method_info: OptionalMethod);
+
+#[skyline::from_offset(0x01bb2a80)]
+fn result_commit(this: &AssetTableResult, mode: i32, person: Option<&PersonData>, job:  Option<&JobData>, equipped: Option<&ItemData>, method_info: OptionalMethod);
+
+#[skyline::from_offset(0x01bb48b0)]
+fn result_commit_accessory(this: &AssetTableResult, accessory: &AssetTableAccessory, method_info: OptionalMethod);
+
+#[skyline::from_offset(0x01bb2750)]
+fn result_clear(this: &AssetTableResult, method_info: OptionalMethod);
+
+#[skyline::from_offset(0x01bb3be0)]
+fn result_replace(this: &AssetTableResult, mode: i32, method_info: OptionalMethod);
+
+#[skyline::from_offset(0x01baf640)]
+fn accessory_list_try_add(this: &AssetTableAccessoryList, accessory: &AssetTableAccessory, method_info: OptionalMethod);
+
+#[skyline::from_offset(0x01baf5a0)]
+fn accessory_to_string(accessory: &AssetTableAccessory, method_info: OptionalMethod) -> &'static Il2CppString;

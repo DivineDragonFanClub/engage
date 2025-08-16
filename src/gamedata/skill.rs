@@ -1,5 +1,6 @@
 pub use unity::{il2cpp::object::Array, prelude::*};
-use super::{*, person::CapabilitySbyte};
+use crate::bit::BitStruct;
+use super::{*, item::ItemData, person::CapabilitySbyte};
 // Structs, methods required for SkillArray and SkillData
 pub struct SkillArrayEntity {
     pub value : u32,
@@ -29,7 +30,7 @@ impl DerefMut for SkillArrayEntityListFields  {
 
 #[unity::class("App", "SkillArray")]
 pub struct SkillArray {
-    mask: &'static Array<u8>,
+    pub bit: &'static mut BitStruct,
     pub list: &'static mut SkillArrayEntityList,
     pub flags: i64,
     pub cycles: i32,
@@ -65,6 +66,97 @@ pub struct SkillData {
     pub timing: i32,
     pub target: i32,
     pub equip_iids: Option<&'static Array<&'static Il2CppString>>,
+    pub group: i32,
+    pub priority: u8,
+    pub layer: i32,
+    pub order: i8,
+    pub cycle: i32,
+    pub frequency: i32,
+    pub condition: &'static Il2CppString,
+    pub give_target: i32,
+    pub give_condition: &'static Il2CppString,
+    pub give_sids: &'static Array<&'static Il2CppString>,
+    pub remove_sids: &'static Array<&'static Il2CppString>,
+    pub sync_conditions: &'static Array<&'static Il2CppString>,
+    pub sync_sids: &'static Array<&'static Il2CppString>,
+    pub rebirth_sid: &'static Il2CppString,
+    pub engage_sid: &'static Il2CppString,
+    pub change_sids: &'static Array<&'static Il2CppString>,
+    pub attack_range:  Option<&'static Il2CppString>,
+    pub overlap_range:  Option<&'static Il2CppString>,
+    pub overlap_terrain:  Option<&'static Il2CppString>,
+    pub zoc_range:  Option<&'static Il2CppString>,
+    pub zoc_type: i32,
+    pub cooperation_skill:  Option<&'static Il2CppString>,
+    pub horse_skill: Option<&'static Il2CppString>,
+    pub covert_skill: Option<&'static Il2CppString>,
+    pub heavy_skill: Option<&'static Il2CppString>,
+    pub fly_skill: Option<&'static Il2CppString>,
+    pub magic_skill: Option<&'static Il2CppString>,
+    pub pranas_kill: Option<&'static Il2CppString>,
+    pub dragons_kill: Option<&'static Il2CppString>,
+    pub act_names: Option<&'static Array<&'static Il2CppString>>,
+    pub act_operations: Option<&'static Array<&'static Il2CppString>>,
+    pub act_values: Option<&'static Array<&'static Il2CppString>>,
+    pub around_center: i32,
+    pub around_target: i32,
+    pub around_condition: Option<&'static Il2CppString>,
+    pub around_name: Option<&'static Il2CppString>,
+    pub around_operation: Option<&'static Il2CppString>,
+    pub around_value: Option<&'static Il2CppString>,
+    pub bad_state: i32,
+    pub bad_ignore: i32,
+    pub efficacy: i32,
+    pub efficacy_ignore: i32,
+    pub efficacy_value: i32,
+    pub flag: i64,
+    pub private_flag: i32,
+    pub work: i32,
+    pub work_operation: Option<&'static Il2CppString>,
+    pub work_value :f32,
+    pub power: i32,
+    pub life: i32,
+    pub cost: i32,
+    pub rewarp: i32,
+    pub removable: i32,
+    pub vision_count: i32,
+    pub rangetarget: i32,
+    pub range_i: i32,
+    pub range_o: i32,
+    pub range_add: i32,
+    pub range_extend: i32,
+    pub move_self: i32,
+    pub move_target: i32,
+    pub enhance_level: i8,
+    pub enhance_value: &'static CapabilitySbyte,
+    pub weapon_prohibit: &'static WeaponMask,
+    weapon_level: *const u8,
+    pub effect: Option<&'static Il2CppString>,
+    pub inheritance_cost: u16,
+    pub inheritance_sort: u16,
+    pub give_skills: &'static SkillArray,
+    pub remove_skills: &'static SkillArray,
+    pub sync_skills: &'static SkillArray,
+    pub rebirth_skill: Option<&'static SkillData>,
+    pub engage_skill: Option<&'static SkillData>,
+    pub change_skills: &'static Array<&'static SkillData>,
+    pub low_skill: Option<&'static SkillData>,
+    pub high_skill: Option<&'static SkillData>,
+    pub root_command_skill: Option<&'static SkillData>,
+    pub timing_mask: i32,
+    pub cycle_mask: i32,
+    pub sort_key: i32,
+    pub act_funcs: *const u8,
+    pub around_funcs: *const u8,
+    pub style_skills: &'static Array<&'static SkillData>,
+    pub weapon_level_mask: &'static WeaponMask,
+    condition_command: *const u8,
+    give_condition_command: *const u8,
+    around_condition_command: *const u8,
+    sync_condition_commands: *const u8,
+    pub equip_items: &'static List<ItemData>,
+    pub default_equip_item: Option<&'static ItemData>,
+    pub prefixless_sid :&'static Il2CppString,
 }
 impl Gamedata for SkillData{}
 
@@ -78,7 +170,7 @@ impl SkillArray {
         else {false }
     }
     pub fn get_category(&self, index: i32) -> i32 { unsafe { skill_array_get_category(self, index, None) }}
-    pub fn find_sid(&self, sid: &Il2CppString) -> Option<&'static SkillData> { unsafe { skillarray_find(self, sid, None)}}
+    pub fn find_sid<'a>(&self, sid: impl Into<&'a Il2CppString>) -> Option<&'static SkillData> { unsafe { skillarray_find(self, sid.into(), None)}}
     pub fn remove_skill(&self, skill: &SkillData) -> bool { unsafe { skill_array_remove_skill(self, skill, None)}}
     pub fn remove_sid(&self, sid: &Il2CppString) -> bool { unsafe { skill_array_remove(self, sid, None)}}
     pub fn replace(&self, index: i32, skill: &SkillData, category: i32 ) { unsafe { skill_array_replace(self, index, skill, category, None); }}

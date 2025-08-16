@@ -76,7 +76,7 @@ impl PersonData {
     pub fn get_jid(&self) -> Option<&Il2CppString> { unsafe { person_get_jid(self, None) }}
     pub fn get_level(&self) -> u8 { unsafe { person_get_level(self, None) } }
     pub fn get_limit(&self) -> &mut CapabilitySbyte {  unsafe { person_get_limit(self, None) } }
-    pub fn get_name(&self) -> Option<&Il2CppString> {  unsafe { person_get_name(self, None) } }
+    pub fn get_name(&self) -> Option<&'static Il2CppString> {  unsafe { person_get_name(self, None) } }
     pub fn get_sp(&self) -> i32 { unsafe { person_get_sp(self, None)}}
     pub fn get_summon_color(&self) -> i32 { unsafe { person_get_summoncolor(self, None)}}
     pub fn get_summon_rank(&self) -> i32 { unsafe { person_get_summon_rank(self, None)}}
@@ -90,6 +90,7 @@ impl PersonData {
     pub fn get_bmap_size(&self) -> u8 { unsafe { person_get_bmapsize(self, None)}}
     pub fn get_exist_die_cid(&self) -> Option<&'static Il2CppString> { unsafe { person_cid_exist(self, None) }}
     pub fn get_exist_timing(&self) -> i32 { unsafe { person_cid_timing(self, None)}}
+    pub fn get_link_god(&self) -> Option<&'static GodData> { unsafe { person_get_link_god(self, None)}}
     pub fn load() { unsafe { persondata_load(None); }}
     pub fn on_complete(&self) { unsafe { person_on_release(self, None); }}
 
@@ -134,7 +135,7 @@ fn person_on_release(this: &PersonData, method_info: OptionalMethod);
 fn person_set_fid(this: &PersonData, fid: &Il2CppString, method_info: OptionalMethod);
 
 #[unity::from_offset("App", "PersonData", "get_Name")] //#[skyline::from_offset(0x1f25d40)]
-fn person_get_name(this: &PersonData, method_info: OptionalMethod) -> Option<&Il2CppString>;
+fn person_get_name(this: &PersonData, method_info: OptionalMethod) -> Option<&'static Il2CppString>;
 
 #[unity::from_offset("App", "PersonData", "get_UnitIconID")] //#[skyline::from_offset(0x1f25d20)]
 fn get_uniticonid(this: &PersonData, method_info: OptionalMethod) -> Option<&'static Il2CppString>;
@@ -307,6 +308,9 @@ fn person_set_engage_sid(this: &PersonData, value: Option<&Il2CppString>, method
 
 #[unity::from_offset("App", "PersonData", "set_LinkGod")]
 fn person_set_link_god(this: &PersonData, value: Option<&GodData>, method_info: OptionalMethod);
+
+#[unity::from_offset("App", "PersonData", "get_LinkGod")]
+fn person_get_link_god(this: &PersonData, method_info: OptionalMethod) -> Option<&'static GodData>;
 
 #[unity::from_offset("App", "PersonData", "get_EngageSid")]
 fn person_get_engage_sid(this: &PersonData, method_info: OptionalMethod) -> Option<&'static Il2CppString>;
