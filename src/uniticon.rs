@@ -1,11 +1,12 @@
-use unity::{prelude::*, engine::{ui::{IsImage, ImageFields}, Material}};
+use unity::{prelude::*, engine::{ui::{IsImage, ImageFields}, Material, Sprite}};
 
 #[unity::class("App", "UnitIcon")]
 pub struct UnitIcon {
-    parent: ImageFields,
+    parent: [u8;0xF8],
     index_atlas: &'static (),
     pallete_atlas: &'static (),
-    icon_name: &'static Il2CppString,
+    pub pallete_sprite: Option<&'static Sprite>,
+    pub icon_name: Option<&'static Il2CppString>,
     pallete_name: &'static Il2CppString,
     brightness: f32,
     material_instance: &'static Material,
