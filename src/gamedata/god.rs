@@ -43,7 +43,7 @@ impl GodData {
             _ => {},
         }
     }
-    pub fn get_link_dictionary() -> &'static Dictionary<&'static Il2CppString, &'static GodData> {
+    pub fn get_link_dictionary() -> &'static Dictionary<'static, &'static Il2CppString, &'static GodData> {
         return Self::class().get_static_fields::<GodDataStaticFields>().link_dics;
     }
     pub fn try_get_link(person: &PersonData) -> Option<&'static GodData> {
@@ -91,7 +91,7 @@ impl GodGrowthData {
         .unwrap();
         let get_keys = unsafe {
             std::mem::transmute::<_,
-            extern "C" fn(&Dictionary<&'static Il2CppString, &'static mut List<GodGrowthDataLevelData>>, &Il2CppString, &MethodInfo)
+            extern "C" fn(&Dictionary<'static, &'static Il2CppString, &'static mut List<GodGrowthDataLevelData>>, &Il2CppString, &MethodInfo)
              -> Option<&'static mut List<GodGrowthDataLevelData>>>(
                 method.method_ptr,
             )
@@ -111,10 +111,10 @@ pub struct GodGrowthDataLevelData {
 }
 
 pub struct GodGrowthDataStaticFields {
-    pub level_list: &'static Dictionary<&'static Il2CppString, &'static mut List<GodGrowthDataLevelData>>,
+    pub level_list: &'static Dictionary<'static, &'static Il2CppString, &'static mut List<GodGrowthDataLevelData>>,
 }
 pub struct GodDataStaticFields{
-    pub link_dics: &'static Dictionary<&'static Il2CppString, &'static GodData>,
+    pub link_dics: &'static Dictionary<'static, &'static Il2CppString, &'static GodData>,
 }
 
 #[unity::class("App", "GodGrowthData.StyleItems")]

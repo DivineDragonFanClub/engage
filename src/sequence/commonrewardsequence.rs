@@ -9,7 +9,7 @@ use crate::gamedata::{unit::Unit, item::ItemData};
 pub struct CommonRewardSequence {
     pub proc: ProcInstFields,
     menu: u64,
-    pub exp_list: &'static Dictionary<&'static Unit, i32>,
+    pub exp_list: &'static Dictionary<'static, &'static Unit, i32>,
     pub item_reward_list: &'static List<ItemData>,
     pub reward_money : i32,
 }
