@@ -93,6 +93,9 @@ pub struct PersonData {
     pub birth_month: u8,
     pub birth_day: u8,
     pub gender: i32,
+    // take care about the padding when adding stuff above it
+    _padding: [u8; 0x14C - 0x70],
+    pub hometown: i32,
     // ...
 }
 impl Gamedata for PersonData { }
