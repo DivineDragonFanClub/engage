@@ -198,6 +198,9 @@ impl Unit {
         unsafe { unit_itemadd(self, item, None); }
     }
 
+    pub fn add_base_capability(&self, stat: i32, value: i32) {
+        unsafe { unit_add_base_capability(self, stat, value, None); }
+    }
     pub fn set_selected_weapon(&self, weapon_mask: &WeaponMask) {
         unsafe { unit_setselectedweapon(self, weapon_mask, None); }
     }
@@ -304,6 +307,7 @@ impl Unit {
     pub fn reload_actor(&self) { unsafe { unit_reload_actor(self, None);}}
     pub fn update_weapon_mask(&self) { unsafe { unit_update_weapon_mask(self, None); }}
     pub fn update(&self) { unsafe { unit_update(self, None);}}
+    pub fn reset_weapon_mask(&self) { unsafe { unit_reset_weapon_mask(self, None); }}
 }
 
 impl UnitEdit {
@@ -532,6 +536,9 @@ fn unit_set_learned_job_skill(this: &Unit, value: Option<&SkillData>, method_inf
 #[unity::from_offset("App", "Unit", "PlayEngage")]
 fn unit_play_engage(this: &Unit, enable: bool, method_info: OptionalMethod);
 
+#[unity::from_offset("App", "Unit", "AddBaseCapability")]
+fn unit_add_base_capability(this: &Unit, index: i32, value: i32, method_info: OptionalMethod);
+
 #[skyline::from_offset(0x01a232e0)]
 fn unit_get_dress_gender(this: &Unit, method_info: OptionalMethod) -> Gender;
 // UnitEdit 
@@ -568,6 +575,8 @@ fn unit_get_engage_attack(this: &Unit, method_info: OptionalMethod) -> Option<&'
 #[unity::from_offset("App", "Unit", "GetEngageLinkUnit")]
 fn unit_get_engage_link_unit(this: &Unit, method_info: OptionalMethod) -> Option<&'static Unit>;
 
+#[skyline::from_offset(0x01a0b9b0)]
+fn unit_reset_weapon_mask(this: &Unit, method_info: OptionalMethod);
 // God Unit
 #[skyline::from_offset(0x0233eae0)]
 pub fn god_unit_escaped(this: &GodUnit, method_info: OptionalMethod) -> bool;

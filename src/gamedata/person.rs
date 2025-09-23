@@ -60,6 +60,9 @@ impl PersonData {
     pub fn get_ascii_name(&self) -> Option<&Il2CppString> { unsafe {person_get_ascii_name(self, None) } }
     pub fn get_asset_force(&self) -> i32 { unsafe { person_get_asset_force(self, None) }  }
     pub fn get_attrs(&self) -> i32 { unsafe { person_get_attrs(self, None)} }
+    pub fn get_engage_skill(&self) -> Option<&'static SkillData> {
+        unsafe { person_get_engage_skill(&self, None)}
+    }
     pub fn get_combat_bgm(&self) -> Option<&Il2CppString> { unsafe { person_get_combat_bgm(self, None)}}
     pub fn get_common_skills(&self) -> &mut SkillArray { unsafe { person_get_commonskill(self, None) }  }
 
@@ -109,7 +112,7 @@ impl PersonData {
     pub fn set_attrs(&self, attr: i32) { unsafe { person_set_attrs(self, attr, None); }}
     pub fn set_common_skills(&self, skill: &SkillArray) { unsafe { set_commonskill(self, skill, None); }}
     pub fn set_common_sids(&self, sids: &Array<&Il2CppString>) { unsafe { person_set_common_sids(self, sids, None); }}
-    pub fn set_engage_skill(&self, skill: &SkillData) { unsafe { person_set_engage_skill(self, skill, None); }}
+    pub fn set_engage_skill(&self, skill: Option<&SkillData>) { unsafe { person_set_engage_skill(self, skill, None); }}
     pub fn set_fid(&self, fid: &Il2CppString) {  unsafe { person_set_fid(self, fid, None);}}
     pub fn set_gender(&self, gender: i32) { unsafe { person_set_gender(self, gender, None); }}
     pub fn set_grow(&self, value: &Capability) { unsafe { person_set_grow(self, value, None); }}
@@ -159,7 +162,7 @@ fn get_commonsids(this: &PersonData, method_info: OptionalMethod) -> Option<&mut
 fn person_get_commonskill(this: &PersonData, method_info: OptionalMethod) -> &mut SkillArray;
 
 #[unity::from_offset("App", "PersonData", "set_EngageSkill")]
-fn person_set_engage_skill(this: &PersonData, skill: &SkillData, method_info: OptionalMethod);
+fn person_set_engage_skill(this: &PersonData, skill: Option<&SkillData>, method_info: OptionalMethod);
 
 #[skyline::from_offset(0x1f26000)]
 fn person_get_limit(this: &PersonData, method_info: OptionalMethod) -> & mut CapabilitySbyte;
@@ -326,3 +329,6 @@ fn person_cid_exist(this: &PersonData, method_info: OptionalMethod) -> Option<&'
 
 #[unity::from_offset("App", "PersonData", "get_ExistDieTiming")]
 fn person_cid_timing(this: &PersonData, method_info: OptionalMethod) -> i32;
+
+#[unity::from_offset("App", "PersonData", "get_EngageSkill")]
+fn person_get_engage_skill(this: &PersonData, method_info: OptionalMethod) -> Option<&'static SkillData>;

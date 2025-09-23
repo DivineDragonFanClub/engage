@@ -13,3 +13,4 @@ pub mod wellsequence;
 pub mod commonrewardsequence;
 pub mod arenaordersequence;
 pub mod unitgrowsequence;
+pub mod combatsequence;

@@ -2,7 +2,7 @@
 
 use modular_bitfield::{bitfield, specifiers::B2};
 use unity::{prelude::*, system::List};
-
+use unity::engine::{Material, Vector2};
 use crate::proc::{desc::ProcDesc, Bindable, ProcInst, ProcInstFields};
 
 pub mod content;
@@ -20,7 +20,7 @@ pub mod savedata;
 #[unity::class("App", "BasicMenu")]
 pub struct BasicMenu<T: 'static> {
     pub proc: ProcInstFields,
-    pub menu_content: *const u8,
+    pub menu_content: &'static mut BasicMenuContent,
     pub menu_item_list: &'static mut List<T>,
     pub full_menu_item_list: &'static mut List<T>,
     pad: [u8; 0x10],
@@ -49,8 +49,25 @@ impl<T> BasicMenu<T> {
             close_anime_all(&self, method.method_info);
         });
     }
+    pub fn open_anime_all(&self) {
+        self.get_class().get_virtual_method("OpenAnimeAll").map(|method| {
+            let close_anime_all =
+                unsafe { std::mem::transmute::<_, extern "C" fn(&BasicMenu<T>, &MethodInfo)>(method.method_info.method_ptr) };
+            close_anime_all(&self, method.method_info);
+        });
+    }
+    pub fn open_anime(&self) {
+        self.get_class().get_virtual_method("OpenAnime").map(|method| {
+            let close_anime_all =
+                unsafe { std::mem::transmute::<_, extern "C" fn(&BasicMenu<T>, &MethodInfo)>(method.method_info.method_ptr) };
+            close_anime_all(&self, method.method_info);
+        });
+    }
     pub fn save_select(&self, sel: &BasicMenuSelect) {
         unsafe { basicmenu_save_select(self, sel, None) }
+    }
+    pub fn restore_select(&self, sel: &BasicMenuSelect) {
+        unsafe { restore_select(self, sel, None); }
     }
 }
 
@@ -148,7 +165,7 @@ pub trait MenuSequence {
 #[unity::class("App", "BasicMenuItem")]
 pub struct BasicMenuItem {
     pub menu: &'static mut BasicMenu<BasicMenuItem>,
-    menu_item_content: *const u8,
+    pub menu_item_content: &'static BasicMenuContent,
     name: &'static Il2CppString,
     pub index: i32,
     full_index: i32,
@@ -232,7 +249,7 @@ fn basicmenuitem_ctor(this: &BasicMenuItem, method_info: OptionalMethod);
 fn basicmenuitem_is_attribute_disable(this: &BasicMenuItem, method_info: OptionalMethod) -> bool;
 
 #[skyline::from_offset(0x02467490)]
-fn build_content_text(this: *const u8, method_info: OptionalMethod);
+fn build_content_text(this: &BasicMenuContent, method_info: OptionalMethod);
 
 #[unity::from_offset("App", "BasicMenuItem", "ForceRebuildLayout")]
 fn basicmenuitem_force_rebuild(this: &BasicMenuItem, method_info: OptionalMethod);
@@ -240,7 +257,27 @@ fn basicmenuitem_force_rebuild(this: &BasicMenuItem, method_info: OptionalMethod
 #[unity::class("App", "BasicMenuContent")]
 pub struct BasicMenuContent {
     pub base: u64,
+    src_material: &'static Material,
+    material: &'static Material,
+    pub menu: &'static mut BasicMenu<BasicMenuItem>,
+    unity_stuff: [u8; 0x50],
+    pub cursor: &'static mut BasicMenuContentCursor,
+    pub scroll: u64,
+    pub pos: Vector2<f32>,
+    pub pos_old: Vector2<f32>,
     // ...
+}
+
+#[unity::class("", "Cursor")]
+pub struct BasicMenuContentCursor {
+    pub content: &'static mut BasicMenuContent,
+    unity_stuff: [u8; 0x48],
+    pub pos_x: f32,
+    pub pos_y: f32,
+    pub from_x: f32,
+    pub from_y: f32,
+    pub from_w: f32,
+    pub from_h: f32,
 }
 
 /// The return type for Call methods on classes inheriting from BasicMenuItem.
@@ -251,30 +288,30 @@ pub struct BasicMenuContent {
 #[repr(C)]
 #[bitfield]
 pub struct BasicMenuResult {
-    pub close_this: bool,
-    pub close_parent: bool,
-    pub close_all: bool,
-    pub delete_this: bool,
+    pub close_this: bool,   //1
+    pub close_parent: bool, //2
+    pub close_all: bool,    //4
+    pub delete_this: bool,  //8
 
-    pub delete_parent: bool,
-    pub delete_all: bool,
+    pub delete_parent: bool,    //16
+    pub delete_all: bool,   //32
     #[skip]
     __: bool,
     #[skip(getters)]
-    pub se_decide: bool,
+    pub se_decide: bool,    //128
 
     #[skip(getters)]
-    pub se_decide2: bool,
+    pub se_decide2: bool,   //256
     #[skip(getters)]
-    pub se_cancel: bool,
+    pub se_cancel: bool,    //512
     #[skip]
     __: bool,
 
     #[skip(getters)]
-    pub se_miss: bool,
+    pub se_miss: bool,  //2048
     #[skip(getters)]
-    pub se_cursor: bool,
-    pub do_nothing: bool,
+    pub se_cursor: bool,    //4096
+    pub do_nothing: bool,   //8192
     #[skip]
     padding: B2,
 }
@@ -373,3 +410,6 @@ pub struct BasicMenuSelect {
 
 #[unity::from_offset("App", "BasicMenu", "SaveSelect")]
 fn basicmenu_save_select<P: BasicMenuMethods + ?Sized>(this: &P, sel: &BasicMenuSelect, method_info: OptionalMethod);
+
+#[skyline::from_offset(0x245d0a0)]
+fn restore_select<T>(basic_menu: &BasicMenu<T>, select: &BasicMenuSelect, method_info: OptionalMethod);

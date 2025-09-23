@@ -2,7 +2,7 @@ use unity::prelude::*;
 
 use crate::proc::ProcInst;
 
-use super::{BasicMenu, BasicMenuResult};
+use super::{BasicMenu, BasicMenuItemAttribute, BasicMenuResult};
 #[repr(C)]
 #[unity::class("", "ConfigBasicMenuItem")]
 pub struct ConfigBasicMenuItem {
@@ -50,6 +50,14 @@ impl ConfigBasicMenuItem {
             .get_virtual_method_mut("SetHelpText")
             .map(|method| method.method_ptr = Methods::set_help_text as _);
 
+        item.get_class_mut()
+            .get_virtual_method_mut("ACall")
+            .map(|method| method.method_ptr = Methods::a_call as _);
+
+        item.get_class_mut()
+            .get_virtual_method_mut("BuildAttribute")
+            .map(|method| method.method_ptr = Methods::build_attributes as _);
+
         item.title_text = title.into();
 
         Methods::set_command_text(item, None);
@@ -72,6 +80,14 @@ impl ConfigBasicMenuItem {
         item.get_class_mut()
             .get_virtual_method_mut("SetHelpText")
             .map(|method| method.method_ptr = Methods::set_help_text as _);
+
+        item.get_class_mut()
+            .get_virtual_method_mut("ACall")
+            .map(|method| method.method_ptr = Methods::a_call as _);
+
+        item.get_class_mut()
+            .get_virtual_method_mut("BuildAttribute")
+            .map(|method| method.method_ptr = Methods::build_attributes as _);
 
         item.title_text = title.into();
 
@@ -112,6 +128,13 @@ impl ConfigBasicMenuItem {
             .map(|method| method.method_ptr = Methods::on_deselect as _)
             .unwrap();
 
+        item.get_class_mut()
+            .get_virtual_method_mut("ACall")
+            .map(|method| method.method_ptr = Methods::a_call as _);
+
+        item.get_class_mut()
+            .get_virtual_method_mut("BuildAttribute")
+            .map(|method| method.method_ptr = Methods::build_attributes as _);
 
         item.title_text = title.into();
 
@@ -153,19 +176,20 @@ impl ConfigBasicMenuItem {
 }
 
 pub trait ConfigBasicMenuItemSwitchMethods {
-    fn init_content(_this: &mut ConfigBasicMenuItem) {
-        
-    }
-    
+    fn init_content(_this: &mut ConfigBasicMenuItem) {}
     extern "C" fn custom_call(this: &mut ConfigBasicMenuItem, method_info: OptionalMethod) -> BasicMenuResult;
     extern "C" fn set_command_text(this: &mut ConfigBasicMenuItem, method_info: OptionalMethod);
     extern "C" fn set_help_text(this: &mut ConfigBasicMenuItem, method_info: OptionalMethod);
+    extern "C" fn a_call(this: &mut ConfigBasicMenuItem, method_info: OptionalMethod) -> BasicMenuResult {
+        BasicMenuResult::new()
+    }
+    extern "C" fn build_attributes(this: &mut ConfigBasicMenuItem, method_info: OptionalMethod) -> BasicMenuItemAttribute {
+        BasicMenuItemAttribute::Enable
+    }
 }
 
 pub trait ConfigBasicMenuItemCommandMethods {
-    fn init_content(_this: &mut ConfigBasicMenuItem) {
-        
-    }
+    fn init_content(_this: &mut ConfigBasicMenuItem) {}
 
     extern "C" fn custom_call(this: &mut ConfigBasicMenuItem, method_info: OptionalMethod) -> BasicMenuResult;
     extern "C" fn set_command_text(this: &mut ConfigBasicMenuItem, method_info: OptionalMethod);
@@ -182,6 +206,12 @@ pub trait ConfigBasicMenuItemCommandMethods {
         this.is_arrow = false;
         ConfigBasicMenuItem::on_deselect(this);
     }
+    extern "C" fn a_call(this: &mut ConfigBasicMenuItem, method_info: OptionalMethod) -> BasicMenuResult {
+        BasicMenuResult::new()
+    }
+    extern "C" fn build_attributes(this: &mut ConfigBasicMenuItem, method_info: OptionalMethod) -> BasicMenuItemAttribute {
+        BasicMenuItemAttribute::Enable
+    }
 }
 
 #[allow(dead_code)]
@@ -197,6 +227,12 @@ pub trait ConfigBasicMenuItemGaugeMethods {
     
     extern "C" fn custom_call(this: &mut ConfigBasicMenuItem, method_info: OptionalMethod) -> BasicMenuResult;
     extern "C" fn set_help_text(this: &mut ConfigBasicMenuItem, method_info: OptionalMethod);
+    extern "C" fn a_call(this: &mut ConfigBasicMenuItem, method_info: OptionalMethod) -> BasicMenuResult {
+        BasicMenuResult::new()
+    }
+    extern "C" fn build_attributes(this: &mut ConfigBasicMenuItem, method_info: OptionalMethod) -> BasicMenuItemAttribute {
+        BasicMenuItemAttribute::Enable
+    }
 }
 
 #[skyline::from_offset(0x25379a0)]

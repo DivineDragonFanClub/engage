@@ -1,5 +1,4 @@
 //! Types and methods to manipulate the script system for events.
-
 use unity::prelude::*;
 
 use crate::{gamedata::{item::ItemData, unit::Unit}, proc::ProcInst};
@@ -31,21 +30,26 @@ impl EventScript {
         unsafe { eventscript_getfunc(Self::get_instance(), name.into(), None) }
     }
   
-    pub fn call<'a>(name: impl Into<&'a Il2CppString>, arg: &Il2CppArray<DynValue>) {
+    pub fn call<'a>(name: impl Into<&'a Il2CppString>, arg: &Il2CppArray<&DynValue>) {
         unsafe { eventscript_call(Self::get_instance(), name.into(), arg, None) }
+    }
+    pub fn set<'a>(key: impl Into<&'a Il2CppString>, arg: &DynValue) {
+        unsafe {
+            moonsharp_table_set_value(Self::get_instance().global_table,key.into(), arg, None);
+        }
     }
 }
 
 pub trait EventScriptCommand {
-    fn register_action(&self, name: &str, action: extern "C" fn(&Il2CppArray<DynValue>, OptionalMethod));
+    fn register_action(&self, name: &str, action: extern "C" fn(&Il2CppArray<&DynValue>, OptionalMethod));
 }
 
 pub trait EventResultScriptCommand {
-    fn register_function(&self, name: &str, action: extern "C" fn(&Il2CppArray<DynValue>, OptionalMethod) -> &'static DynValue);
+    fn register_function(&self, name: &str, action: extern "C" fn(&Il2CppArray<&DynValue>, OptionalMethod) -> &'static DynValue);
 }
 
 impl EventScriptCommand for EventScript {
-    fn register_action(&self, name: &str, action: extern "C" fn(&Il2CppArray<DynValue>, OptionalMethod)) {
+    fn register_action(&self, name: &str, action: extern "C" fn(&Il2CppArray<&DynValue>, OptionalMethod)) {
         unsafe {
             eventscript_registaction(self, EventScriptActionArgs::new(action).unwrap(), name.into(), None);
         }
@@ -53,7 +57,7 @@ impl EventScriptCommand for EventScript {
 }
 
 impl EventResultScriptCommand for EventScript {
-    fn register_function(&self, name: &str, action: extern "C" fn(&Il2CppArray<DynValue>, OptionalMethod) -> &'static DynValue) {
+    fn register_function(&self, name: &str, action: extern "C" fn(&Il2CppArray<&DynValue>, OptionalMethod) -> &'static DynValue) {
         unsafe {
             eventscript_registfunction(self, EventScriptFunctionArgs::new(action).unwrap(), name.into(), None);
         }
@@ -63,7 +67,7 @@ impl EventResultScriptCommand for EventScript {
 #[unity::class("", "EventScript.FunctionArgs")]
 
 pub struct EventScriptFunctionArgs {
-    pub method_ptr: extern "C" fn(&Il2CppArray<DynValue>, OptionalMethod) -> &'static DynValue,
+    pub method_ptr: extern "C" fn(&Il2CppArray<&DynValue>, OptionalMethod) -> &'static DynValue,
     pub invoke_impl: *const u8,
     // Usually the ProcInst
     pub target: *const u8,
@@ -75,7 +79,7 @@ pub struct EventScriptFunctionArgs {
 }
 
 impl EventScriptFunctionArgs {
-    pub fn new(method: extern "C" fn(&Il2CppArray<DynValue>, OptionalMethod) -> &'static DynValue) -> Il2CppResult<&'static mut EventScriptFunctionArgs> {
+    pub fn new(method: extern "C" fn(&Il2CppArray<&DynValue>, OptionalMethod) -> &'static DynValue) -> Il2CppResult<&'static mut EventScriptFunctionArgs> {
         let function_args_class = EventScript::class().get_nested_types()[0];
 
         Il2CppObject::<EventScriptFunctionArgs>::from_class(function_args_class).map(|args| {
@@ -94,7 +98,7 @@ impl EventScriptFunctionArgs {
 
 #[unity::class("", "EventScript.ActionArgs")]
 pub struct EventScriptActionArgs {
-    pub method_ptr: extern "C" fn(&Il2CppArray<DynValue>, OptionalMethod),
+    pub method_ptr: extern "C" fn(&Il2CppArray<&DynValue>, OptionalMethod),
     pub invoke_impl: *const u8,
     // Usually the ProcInst
     pub target: *const (),
@@ -106,7 +110,7 @@ pub struct EventScriptActionArgs {
 }
 
 impl EventScriptActionArgs {
-    pub fn new(method: extern "C" fn(&Il2CppArray<DynValue>, OptionalMethod)) -> Il2CppResult<&'static mut EventScriptActionArgs> {
+    pub fn new(method: extern "C" fn(&Il2CppArray<&DynValue>, OptionalMethod)) -> Il2CppResult<&'static mut EventScriptActionArgs> {
         let action_args_class = EventScript::class().get_nested_types()[1];
 
         Il2CppObject::<EventScriptActionArgs>::from_class(action_args_class).map(|args| {
@@ -149,6 +153,7 @@ impl DynValue {
     pub fn new_number(value: f64) -> &'static mut DynValue {
         unsafe { dynvalue_new_number(value, None) }
     }
+    pub fn assign(&self, value: &Self) { unsafe { dynvalue_assign(self, value, None); } }
 }
 
 #[skyline::from_offset(0x2e200f0)]
@@ -160,14 +165,19 @@ fn dynvalue_new_string(string: &Il2CppString, method_info: OptionalMethod) -> &'
 #[skyline::from_offset(0x02e24d10)]
 fn dynvalue_new_number(v: f64, method_info: OptionalMethod) -> &'static mut DynValue;
 
+#[skyline::from_offset(0x02e369a0)]
+fn dynvalue_assign(this: &DynValue, value: &DynValue, method_info: OptionalMethod);
+
 pub trait ScriptUtils {
     fn try_get_i32(&self, index: i32) -> i32;
     fn try_get_string(&self, index: i32) -> Option<&'static Il2CppString>;
     fn try_get_unit(&self, index: i32) -> Option<&'static Unit>;
     fn try_get_item(&self, arg_index: i32) -> Option<&'static ItemData>;
+    fn try_get_value(&self, arg_index: i32) -> Option<&'static DynValue>;
+    fn try_get_type(&self, arg_index: i32) -> i32;
 }
 
-impl ScriptUtils for Il2CppArray<DynValue> {
+impl ScriptUtils for Il2CppArray<&DynValue> {
     fn try_get_i32(&self, arg_index: i32) -> i32 {
         unsafe { scriptutil_trygetint(self, arg_index, i32::MAX, None) }
     }
@@ -183,6 +193,12 @@ impl ScriptUtils for Il2CppArray<DynValue> {
     fn try_get_item(&self, arg_index: i32) -> Option<&'static ItemData> {
         unsafe { scriptutil_trygetitem(self, arg_index, true, None) }
     }
+    fn try_get_value(&self, arg_index: i32) -> Option<&'static DynValue> {
+        unsafe { scriptutil_tryget_value(&self, arg_index, None) }
+    }
+    fn try_get_type(&self, arg_index: i32) -> i32 {
+        unsafe { scriptutil_tryget_type(&self, arg_index, None) }
+    }
 }
 
 #[skyline::from_offset(0x3371160)]
@@ -190,25 +206,30 @@ pub fn system_io_memorystream_ctor(this: &MemoryStream, buffer: &'static mut Il2
 
 #[skyline::from_offset(0x2196920)]
 fn scriptutil_trygetstring(
-    args: &Il2CppArray<DynValue>,
+    args: &Il2CppArray<&DynValue>,
     index: i32,
     nothing: &Il2CppString,
     method_info: OptionalMethod,
 ) -> Option<&'static Il2CppString>;
 
 #[skyline::from_offset(0x2196cd0)]
-fn scriptutil_trygetint(args: &Il2CppArray<DynValue>, index: i32, nothing: i32, method_info: OptionalMethod) -> i32;
+fn scriptutil_trygetint(args: &Il2CppArray<&DynValue>, index: i32, nothing: i32, method_info: OptionalMethod) -> i32;
 
 #[skyline::from_offset(0x21961f0)]
-fn scriptutil_trygetunit(args: &Il2CppArray<DynValue>, index: i32, warning: bool, method_info: OptionalMethod) -> Option<&'static Unit>;
+fn scriptutil_trygetunit(args: &Il2CppArray<&DynValue>, index: i32, warning: bool, method_info: OptionalMethod) -> Option<&'static Unit>;
 
 #[skyline::from_offset(0x21a3740)]
 fn scriptutil_trygetitem(
-    args: &Il2CppArray<DynValue>,
+    args: &Il2CppArray<&DynValue>,
     index: i32,
     warning: bool,
     method_info: OptionalMethod,
 ) -> Option<&'static ItemData>;
+
+#[skyline::from_offset(0x021a3970)]
+fn scriptutil_tryget_value(args: &Il2CppArray<&DynValue>, index: i32, method_info: OptionalMethod) -> Option<&'static DynValue>;
+#[skyline::from_offset(0x021a3620)]
+fn scriptutil_tryget_type(args: &Il2CppArray<&DynValue>, index: i32, method_info: OptionalMethod) -> i32;
 
 #[skyline::from_offset(0x21994e0)]
 pub fn scriptutil_yield(method_info: OptionalMethod);
@@ -248,7 +269,7 @@ pub fn eventscript_registfunction(
 );
 
 #[unity::from_offset("App", "EventScript", "Call")]
-fn eventscript_call(this: &EventScript, name: &Il2CppString, args: &Il2CppArray<DynValue>, method_info: OptionalMethod);
+fn eventscript_call(this: &EventScript, name: &Il2CppString, args: &Il2CppArray<&DynValue>, method_info: OptionalMethod);
 
 #[unity::from_offset("App", "ScriptUtil", "GetSequence")]
 fn scriptutil_get_sequence(method_info: OptionalMethod) -> &'static ProcInst;
@@ -258,3 +279,6 @@ pub struct ScriptUtil;
 impl ScriptUtil {
     pub fn get_sequence() -> &'static ProcInst { unsafe { scriptutil_get_sequence(None) } }
 }
+
+#[skyline::from_offset(0x2d24990)]
+fn moonsharp_table_set_value(table: *const u8, key: &Il2CppString, value: &DynValue, method_info: OptionalMethod);

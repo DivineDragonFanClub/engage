@@ -47,3 +47,4 @@ pub mod hub;
 pub mod sortie;
 pub mod backgroundmanager;
 pub mod reliance;
+pub mod bit;

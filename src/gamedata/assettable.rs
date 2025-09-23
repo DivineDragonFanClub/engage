@@ -3,7 +3,7 @@ use std::result;
 pub use unity::prelude::*;
 pub use unity::engine::Color;
 pub use unity::system::*;
-use crate::bit::BitStruct;
+use crate::bit::*;
 use super::{*, unit::*, item::ItemData};
 
 #[unity::class("App", "AssetTable")]
@@ -74,10 +74,10 @@ impl AssetTable {
 
 #[unity::class("App", "AsssetTable.ConditionFlags")]
 pub struct AssetTableConditionFlags {
-    pub bits: BitStruct,
+    pub bits: BitStructFields,
     pub keys: &'static List<Il2CppString>,
     pub hits: &'static SimpleList<i32>,
-    pub dic: &'static Dictionary<&'static Il2CppString, i32>,
+    pub dic: &'static Dictionary<'static, &'static Il2CppString, i32>,
 
 }
 
@@ -90,7 +90,7 @@ impl AssetTableConditionFlags {
 pub struct AssetTableStaticFields { 
     pub preset_name: &'static List<Il2CppString>,
     pub search_lists: &'static mut Array<&'static mut List<AssetTable>>,
-    pub condition_indexes: &'static Dictionary<&'static Il2CppString, i32>,
+    pub condition_indexes: &'static Dictionary<'static, &'static Il2CppString, i32>,
     pub condition_flags: &'static mut AssetTableConditionFlags,
     pub null_sound: AssetTableSound,
     pub null_color: Color,
@@ -143,7 +143,7 @@ pub struct AssetTableResult {
     pub weapon_id: Option<&'static Il2CppString>,
     pub body_anims: &'static mut List<Il2CppString>,
     pub accessory_list: &'static mut AssetTableAccessoryList,
-    pub accessory_dictionary: &'static Dictionary<&'static Il2CppString, &'static AssetTableAccessory>,
+    pub accessory_dictionary: &'static Dictionary<'static, &'static Il2CppString, &'static AssetTableAccessory>,
 }
 
 impl AssetTableResult {
@@ -227,7 +227,6 @@ impl AssetTableAccessoryList {
             clear(self, method.method_info);
         }
     }
-
 }
 
 #[unity::from_offset("App","AssetTable", "set_Conditions")]

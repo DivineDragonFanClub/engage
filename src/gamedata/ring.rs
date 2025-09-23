@@ -1,6 +1,7 @@
 use unity::prelude::*;
 
 use crate::gamedata::{Gamedata, StructBaseFields, skill::SkillArray};
+use crate::gamedata::person::CapabilitySbyte;
 use crate::gamedata::unit::{Unit, UnitRing};
 
 #[unity::class("App", "RingData")]
@@ -14,6 +15,7 @@ pub struct RingData {
     pub kind: i32,
     pub rank: i32,
     pub icon: &'static Il2CppString,
+    pub enhance: &'static mut CapabilitySbyte,
 }
 
 impl Gamedata for RingData {}

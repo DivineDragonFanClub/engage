@@ -40,6 +40,11 @@ impl Random {
     pub fn value(&self) -> i32 {
         unsafe { random_get_value2(self, None)}
     }
+    pub fn new(seed: u32) -> &'static mut Self {
+        let random = Random::instantiate().unwrap();
+        random.ctor(seed);
+        random
+    }
 
 }
 #[unity::from_offset("App", "Random", "get_Game")]

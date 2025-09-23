@@ -39,7 +39,9 @@ impl MapMind {
         let instance = Self::get_instance();
         unsafe { get_unit(instance, None) }
     }
-
+    pub fn get_target_unit() -> Option<&'static mut Unit> {
+        unsafe { get_target_unit(Self::get_instance(), None) }
+    }
     pub fn set_trade_unit_index(&mut self, value: i32,) {
         self.focus_x = value as i8;
     }
@@ -48,3 +50,6 @@ impl MapMind {
 // App.MapMind$$get_Unit	7101dee2b0	App_Unit_o * App.MapMind$$get_Unit(App_MapMind_o * __this, MethodInfo * method)	12
 #[unity::from_offset("App", "MapMind", "get_Unit")]
 fn get_unit(this: &MapMind, method_info: OptionalMethod) -> &mut Unit;
+
+#[unity::from_offset("App", "MapMind", "get_TargetUnit")]
+fn get_target_unit(this: &MapMind, method_info: OptionalMethod) -> Option<&'static mut Unit>;

@@ -27,18 +27,26 @@ impl DerefMut for SkillArrayEntityListFields  {
     }
 }
 
-
+#[unity::class("App", "WeaponLevels")]
+pub struct WeaponLevels {
+    pub levels: &'static Array<i8>,
+}
 #[unity::class("App", "SkillArray")]
 pub struct SkillArray {
     pub bit: &'static mut BitStruct,
     pub list: &'static mut SkillArrayEntityList,
     pub flags: i64,
+
     pub cycles: i32,
     pub timing: i32,
+
     pub efficacys: i32,
     pub efficacy_ignore: i32,
+
     pub bad_states: i32,
     pub bad_ignore: i32,
+
+    pub weapon_levels: &'static WeaponLevels,
 }
 impl Deref for SkillArrayFields {
     type Target = [SkillArrayEntity];
@@ -72,7 +80,7 @@ pub struct SkillData {
     pub order: i8,
     pub cycle: i32,
     pub frequency: i32,
-    pub condition: &'static Il2CppString,
+    pub condition: Option<&'static Il2CppString>,
     pub give_target: i32,
     pub give_condition: &'static Il2CppString,
     pub give_sids: &'static Array<&'static Il2CppString>,
@@ -129,7 +137,7 @@ pub struct SkillData {
     pub move_target: i32,
     pub enhance_level: i8,
     pub enhance_value: &'static CapabilitySbyte,
-    pub weapon_prohibit: &'static WeaponMask,
+    pub weapon_prohibit: &'static mut WeaponMask,
     weapon_level: *const u8,
     pub effect: Option<&'static Il2CppString>,
     pub inheritance_cost: u16,
@@ -139,7 +147,7 @@ pub struct SkillData {
     pub sync_skills: &'static SkillArray,
     pub rebirth_skill: Option<&'static SkillData>,
     pub engage_skill: Option<&'static SkillData>,
-    pub change_skills: &'static Array<&'static SkillData>,
+    pub change_skills: &'static mut Array<&'static mut SkillData>,
     pub low_skill: Option<&'static SkillData>,
     pub high_skill: Option<&'static SkillData>,
     pub root_command_skill: Option<&'static SkillData>,
@@ -148,8 +156,8 @@ pub struct SkillData {
     pub sort_key: i32,
     pub act_funcs: *const u8,
     pub around_funcs: *const u8,
-    pub style_skills: &'static Array<&'static SkillData>,
-    pub weapon_level_mask: &'static WeaponMask,
+    pub style_skills: &'static mut Array<&'static mut SkillData>,
+    pub weapon_level_mask: &'static mut WeaponMask,
     condition_command: *const u8,
     give_condition_command: *const u8,
     around_condition_command: *const u8,
@@ -176,7 +184,9 @@ impl SkillArray {
     pub fn replace(&self, index: i32, skill: &SkillData, category: i32 ) { unsafe { skill_array_replace(self, index, skill, category, None); }}
     pub fn skill_array_add(&self, add: &SkillArray) -> bool { unsafe { add_skill_array(self, add, None)}}
     pub fn index_of(&self, sid: &Il2CppString) -> i32 { unsafe { sid_index_of(self, sid, None)}}
-
+    pub fn update(&self) {
+        unsafe { skill_array_update(self, None) }
+    }
     pub fn replace_sid(&self, sid: &Il2CppString, skill: &SkillData) {
         let index = self.index_of(sid);
         if index == -1 { return; }
@@ -213,6 +223,8 @@ impl SkillData {
 }
 
 impl SkillArrayEntity {
+    pub fn get_index(&self) -> i32 { (self.value & 0xFFF) as i32 }
+    pub fn is_hidden(&self) -> bool { self.get_skill().is_none_or(|s| s.flag & 1 != 0 && s.parent.index > 0 ) }
     pub fn get_skill(&self) -> Option<&'static SkillData> { unsafe { skill_array_entity_get_skill(self, None)}}
     pub fn get_age(&self) -> i32 { unsafe { skill_array_entity_get_age(self, None) }}
     pub fn get_category(&self) -> i32 { unsafe { skill_array_entity_get_category(self, None)}}
@@ -245,6 +257,7 @@ fn skill_array_remove(this: &SkillArray, sid: &Il2CppString, method_info: Option
 
 #[skyline::from_offset(0x02483080)]
 fn skill_array_remove_skill(this: &SkillArray, skill: &SkillData, method_info: OptionalMethod) -> bool;
+
 #[skyline::from_offset(0x024877e0)]
 fn skill_array_get_category(this: &SkillArray, index: i32, method_info: OptionalMethod) -> i32;
 
@@ -262,6 +275,10 @@ fn sid_index_of(this: &SkillArray, sid: &Il2CppString, method_info: OptionalMeth
 
 #[skyline::from_offset(0x02483760)]
 fn skill_array_replace(this: &SkillArray, index: i32, skill: &SkillData, category: i32, method_info: OptionalMethod);
+
+#[skyline::from_offset(0x02481130)]
+fn skill_array_update(this: &SkillArray, method_info: OptionalMethod);
+
 //SkillData
 #[unity::from_offset("App", "SkillData", "get_Efficacy")]
 fn skilldata_get_efficacy(this: &SkillData, method_info: OptionalMethod) -> i32;
