@@ -7,8 +7,13 @@ pub struct HubSequence {
     proc: ProcInstFields,
     is_resume: bool,
     m_is_loaded: bool,
-    //
+    scene_name: &'static Il2CppString,
+    scene_mode: i32,
+    // 0x78
+    padding: [u8;0x40],
+    pub hub_locator: &'static mut HubLocatorGroup,
 }
+
 impl Bindable for HubSequence {}
 
 impl HubSequence {
