@@ -9,8 +9,16 @@ pub struct HubSequence {
     m_is_loaded: bool,
     scene_name: &'static Il2CppString,
     scene_mode: i32,
-    // 0x78
-    padding: [u8;0x40],
+    script_func_name: &'static Il2CppString,
+    fast_travel_id: &'static Il2CppString,
+    talk_access: &'static (),
+    is_background_bind: bool,
+    is_key_help: bool,
+    is_cave: bool,
+    scene_name_again: &'static Il2CppString,
+    start_name: &'static Il2CppString,
+    hub_root: &'static (),
+    hub_env: &'static (),
     pub hub_locator: &'static mut HubLocatorGroup,
 }
 
