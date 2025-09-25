@@ -15,7 +15,7 @@ pub struct HubSequence {
     is_background_bind: bool,
     is_key_help: bool,
     is_cave: bool,
-    scene_name_again: &'static Il2CppString,
+    pub scene_name_again: &'static Il2CppString,
     start_name: &'static Il2CppString,
     hub_root: &'static (),
     hub_env: &'static (),
