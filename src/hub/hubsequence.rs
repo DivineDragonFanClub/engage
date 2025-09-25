@@ -22,6 +22,11 @@ impl HubSequence {
         let get_instance = unsafe { std::mem::transmute::<_, extern "C" fn(&MethodInfo) -> &'static HubSequence>( method.unwrap().method_ptr, ) };
         get_instance(method.unwrap())
     }
+    pub fn get_instance_mut() -> &'static mut Self {
+        let method = HubSequence::class()._1.parent._1.parent.get_methods().iter().find(|method| method.get_name() == Some(String::from("get_Instance")));
+        let get_instance = unsafe { std::mem::transmute::<_, extern "C" fn(&MethodInfo) -> &'static mut HubSequence>( method.unwrap().method_ptr, ) };
+        get_instance(method.unwrap())
+    }
     pub fn is_exist_instance() -> bool { unsafe { hub_is_exist_instance(None) }}
     pub fn get_mini_map(&self) -> &HubMiniMap { unsafe { hub_get_mini_map(self, None)}}
     
