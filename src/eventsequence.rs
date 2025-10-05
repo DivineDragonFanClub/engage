@@ -2,7 +2,7 @@
 
 use unity::prelude::*;
 
-use crate::{proc::ProcInst, script::DynValue};
+use crate::{proc::ProcInst, proc::ProcInstFields, script::DynValue};
 
 #[repr(C)]
 #[unity::class("App", "EventSequence")]
