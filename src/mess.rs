@@ -11,7 +11,9 @@ impl Mess {
     pub fn get<'a>(label: impl Into<&'a Il2CppString>) -> &'static mut Il2CppString {
         unsafe { mess_get(label.into(), None) }
     }
-
+    pub fn get_item_none() -> &'static mut Il2CppString {
+        unsafe { mess_get("MIID_H_None".into(), None) }
+    }
     pub fn load(filename: &Il2CppString) -> bool {
         unsafe { mess_load(filename, None) }
     }
@@ -25,6 +27,9 @@ impl Mess {
     }
     pub fn set_argument<'a>(index: i32, value: impl Into<&'a Il2CppString>) {
         unsafe { mess_set_argument(index, value.into(), None);}
+    }
+    pub fn set_argument_number(index: i32, value: i32) {
+        unsafe { mess_set_argument_number(index, value, None); }
     }
     pub fn create_sprite_tag(category: i32, kind_name: &Il2CppString) -> &'static Il2CppString {
         unsafe { mess_create_sprite_tag(category, kind_name, None)}
@@ -92,3 +97,6 @@ fn mess_set_argument(index: i32, value: &Il2CppString, method_info: OptionalMeth
 
 #[skyline::from_offset(0x025d94d0)]
 fn mess_create_sprite_tag(category: i32, kind_name: &Il2CppString, method_info: OptionalMethod) -> &'static Il2CppString;
+
+#[skyline::from_offset(0x25da0d0)]
+fn mess_set_argument_number(index: i32, value: i32, method_info: OptionalMethod);

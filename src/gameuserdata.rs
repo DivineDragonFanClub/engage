@@ -1,5 +1,6 @@
 //! Methods and wrappers to manipulate the settings of the player.
 
+use num_derive::{FromPrimitive, ToPrimitive};
 use crate::{singleton::SingletonClass, gamevariable::GameVariable};
 use crate::gamedata::dispos::ChapterData;
 use unity::{il2cpp::class::Il2CppRGCTXData, prelude::*};
@@ -8,8 +9,15 @@ use unity::{il2cpp::class::Il2CppRGCTXData, prelude::*};
 #[unity::class("App", "GameUserData")]
 pub struct GameUserData {
     parent: [u8;0x10],
-    padding: [u8;0x20],
+    pub status: &'static GameUserDataStatus,
+    pub sequence: Sequences,
+    pub game_mode: i32,
+    pub difficulty: i32,
+    pub chapter: Option<&'static ChapterData>,
     pub gmap_spot: &'static mut Il2CppString,
+    content_index: i32,
+    variable: *const u8,
+    pub gold: i32,
 }
 
 #[unity::from_offset("App", "GameUserData", "get_Variable")]
@@ -29,6 +37,19 @@ pub enum GameMode {
     Casual,
     Classic,
     Phoenix
+}
+#[repr(i32)]
+#[derive(Clone, Copy, PartialEq, Eq, FromPrimitive, ToPrimitive)]
+pub enum Sequences {
+    None = 0,
+    ChapterSave = 1,
+    Sortie = 2,
+    Map = 3,
+    Hub = 4,
+    Kizuna = 5,
+    Gmap = 6,
+    Chapter = 7,
+    Other = 8,
 }
 
 impl From<i32> for GameMode {
@@ -125,7 +146,12 @@ impl GameUserData {
     }
     pub fn get_chapter() -> &'static ChapterData { unsafe { get_chapter_data(Self::get_instance(), None)}}
     pub fn get_status() -> &'static mut GameUserDataStatus { unsafe { get_game_user_data_status(Self::get_instance(), None) } }
+    pub fn get_gold() -> i32 {
+        unsafe {
+            game_user_data_get_gold(Self::get_instance(), None)
+        }
 
+    }
     pub fn set_gold(monies: i32) { unsafe { setgold(Self::get_instance(), monies, None );} }
     pub fn set_iron(amount: i32){ unsafe { game_user_data_set_iron(Self::get_instance(), amount, None); } }
     pub fn set_steel(amount: i32){ unsafe { game_user_data_set_steel(Self::get_instance(), amount, None); } }
@@ -216,3 +242,6 @@ fn game_user_data_set_field_bgm_player(this: &GameUserData, value: &Il2CppString
 fn game_user_data_set_field_bgm_enemy(this: &GameUserData, value: &Il2CppString, method_info: OptionalMethod);
 #[unity::from_offset("App", "GameUserData", "SetGrowMode")]
 fn game_user_data_set_grow_mode(this: &GameUserData, value: i32, method_info: OptionalMethod);
+
+#[unity::from_offset("App", "GameUserData", "get_Gold")]
+fn game_user_data_get_gold(this: &GameUserData, method_info: OptionalMethod) -> i32;

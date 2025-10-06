@@ -12,7 +12,7 @@ pub struct UnitGrowSequence {
     pub exp: i32,
     pub old_level: i32,
     pub is_talk: bool,
-    pub skill_point: bool,
+    pub skill_point: i32,
     pub class_change_job: Option<&'static JobData>,
     pub class_change_item: Option<&'static ItemData>,
     pub class_change_weapon_mask: Option<&'static WeaponMask>,

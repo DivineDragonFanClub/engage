@@ -40,7 +40,7 @@ impl HubSequence {
     
     pub fn get_current_access_data(&self) -> &mut HubAccessManager { unsafe { hub_get_access_data(self, None)}}
     pub fn get_player_controller() -> Option<&'static HubPlayerController> { unsafe { hub_sequence_get_player_controller(None)}}
-    pub fn get_locator_group(&self) -> &'static mut HubLocatorGroup { unsafe { hub_get_locator_group(self, None)}}
+    pub fn get_locator_group(&self) -> Option<&'static mut HubLocatorGroup> { unsafe { hub_get_locator_group(self, None)}}
 }
 
 
@@ -58,5 +58,5 @@ fn hub_sequence_get_player_controller(method_info: OptionalMethod) -> Option<&'s
 fn hub_is_exist_instance(method_info: OptionalMethod) -> bool;
 
 #[unity::from_offset("App", "HubSequence", "get_LocatorGroup")]
-fn hub_get_locator_group(this: &HubSequence, method_info: OptionalMethod) -> &'static mut HubLocatorGroup;
+fn hub_get_locator_group(this: &HubSequence, method_info: OptionalMethod) -> Option<&'static mut HubLocatorGroup>;
 

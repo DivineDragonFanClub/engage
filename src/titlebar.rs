@@ -2,6 +2,22 @@
 
 use unity::prelude::*;
 
+#[repr(i32)]
+#[derive(PartialEq, Clone, Copy)]
+pub enum TitleBarFooterType{
+    Gold = 1,
+    PieceOfBond = 2,
+    Refine = 4,
+    RefineGod = 8,
+    Proof = 16,
+    RelayTicket = 32,
+    None = 0,
+    GoldAndBond = 3,
+    GoldAndRefine = 5,
+    GoldAndBondAndRefine = 7,
+    GoldAndBondAndRelayTicket = 35,
+}
+
 #[repr(C)]
 #[unity::class("App", "TitleBar")]
 pub struct TitleBar { }
@@ -34,6 +50,9 @@ impl TitleBar {
     pub fn show_footer() {
         unsafe { titlebar_show_footer(Self::get_instance(), None); }
     }
+    pub fn open_footer(ty: TitleBarFooterType) {
+        unsafe { titlebar_open_footer(Self::get_instance(), ty, None); }
+    }
 }
 
 #[unity::from_offset("App", "TitleBar", "OpenHeader")]
@@ -53,3 +72,6 @@ fn titlebar_hide_footer(this: &'static TitleBar, method_info: OptionalMethod);
 
 #[unity::from_offset("App", "TitleBar", "ShowFooter")]
 fn titlebar_show_footer(this: &'static TitleBar, method_info: OptionalMethod);
+
+#[unity::from_offset("App", "TitleBar", "OpenFooter")]
+fn titlebar_open_footer(this: &'static TitleBar, ty: TitleBarFooterType, method_info: OptionalMethod);

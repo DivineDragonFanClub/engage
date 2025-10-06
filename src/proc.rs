@@ -6,7 +6,10 @@ pub mod desc;
 use desc::*;
 
 pub mod inst;
+pub mod hash;
+
 pub use inst::*;
+pub use hash::*;
 
 #[repr(C)]
 pub struct Proc;

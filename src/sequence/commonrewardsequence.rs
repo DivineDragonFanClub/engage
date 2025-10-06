@@ -20,8 +20,14 @@ impl CommonRewardSequence {
     pub fn create_bind<P: Bindable>(parent: &P, exp_list: &Dictionary<&Unit, i32>, item_list: &List<ItemData>, money: i32, is_bg: bool) {
         unsafe { create_common_reward_bind(parent, exp_list, item_list, money, is_bg, None); }
     }
+    pub fn create_bind_for_well<P: Bindable>(parent: &P, items: &List<ItemData>, title: &Il2CppString) {
+        unsafe { item_gain_create_bind(parent, items, title, None) }
+    }
 }
 
 
 #[skyline::from_offset(0x02532f40)]
 fn create_common_reward_bind<P: Bindable>(proc: &P, exp: &Dictionary<&Unit, i32>, items: &List<ItemData>, money: i32, is_bg: bool, method_info: OptionalMethod);
+
+#[skyline::from_offset(0x02533950)]
+fn item_gain_create_bind<P: Bindable>(parent: &P, item_list: &List<ItemData>, title: &Il2CppString, _method_info: OptionalMethod);

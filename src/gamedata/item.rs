@@ -96,6 +96,7 @@ impl RewardData {
 }
 
 impl ItemData {
+	pub fn get_kind_name(kind: i32) -> &'static Il2CppString { unsafe { itemdata_get_kind_name(kind, None)}}
 	pub fn get_kind(&self) -> i32 { unsafe { itemdata_get_kind(self, None)}}
 	pub fn get_weapon_level(&self) -> i32 { unsafe { itemdata_get_weapon_level(self, None)}}
 	pub fn get_equip_skills(&self) -> &'static SkillArray { unsafe { item_get_equip_skills(self, None)}}
@@ -210,6 +211,9 @@ fn item_data_get_inventory(this: &ItemData, method_info: OptionalMethod) -> i32;
 
 #[skyline::from_offset(0x027b1c30)]
 fn item_data_add_inventory(this: &ItemData, count: i32, method_info: OptionalMethod);
+
+#[unity::from_offset("App", "ItemData", "GetKindName")] 
+fn itemdata_get_kind_name(kind: i32, method_info: OptionalMethod) -> &'static Il2CppString;
 
 //UnitItemList
 #[unity::from_offset("App", "UnitItemList", "get_Count")]

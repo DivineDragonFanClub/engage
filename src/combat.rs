@@ -1,6 +1,14 @@
 //! Types and methods to query the state of [`Unit`](crate::gamedata::unit::Unit)s in battle.
 
+use unity::engine::Color;
+use unity::il2cpp::object::Array;
 use unity::prelude::*;
+use unity::system::List;
+use crate::battle::BattleCalculator;
+use crate::force::Force;
+use crate::gamedata::{JobData, PersonData};
+use crate::gamedata::assettable::{AssetTableResult, AssetTableSound};
+use crate::gamedata::item::UnitItem;
 use crate::gamedata::unit::Unit;
 
 #[unity::class("Combat", "Character")]
@@ -116,11 +124,86 @@ bitflags::bitflags! {
 
 #[unity::class("Combat", "CharacterGameStatus")]
 pub struct CharacterGameStatus {
-    appearance: [u8; 0x18],
-    pub unit: &'static mut Unit,
+    pub appearance: &'static mut CharacterAppearance,
+    pub emblem_identifier: Option<&'static Il2CppString>,
+    pub side: i32,
+    pub stun: bool,
+    pub unit: Option<&'static Unit>,
+    pub person: Option<&'static PersonData>,
+    pub job: Option<&'static JobData>,
+    pub force: Option<&'static Force>,
+    pub name: Option<&'static Il2CppString>,
+    pub max_hp: i32,
+    pub hp: i32,
+    pub max_stun: i32,
+    pub stun_value: i32,
+    pub engage_count: i32,
+    pub map_x: i32,
+    pub map_y: i32,
+    pub battle_x: i32,
+    pub battle_y: i32,
+    pub weapon: Option<&'static UnitItem>,
     // too lazy to do the rest for now
 }
+impl CharacterGameStatus {
+    pub fn import(&self, side: i32, calc: &BattleCalculator, side_type: i32, map_distance: i32) {
+        unsafe {
+            combat_character_game_status_import(self, side, calc, side_type, map_distance, None);
+        }
+    }
+}
 
+#[unity::class("Combat", "CombatRecord")]
+pub struct CombatRecord {
+    pub is_enemy_attack: i32,
+    pub combat_style: i32,
+    pub calculator: &'static BattleCalculator,
+    pub sim_calculator: &'static BattleCalculator,
+    pub game_status: &'static mut Array<&'static mut CharacterGameStatus>,
+    pub chain_atk: &'static mut Array<&'static mut CharacterGameStatus>,
+    pub dragonize: &'static mut Array<&'static mut CharacterGameStatus>,
+    location: *const u8,
+    passive_skills: *const u8,
+    phase_array: &'static Array<&'static Phase>,
+    pub map_distance: i32,
+    pub chain_attack_count: i32,
+    pub finish_style: i32,
+}
+
+#[unity::class("Combat", "CharacterAppearance")]
+pub struct CharacterAppearance {
+    pub assets: &'static Array<CharacterAssetT>,
+    pub animset_names: &'static List<Il2CppString>,
+    pub acc_target: &'static Array<&'static Il2CppString>,
+    pub mask_color_100: Color,
+    pub mask_color_075: Color,
+    pub mask_color_050: Color,
+    pub mask_color_025: Color,
+    pub skin_color: Color,
+    pub grad_color: Color,
+    pub hair_color: Color,
+    pub toon_shadow_color: Color,
+    pub sound: AssetTableSound,
+    proporion: *const u8,
+    animset: *const u8,
+    weapon_style: i32,
+}
+
+impl CharacterAppearance {
+    pub fn create_from_result(result: &AssetTableResult, distance: i32) -> &'static mut CharacterAppearance {
+        unsafe {
+            create_from_result(result, distance, None)
+        }
+    }
+}
+
+#[unity::class("Combat", "CharacterAsset")]
+pub struct CharacterAssetT {
+    pub asset_type: i32,
+    pub name: Option<&'static Il2CppString>,
+    pub addr_path: Option<&'static Il2CppString>,
+    //...
+}
 #[repr(C)]
 #[derive(Debug)]
 /// Used by the game to determine the sound effects to play during damage for zoomed-in combat.
@@ -250,3 +333,9 @@ pub fn side_is_master(i: i32, method_info: OptionalMethod) -> bool;
 // Combat.Side$$IsChainAtk	710247cb00	bool Combat.Side$$IsChainAtk(int32_t i, MethodInfo * method)	16
 #[unity::from_offset("Combat", "Side", "IsChainAtk")]
 pub fn side_is_chain_atk(i: i32, method_info: OptionalMethod) -> bool;
+
+#[skyline::from_offset(0x027e0880)]
+fn combat_character_game_status_import(this:&CharacterGameStatus, side: i32, calc: &BattleCalculator, side_type: i32, distance: i32, method_info: OptionalMethod);
+
+#[skyline::from_offset(0x02b0ed80)]
+fn create_from_result(result: &AssetTableResult, map_distance: i32, method_info: OptionalMethod) -> &'static mut CharacterAppearance;

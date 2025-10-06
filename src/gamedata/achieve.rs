@@ -1,5 +1,5 @@
 use unity::prelude::*;
-use super::{Gamedata, StructBaseFields, StructDataFields};
+use super::{Gamedata, PersonData, StructBaseFields, StructDataFields};
 
 #[repr(i32)]
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -18,8 +18,8 @@ pub struct AchieveData {
     pub category: i32,
     pub kind: i32,
     pub count: i32,
-    arg: &'static Il2CppString,
-    count_unit: &'static Il2CppString,
+    pub arg: &'static Il2CppString,
+    pub count_unit: &'static Il2CppString,
     pub kizuna_rewards: i32,
     pub chapter: &'static Il2CppString,
     pub flagname: &'static Il2CppString,
@@ -43,6 +43,8 @@ impl AchieveData {
     }
     pub fn get_status(&self) -> AchieveDataStatus {  unsafe { achieve_status(self, None) } }
     pub fn get_reward(&self) -> i32 { unsafe { achieve_reward(self, None)}}
+
+    pub fn set_clear_reliance(person: &PersonData) { unsafe { set_clear_reliance(person, None); }}
 }
 impl Gamedata for AchieveData {}
 
@@ -75,3 +77,6 @@ pub fn add_b_reliance_count(method_info: OptionalMethod);
 
 #[unity::from_offset("App", "AchieveData","AddCountRelianceS")]
 pub fn add_s_reliance_count(method_info: OptionalMethod);
+
+#[skyline::from_offset(0x027c8910)]
+pub fn set_clear_reliance(this: &PersonData, method_info: OptionalMethod);

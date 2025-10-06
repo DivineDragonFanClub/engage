@@ -1,3 +1,5 @@
+use num_derive::FromPrimitive;
+use num_derive::ToPrimitive;
 use unity::prelude::*;
 
 use crate::proc::{Bindable, ProcInstFields};
@@ -22,7 +24,7 @@ pub struct MainSequenceStaticFields {
 }
 
 #[repr(i32)]
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, FromPrimitive, ToPrimitive)]
 pub enum MainSequenceLabel {
     None = 0,
     Startup = 1,

@@ -38,6 +38,8 @@ pub fn get_string(this: &GameVariable, key: &Il2CppString, method_info: Optional
 #[unity::from_offset("App", "GameVariable", "SetString")]
 pub fn set_string(this: &GameVariable, key: &Il2CppString, value: &Il2CppString, method_info: OptionalMethod);
 
+#[unity::from_offset("App", "GameVariable", "Remove")]
+fn game_variable_remove(this: &GameVariable, key: &Il2CppString, method_info: OptionalMethod) -> bool;
 pub struct GameVariableManager;
 
 impl GameVariableManager {
@@ -108,7 +110,9 @@ impl GameVariableManager {
     pub fn is_string<'a>(key: impl Into<&'a Il2CppString>) -> bool { 
         unsafe { gamevariable_is_string(GameUserData::get_variable(), key.into(), None) } 
     }
-
+    pub fn remove<'a>(key: impl Into<&'a Il2CppString>) -> bool {
+        unsafe { game_variable_remove(GameUserData::get_variable(), key.into().into(), None) }
+    }
     
 }
 

@@ -36,7 +36,6 @@ impl Gamedata for HubFacilityData { }
 
 impl HubFacilityData {
     pub fn is_complete(&self) -> bool { unsafe { hubdatafacility_iscomplete(self, None) } }
-
     pub fn set_first_access_flag(&self) { unsafe { hubdatafacility_set_first_access_flag(self, None); } }
 }
 
@@ -57,23 +56,35 @@ pub struct JobData {
     pub unit_icon_id_f : Option<&'static Il2CppString>, //0x38
     pub unit_icon_weapon_id: &'static Il2CppString, //0x40
     pub rank: i32,  //0x48
-    __ : i32,   ///0x4c
-    pub style_name: &'static Il2CppString, //0x50
+    pub style_name: Option<&'static Il2CppString>, //0x50
     pub move_type: i32, //0x58
-    pub step_frame: i32,
-    pub max_level: u8,
-    pub internal_level: i8,
-    pub sort: u16,
-    pub flag: &'static JobDataFlag,
-    cc_item: &'static Array<&'static Il2CppString>,
-    unique_item: &'static Array<&'static Il2CppString>,
-    style: i32,
-    pub weapons: &'static mut Array<i8>,
-    pub max_weapon_level: &'static mut Array<&'static Il2CppString>,
-    pub weapon_levels: &'static mut Array<i32>,
-    junk: [u8; 0x60],
+    pub step_frame: i32,    // 0x5c
+    pub max_level: u8,  //0x60
+    pub internal_level: i8, //0x61
+    pub sort: u16,  //0x62
+    pub flag: &'static JobDataFlag, //0x68
+    cc_item: &'static Array<&'static Il2CppString>, //0x70
+    unique_item: &'static Array<&'static Il2CppString>, //0x78
+    pub style: i32, //0x80
+    pub weapons: &'static mut Array<i8>,    // 0x88
+    pub max_weapon_level: &'static mut Array<&'static Il2CppString>,    //0x90
+    pub weapon_levels: &'static mut Array<i32>, //0x98
+    pub weapon_mask_plus: &'static WeaponMask,  //0xa0
+    pub high_jobs: &'static Array<&'static Il2CppString>,   //0xa8
+    pub low_job: Option<&'static Il2CppString>, //0xb0
+    pub base: &'static Capability,  //0xb8
+    pub limit: &'static Capability, //0xc0
+    pub base_grow: &'static CapabilitySbyte,    //0xc8
+    pub diff_grow: &'static CapabilitySbyte,    //0xd0
+    pub diff_grow_normal: &'static CapabilitySbyte, //0xd8
+    pub diff_grow_hard: &'static CapabilitySbyte,   //0xe0
+    pub diff_grow_lunatic: &'static CapabilitySbyte,    //0xe8
+    pub short_name: &'static Il2CppString,  //0xf0
+    pub skills: Option<&'static Array<&'static Il2CppString>>,  //0xf8
     pub learn_skill: Option<&'static Il2CppString>, // 0x100
     pub lunatic_skill: Option<&'static Il2CppString>, //0x108
+    pub attrs: i32, //0x110
+    pub mask_skills: &'static SkillArray,   //0x118
 }
 impl Gamedata for JobData { }
 
@@ -93,10 +104,53 @@ pub struct PersonData {
     pub birth_month: u8,
     pub birth_day: u8,
     pub gender: i32,
-    // take care about the padding when adding stuff above it
-    _padding: [u8; 0x14C - 0x70],
+    pub level: i8,
+    pub internal_level: i8,
+    pub auto_grow_offset_n: i8,
+    pub auto_grow_offset_h: i8,
+    pub auto_grow_offset_l: i8,
+    pub asset_force: i32,
+    pub support_category: Option<&'static Il2CppString>,
+    pub skill_point: i32,
+    pub bmap_size: u8,
+    pub items: Option<&'static Array<&'static Il2CppString>>,
+    pub drop_item: Option<&'static Il2CppString>,
+    pub drop_ratio: f32,
+    pub flag: &'static PersonDataFlag,
+    pub aptitude: &'static WeaponMask,
+    pub sub_aptitude: &'static WeaponMask,
+    pub offset_n: &'static CapabilitySbyte,
+    pub offset_h: &'static CapabilitySbyte,
+    pub offset_l: &'static CapabilitySbyte,
+    pub limit: &'static CapabilitySbyte,
+    pub grow: &'static Capability,
+    pub common_sids: Option<&'static Array<&'static Il2CppString>>,
+    pub normal_sids: Option<&'static Array<&'static Il2CppString>>,
+    pub hard_sids: Option<&'static Array<&'static Il2CppString>>,
+    pub lunatic_sids: Option<&'static Array<&'static Il2CppString>>,
+    pub engage_sid: Option<&'static Il2CppString>,
+    pub talk_pause_delay_min: f32,
+    pub talk_pause_delay_max: f32,
+    pub talk_pause_speed: f32,
+    pub combat_bgm: Option<&'static Il2CppString>,
+    pub ascii_name: Option<&'static Il2CppString>,
+    pub link_god: Option<&'static GodData>,
+    pub attrs: i32,
+    pub exist_die_cid: Option<&'static Il2CppString>,
+    pub exist_die_timing: i32,
     pub hometown: i32,
-    // ...
+    pub net_ranking_index: u8,
+    pub not_lvl_up_talk_pids: Option<&'static Array<&'static Il2CppString>>,
+    pub summon_color: i32,
+    pub summon_rank: i32,
+    pub summon_god: Option<&'static Il2CppString>,
+    pub summon_rate: i32,
+    pub common_skills: &'static SkillArray,
+    pub normal_skills: &'static SkillArray,
+    pub hard_skills: &'static SkillArray,
+    pub lunatic_skills: &'static SkillArray,
+    pub engage_skill: Option<&'static SkillData>,
+    pub face_data: &'static PersonData,
 }
 impl Gamedata for PersonData { }
 
@@ -138,9 +192,9 @@ pub struct GodData {
     pub engrave_critical: i8,
     pub engrave_avoid: i8,
     pub engrave_secure: i8,
-    pub syncho_enhance: &'static CapabilitySbyte,
-    main_data: &'static GodData,
-    change_data: Option<&'static Array<&'static GodData>>,
+    pub syncho_enhance: &'static mut CapabilitySbyte,
+    pub main_data: &'static GodData,
+    pub change_data: &'static mut Array<&'static mut GodData>,
     change_index: i32,
     pub ascii_name: Option<&'static Il2CppString>,
     pub flag: &'static WeaponMask,
@@ -175,6 +229,10 @@ impl<T> Deref for StructListFields<T> {
     }
 }
 use std::ops::DerefMut;
+use unity::system::Dictionary;
+use crate::gamedata::person::{Capability, PersonDataFlag};
+use crate::gamedata::skill::{SkillArray, SkillData};
+
 impl<T> DerefMut for StructListFields<T> {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.list
@@ -228,15 +286,20 @@ pub struct WeaponMask {
 
 pub trait Gamedata: Il2CppClassData + Sized {
     fn ctor(&self) {
-        let mut method = Self::class()._1.parent.get_methods().iter().find(|method| method.get_name() == Some(String::from(".ctor")));
+        // change back if needed
+        let mut method = Self::class().get_methods().iter().find(|method| method.get_name() == Some(String::from(".ctor")));
         if method.is_none() { return; }
         let ctor = unsafe {
             std::mem::transmute::<_, extern "C" fn(&Self, &MethodInfo) -> ()>(
                 method.unwrap().method_ptr,
             )
         };
-    
         ctor(self, method.unwrap());
+    }
+    fn new() -> &'static mut Self {
+        let mut instance = Self::instantiate().unwrap();
+        instance.ctor();
+        instance
     }
     fn get<'a>(name: impl Into<&'a Il2CppString>) -> Option<&'static Self> {
         let mut method = Self::class()._1.parent.get_methods().iter().find(|method| method.get_name() == Some(String::from("Get")));
@@ -452,6 +515,20 @@ pub trait Gamedata: Il2CppClassData + Sized {
         };
         let get = unsafe {
             std::mem::transmute::<_, extern "C" fn(i32, &MethodInfo) -> Option<&'static Self>>(
+                method.method_ptr,
+            )
+        };
+        get(hash, method)
+    }
+    fn try_get_hash_mut(hash: i32) -> Option<&'static mut Self> {
+        let mut method = if Self::class()._1.parent.get_methods().len() < 11 {
+            Self::class()._1.parent._1.parent.get_methods()[10]
+        }
+        else {
+            Self::class()._1.parent.get_methods()[10]
+        };
+        let get = unsafe {
+            std::mem::transmute::<_, extern "C" fn(i32, &MethodInfo) -> Option<&'static mut Self>>(
                 method.method_ptr,
             )
         };

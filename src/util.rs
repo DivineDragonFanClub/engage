@@ -1,4 +1,4 @@
-use crate::singleton::{SingletonClass, SingletonMonoBehaviour, SingletonProcInst};
+use crate::singleton::*;
 use unity::{il2cpp::class::Il2CppRGCTXData, prelude::*};
 
 /// Utility function to get the instance of a singleton class.
@@ -13,6 +13,18 @@ pub fn get_instance<T: unity::prelude::Il2CppClassData>() -> &'static mut T {
         )
     };
 
+    get_instance(Some(&pointer[5]))
+}
+pub fn try_get_instance<T: unity::prelude::Il2CppClassData>() -> Option<&'static mut T> {
+    let idk = get_generic_class!(SingletonClass<T>).unwrap();
+    let pointer = unsafe {
+        &*(idk.rgctx_data as *const Il2CppRGCTXData as *const u8 as *const [&'static MethodInfo; 6])
+    };
+    let get_instance = unsafe {
+        std::mem::transmute::<_, extern "C" fn(OptionalMethod) -> Option<&'static mut T>>(
+            pointer[5].method_ptr,
+        )
+    };
     get_instance(Some(&pointer[5]))
 }
 
@@ -44,4 +56,9 @@ pub fn get_singleton_proc_instance<T: unity::prelude::Il2CppClassData>() -> Opti
 
         func(Some(method))
     }).unwrap()
+}
+
+pub fn get_singleton_scriptable_object<T: unity::prelude::Il2CppClassData>() -> &'static mut Option<&'static mut T> {
+    let idk = get_generic_class!(SingletonScriptableObject<T>).unwrap();
+    idk.get_static_fields_mut::<Option<&mut T>>()
 }

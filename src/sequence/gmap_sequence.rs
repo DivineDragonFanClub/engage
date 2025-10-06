@@ -1,3 +1,4 @@
+use crate::proc::ProcInstFields;
 use crate::{gmapspotmanager::gmap_spot_manager_open_next_chapters, proc::Bindable};
 use crate::gamedata::dispos::ChapterData;
 use unity::{system::List, prelude::*};
@@ -5,7 +6,11 @@ use unity::{system::List, prelude::*};
 #[repr(C)]
 #[unity::class("App", "GmapSequence")]
 pub struct GmapSequence {
-    parent: [u8; 0x78], //ProcSceneSequence
+    pub proc: ProcInstFields,
+    pub is_resume: bool,
+    pub is_loaded: bool,
+    pub scene_name: Option<&'static Il2CppString>,
+    pub scene_mode: i32,
     pub now_spot: &'static GmapSpot,
     pub changing_spot: &'static GmapSpot,
     changing_path: *const u8,
