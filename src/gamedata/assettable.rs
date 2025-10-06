@@ -228,6 +228,82 @@ impl AssetTableAccessoryList {
         }
     }
 }
+// non reference list
+#[repr(C)]
+#[unity::class("System.Collections.Generic", "List`1")]
+pub struct SimpleList<T: 'static> {
+    pub items: &'static mut Il2CppArray<T>,
+    pub size: u32,
+    version: u32,
+    sync_root: *const u8,
+}
+
+impl<T: 'static> Deref for SimpleListFields<T> {
+    type Target = [T];
+
+    fn deref(&self) -> &Self::Target {
+        unsafe { std::slice::from_raw_parts(self.items.m_items.as_ptr(), self.size as usize) }
+    }
+}
+
+impl<T: 'static> DerefMut for SimpleListFields<T> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        unsafe { std::slice::from_raw_parts_mut(self.items.m_items.as_mut_ptr(), self.size as usize) }
+
+    }
+}
+
+impl<T> SimpleList<T> {
+    pub fn resize(&mut self, length: usize) {
+        if self.items.len() != length {
+            let new_array = unity::il2cpp::object::Il2CppArray::new_specific(self.items.get_class(), length as _).unwrap();
+            new_array[..self.items.len()].swap_with_slice(self.items);
+            self.items = new_array;
+        }
+    }
+
+    pub fn add(&mut self, element: T) {
+        let method = self.get_class()
+            .get_methods()
+            .iter()
+            .find(|method| method.get_name() == Some(String::from("Add")))
+            .unwrap();
+
+        let add = unsafe {
+            std::mem::transmute::<_, extern "C" fn(&mut Self, T, &MethodInfo)>(
+                method.method_ptr,
+            )
+        };
+
+        add(self, element, method);
+    }
+    pub fn insert(&mut self, index: i32, element: T) {
+        let method = self.get_class()
+            .get_methods()
+            .iter()
+            .find(|method| method.get_name() == Some(String::from("Insert")))
+            .unwrap();
+
+        let add = unsafe { std::mem::transmute::<_, extern "C" fn(&mut Self, i32, T, &MethodInfo)>(method.method_ptr)  };
+
+        add(self, index, element, method);
+    }
+    pub fn len(&self) -> usize { self.size as _ }
+
+    pub fn capacity(&self) -> usize { self.items.len() as _ }
+
+    pub fn clear(&mut self) {
+        let method = self.get_class().get_virtual_method("Clear").unwrap();
+
+        let clear = unsafe { std::mem::transmute::<_, extern "C" fn(&mut Self, &MethodInfo)>(method.method_info.method_ptr) };
+        clear(self, method.method_info);
+    }
+    pub fn remove(&mut self, item: T) -> bool {
+        let method = self.get_class().get_virtual_method("Remove").unwrap();
+        let remove = unsafe { std::mem::transmute::<_, extern "C" fn(&mut Self, T, &MethodInfo) -> bool >(method.method_info.method_ptr) };
+        remove(self, item, method.method_info)
+    }
+}
 
 #[unity::from_offset("App","AssetTable", "set_Conditions")]
 fn asset_table_set_conditions(this: &AssetTable, value: &Array<&Il2CppString>, method_info: OptionalMethod);

@@ -3,6 +3,12 @@ use unity::prelude::*;
 use crate::proc::ProcInst;
 
 use super::{BasicMenu, BasicMenuItemAttribute, BasicMenuResult};
+
+pub enum ConfigMenuKind {
+    Switch,
+    Gauge,
+    Command,
+}
 #[repr(C)]
 #[unity::class("", "ConfigBasicMenuItem")]
 pub struct ConfigBasicMenuItem {
@@ -30,7 +36,30 @@ impl ConfigBasicMenuItem {
         unsafe { configbasicmenuitem_ctor(item, None) };
         item
     }
+    pub fn ctor(&self) { unsafe { configbasicmenuitem_ctor(&self, None) }; }
 
+    pub fn from_class(klass: &Il2CppClass, title: impl AsRef<str>, kind: ConfigMenuKind) -> &'static mut ConfigBasicMenuItem {
+        let item: &mut ConfigBasicMenuItem = il2cpp::instantiate_class(klass).unwrap();
+        item.ctor();
+
+        match kind {
+            ConfigMenuKind::Switch => {
+                item.config_method = 0;
+                item.is_command_icon = false;
+            }
+            ConfigMenuKind::Gauge => {
+                item.is_command_icon = false;
+                item.config_method = 1;
+            }
+            ConfigMenuKind::Command => {
+                item.config_method = 0;
+                item.is_command_icon = true;
+                item.is_arrow = false;
+            }
+        }
+        item.title_text = title.into();
+        item
+    }
     pub fn new_switch<Methods: ConfigBasicMenuItemSwitchMethods>(title: impl AsRef<str>) -> &'static mut ConfigBasicMenuItem {
         let item = Self::new();
 

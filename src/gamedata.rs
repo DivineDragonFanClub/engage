@@ -36,7 +36,6 @@ impl Gamedata for HubFacilityData { }
 
 impl HubFacilityData {
     pub fn is_complete(&self) -> bool { unsafe { hubdatafacility_iscomplete(self, None) } }
-
     pub fn set_first_access_flag(&self) { unsafe { hubdatafacility_set_first_access_flag(self, None); } }
 }
 
@@ -81,7 +80,7 @@ pub struct JobData {
     pub diff_grow_hard: &'static CapabilitySbyte,   //0xe0
     pub diff_grow_lunatic: &'static CapabilitySbyte,    //0xe8
     pub short_name: &'static Il2CppString,  //0xf0
-    pub skills: &'static Array<&'static Il2CppString>,  //0xf8
+    pub skills: Option<&'static Array<&'static Il2CppString>>,  //0xf8
     pub learn_skill: Option<&'static Il2CppString>, // 0x100
     pub lunatic_skill: Option<&'static Il2CppString>, //0x108
     pub attrs: i32, //0x110
@@ -152,8 +151,6 @@ pub struct PersonData {
     pub lunatic_skills: &'static SkillArray,
     pub engage_skill: Option<&'static SkillData>,
     pub face_data: &'static PersonData,
-
-    // ...
 }
 impl Gamedata for PersonData { }
 
@@ -232,7 +229,6 @@ impl<T> Deref for StructListFields<T> {
     }
 }
 use std::ops::DerefMut;
-use unity::il2cpp::class::Il2CppRGCTXData;
 use unity::system::Dictionary;
 use crate::gamedata::person::{Capability, PersonDataFlag};
 use crate::gamedata::skill::{SkillArray, SkillData};
@@ -288,23 +284,6 @@ pub struct WeaponMask {
     pub value: i32,
 }
 
-#[unity::class("App", "StructTemplate`1")]
-pub struct StructTemplate<T: 'static> {
-    pub parent: StructBaseFields,
-    phantom: std::marker::PhantomData<T>,
-}
-#[repr(C)]
-pub struct StructTemplateStaticFields {
-    header: *const (),
-    pub dictionary: &'static StructDictionary,
-}
-#[unity::class("App", "StructDictionary`1")]
-pub struct StructDictionary {
-    pub ket_list: &'static List<Il2CppString>,
-    pub index_key: &'static Dictionary<'static, &'static Il2CppString, i32>,
-    pub hash_key: &'static Dictionary<'static, i32, i32>,
-}
-
 pub trait Gamedata: Il2CppClassData + Sized {
     fn ctor(&self) {
         // change back if needed
@@ -321,27 +300,6 @@ pub trait Gamedata: Il2CppClassData + Sized {
         let mut instance = Self::instantiate().unwrap();
         instance.ctor();
         instance
-    }
-    fn add(element: &'static mut Self, key: &Il2CppString, index: i32) -> bool {
-        element.on_build();
-        element.on_completed();
-        Self::get_list_mut().unwrap().add(element);
-        let mut class = Self::class()._1.parent;
-        for _ in 0..2 {
-            if class.get_name().contains("StructData") {    // SkillData's first parent class is StructCalculator not StructData
-                let struct_template = unsafe { &*(class.rgctx_data as *const Il2CppRGCTXData as *const u8 as *const [&'static Il2CppClass; 2]) }[1];
-                let sf = struct_template.get_static_fields::<StructTemplateStaticFields>();
-                if let Some(method) = sf.dictionary.get_class().get_methods().iter().
-                    find(|method| method.get_name() == Some(String::from("Add")) && method.parameters_count == 2)
-                {
-                    let add = unsafe { std::mem::transmute::<_, fn(&StructDictionary, key: &Il2CppString, index: i32, &MethodInfo) -> ()>(method.method_ptr) };
-                    add(sf.dictionary, key, index, method);
-                    return true;
-                }
-            }
-            else { class = class._1.parent; }
-        }
-        false
     }
     fn get<'a>(name: impl Into<&'a Il2CppString>) -> Option<&'static Self> {
         let mut method = Self::class()._1.parent.get_methods().iter().find(|method| method.get_name() == Some(String::from("Get")));

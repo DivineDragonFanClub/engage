@@ -16,6 +16,9 @@ impl Gamedata for BattleStyles {}
 
 impl BattleStyles{
     pub fn get_style(name: Option<&Il2CppString>) -> i32 { unsafe { battle_style_get_style(name, None) } }
+    pub fn get_skills(style: i32) -> Option<&'static Array<&'static Il2CppString>>{
+        unsafe { battle_style_get_skills(style, None) }
+    }
 }
 
 #[unity::class("App", "JobDataFlag")]
@@ -173,3 +176,6 @@ fn job_get_weapon_mask(this: &JobData, weapon_mask: &WeaponMask, select: &Weapon
 
 #[unity::from_offset("App", "BattleStyle", "GetStyle")]
 fn battle_style_get_style(name: Option<&Il2CppString>, method_info: OptionalMethod) -> i32;
+
+#[unity::from_offset("App", "BattleStyle", "GetSkills")]
+fn battle_style_get_skills(style: i32, method_info: OptionalMethod) -> Option<&'static Array<&'static Il2CppString>>;

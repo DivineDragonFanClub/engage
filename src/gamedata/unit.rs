@@ -73,18 +73,16 @@ extern "C" fn unitaccessory_serialize(this: &UnitAccessory, stream: &mut Stream,
 extern "C" fn unitaccessory_deserialize(this: &mut UnitAccessory, stream: &Stream, method_info: OptionalMethod);
 
 impl UnitAccessory {
-    pub fn serialize(&self, stream: &mut Stream) {
-        unsafe { unitaccessory_serialize(self, stream, None) };
-    }
-
-    pub fn deserialize(&mut self, stream: &Stream) {
-        unsafe { unitaccessory_deserialize(self, stream, None) }
-    }
+    pub fn serialize(&self, stream: &mut Stream) { unsafe { unitaccessory_serialize(self, stream, None) }; }
+    pub fn deserialize(&mut self, stream: &Stream) { unsafe { unitaccessory_deserialize(self, stream, None) } }
 }
 
 #[unity::class("App", "UnitAccessoryList")]
 pub struct UnitAccessoryList {
     pub unit_accessory_array: &'static mut Il2CppArray<&'static mut UnitAccessory>
+}
+impl UnitAccessoryList {
+    pub fn get_count() -> i32 { unsafe { unitaccessorylist_get_count(0, None) } }
 }
 
 #[unity::class("App", "Unit")]
@@ -659,3 +657,6 @@ fn unitrecord_add(this: &UnitRecord, kinds: i32, value: i32, method_info: Option
 
 #[unity::from_offset("App", "UnitRecord", "GetDeadChapter")]
 fn unitrecord_get_dead_chapter(this: &UnitRecord, method_info: OptionalMethod) -> Option<&'static ChapterData>;
+
+#[unity::from_offset("App", "UnitAccessoryList", "get_Count")]
+fn unitaccessorylist_get_count(this: u64, method_info: OptionalMethod) -> i32;

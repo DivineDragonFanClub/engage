@@ -49,6 +49,13 @@ impl<T> BasicMenu<T> {
             close_anime_all(&self, method.method_info);
         });
     }
+    pub fn close_anime(&self) {
+        self.get_class().get_virtual_method("CloseAnime").map(|method| {
+            let close_anime_all =
+                unsafe { std::mem::transmute::<_, extern "C" fn(&BasicMenu<T>, &MethodInfo)>(method.method_info.method_ptr) };
+            close_anime_all(&self, method.method_info);
+        });
+    }
     pub fn open_anime_all(&self) {
         self.get_class().get_virtual_method("OpenAnimeAll").map(|method| {
             let close_anime_all =

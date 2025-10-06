@@ -30,6 +30,7 @@ pub struct MapMind {
 }
 
 impl MapMind {
+    pub fn try_get_instance() -> Option<&'static mut MapMind> { Some(Self::get_instance()) }
     pub fn get_instance() -> &'static mut MapMind {
         get_instance::<MapMind>()
     }
