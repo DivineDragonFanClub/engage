@@ -4,17 +4,35 @@ use super::{*, access::{HubAccess, HubAccessManager}, HubLocatorGroup};
 
 #[unity::class("App", "HubSequence")]
 pub struct HubSequence {
-    pub proc: ProcInstFields,
-    pub is_resume: bool,
-    pub m_is_loaded: bool,
-    //
+    proc: ProcInstFields,
+    is_resume: bool,
+    m_is_loaded: bool,
+    scene_name: &'static Il2CppString,
+    scene_mode: i32,
+    script_func_name: &'static Il2CppString,
+    fast_travel_id: &'static Il2CppString,
+    talk_access: &'static (),
+    is_background_bind: bool,
+    is_key_help: bool,
+    is_cave: bool,
+    pub scene_name_again: &'static Il2CppString,
+    start_name: &'static Il2CppString,
+    hub_root: &'static (),
+    hub_env: &'static (),
+    pub hub_locator: &'static mut HubLocatorGroup,
 }
+
 impl Bindable for HubSequence {}
 
 impl HubSequence {
     pub fn get_instance() -> &'static Self {
         let method = HubSequence::class()._1.parent._1.parent.get_methods().iter().find(|method| method.get_name() == Some(String::from("get_Instance")));
         let get_instance = unsafe { std::mem::transmute::<_, extern "C" fn(&MethodInfo) -> &'static HubSequence>( method.unwrap().method_ptr, ) };
+        get_instance(method.unwrap())
+    }
+    pub fn get_instance_mut() -> &'static mut Self {
+        let method = HubSequence::class()._1.parent._1.parent.get_methods().iter().find(|method| method.get_name() == Some(String::from("get_Instance")));
+        let get_instance = unsafe { std::mem::transmute::<_, extern "C" fn(&MethodInfo) -> &'static mut HubSequence>( method.unwrap().method_ptr, ) };
         get_instance(method.unwrap())
     }
     pub fn is_exist_instance() -> bool { unsafe { hub_is_exist_instance(None) }}

@@ -2,11 +2,14 @@
 
 use unity::prelude::*;
 
-use crate::{proc::ProcInst, script::DynValue};
+use crate::{proc::ProcInst, proc::ProcInstFields, script::DynValue};
 
 #[repr(C)]
 #[unity::class("App", "EventSequence")]
-pub struct EventSequence { }
+pub struct EventSequence {
+    pub proc: ProcInstFields,
+    
+}
 
 impl EventSequence {
     /// Note: the arguments are currently Option until more is figure out. They serve no purpose at the moment.
@@ -26,6 +29,14 @@ impl EventSequence {
 
 #[unity::from_offset("App", "EventSequence", "MapOpening")]
 fn eventsequence_mapopening(parent: &ProcInst, method_info: OptionalMethod);
+
+#[unity::from_offset("App", "EventSequence", "AddCoroutine")]
+pub fn eventsequence_addcoroutine(
+    this: &ProcInst,
+    func: &'static DynValue,
+    args: *const u8,
+    method_info: OptionalMethod,
+) -> &'static EventSequence;
 
 #[unity::from_offset("App", "EventSequence", "TryCreateBind")]
 fn eventsequence_trycreatebind(
