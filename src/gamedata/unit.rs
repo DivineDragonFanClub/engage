@@ -131,13 +131,18 @@ pub struct Unit {
     pub ring :Option<&'static UnitRing>,
     pub extra_sight :i32,
     pub move_distance :i32,
-	/// Testing doc comments
+	/// Contains every skill in the possession of the unit, used for filtering and lookups
     pub mask_skill : Option<&'static SkillArray>,
+	/// Contains inherited skills with a SP cost
     pub equip_skill :&'static mut SkillArray,
+	/// Any skill that is not inherited, personal skills and those learned from scripts go here
     pub private_skill :&'static SkillArray,
     pub receive_skill :&'static SkillArray,
     pub supported_skill :&'static SkillArray,
+	/// Skills learned from the inheritance menu
+	/// Can overlap with equip_skill if the skill is equipped on the unit
     pub equip_skill_pool :&'static SkillArray,
+	/// Points to the XML entry of the skill forr the unit's current classsss
     pub learned_job_skill :Option<&'static SkillData>,
     pub original_aptitude : &'static mut WeaponMask,
     pub aptitude : &'static mut WeaponMask,
