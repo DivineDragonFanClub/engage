@@ -1,6 +1,5 @@
 use unity::prelude::*;
 use unity::engine::Sprite;
-use unity::system::Dictionary;
 use crate::spriteatlasmanager::SpriteAtlasManager;
 
 #[unity::class("App", "GameIcon")]
@@ -13,6 +12,9 @@ impl GameIcon {
     }
     pub fn try_get_unit_icon_index<'a>(icon_name: impl Into<&'a Il2CppString>) -> Option<&'static mut Sprite> {
         unsafe { gameicon_tryget_unit_icon(icon_name.into(), None) }
+    }
+    pub fn try_get_skill<'a>(icon_name: impl Into<&'a Il2CppString>) -> Option<&'static mut Sprite> {
+        unsafe { gameicon_trygetskill(icon_name.into(), None) }
     }
 }
 
@@ -42,3 +44,6 @@ extern "C" fn gameicon_tryget_unit_icon(icon_name: &Il2CppString, method_info: O
 
 #[unity::from_offset("App", "GameIcon", "TryGetSystem")]
 extern "C" fn gameicon_trygetsystem(icon_name: &Il2CppString, method_info: OptionalMethod) -> Option<&'static mut Sprite>;
+
+#[unity::from_offset("App", "GameIcon", "TryGetSkill")]
+extern "C" fn gameicon_trygetskill(icon_name: &Il2CppString, method_info: OptionalMethod) -> Option<&'static mut Sprite>;

@@ -1,4 +1,4 @@
-pub use unity::{prelude::*, system::{List, Dictionary}, il2cpp::object::Array};
+pub use unity::{prelude::*, system::{List, Dictionary, Stack}, il2cpp::object::Array};
 use crate::gamedata::{*, item::ItemData, skill::SkillArray, WeaponMask};
 use super::GodData;
 
@@ -18,6 +18,7 @@ impl GodData {
     pub fn get_ascii_name(&self) -> Option<&'static Il2CppString> { unsafe { god_data_get_ascii(self, None) }}
     pub fn get_flag(&self) -> &'static mut WeaponMask { unsafe { god_data_get_flag(self, None)}}
     pub fn get_grow_table(&self) -> Option<&'static Il2CppString> { unsafe { god_data_get_grow_table(self, None)}}
+    pub fn get_link_god_data(&self) -> Option<&'static GodData> { unsafe { goddata_get_link_god_data(self, None)}}
     pub fn load() { unsafe { goddata_load(None); }}
     pub fn on_complete(&self) { unsafe{ god_data_on_complete(self, None); }}
 
@@ -31,6 +32,7 @@ impl GodData {
     pub fn set_engrave_weight(&self, value: i8) { unsafe{ goddata_set_engrave_weight(self, value, None); }}
     pub fn set_link_gid(&self, value: &Il2CppString) { unsafe { god_data_set_link_gid(self, value, None); }}
     pub fn set_link(&self, value: &Il2CppString) { unsafe { god_data_set_link(self, value, None); }}
+    pub fn set_main_data(&self, value: &GodData) { unsafe { god_data_set_main_data(self, value, None)}}
     pub fn set_ascii_name(&self, value: &Il2CppString) { unsafe { god_data_set_ascii(self, value, None); }}
     pub fn set_engrave(&self, index: i32, value: i8){
         match index {
@@ -98,6 +100,9 @@ impl GodGrowthData {
         };
         get_keys(level_list, key.into(), method)
     }
+    pub fn get_level_lists() -> &'static Dictionary<'static, &'static Il2CppString, &'static mut List<GodGrowthDataLevelData>> {
+        Self::class().get_static_fields::<GodGrowthDataStaticFields>().level_list
+    }
 }
 
 #[unity::class("App", "GodGrowthData.LevelData")]
@@ -105,7 +110,7 @@ pub struct GodGrowthDataLevelData {
     pub synchro_skills: &'static SkillArray,
     pub engaged_skills: &'static SkillArray,
     pub engage_skills: &'static SkillArray,
-    pub style_items: &'static GodGrowthDataStyleItems,
+    pub style_items: &'static mut GodGrowthDataStyleItems,
     pub aptitude: &'static mut WeaponMask,
     pub flags: &'static WeaponMask,
 }
@@ -119,7 +124,7 @@ pub struct GodDataStaticFields{
 
 #[unity::class("App", "GodGrowthData.StyleItems")]
 pub struct GodGrowthDataStyleItems {
-    pub items: &'static Array<&'static List<ItemData>>,
+    pub items: &'static mut Array<&'static mut List<ItemData>>,
     pub count: i32,
 }
 
@@ -130,24 +135,49 @@ impl GodGrowthDataStyleItems {
 }
 
 impl Deref for GodGrowthDataStyleItemsFields {
-    type Target = Array<&'static List<ItemData>>;
+    type Target = Array<&'static mut List<ItemData>>;
     fn deref(&self) -> &Self::Target {
         &self.items
     }
 }
+impl DerefMut for GodGrowthDataStyleItemsFields {
+    fn deref_mut(&mut self) -> &mut Array<&'static mut List<ItemData>> {
+        self.items
+    }
+}
+
 
 #[unity::class("App", "GodBond")]
 pub struct GodBond {
     pub god: &'static GodData,
     reliance_s: u64,
     pub pid: &'static Il2CppString,
-    pub level: u8,
-    __: u8,
+    pub level: u16,
     pub exp: u16,
+    __: i32,
+    inherit: *const u8,
+    talk: u64,
+    pub level_data: &'static GodGrowthDataLevelData,
 }
 impl GodBond {
     pub fn level_up(&self) { unsafe { level_up_bond(self, None);} }
 }
+
+#[unity::class("App", "GodBondHolder")]
+pub struct GodBondHolder {
+    parent: u128,
+    pub data: &'static GodData,
+    reliance_s: u64,
+    pub bonds: Option<&'static Dictionary<'static, &'static Il2CppString, GodBond>>,
+    pub pool : &'static Pool<GodBond>,
+}
+
+#[unity::class("App", "Pool")]
+pub struct Pool<T:'static> {
+    pub list: &'static mut List<T>,
+    pub stack: &'static mut Stack<T>,
+}
+
 
 #[skyline::from_offset(0x02b4dff0)]
 fn level_up_bond(this: &GodBond, method_info: OptionalMethod);
@@ -177,6 +207,9 @@ fn god_data_set_engage_link(this: &GodData, value: &Il2CppString, method_info: O
 
 #[unity::from_offset("App", "GodData", "set_LinkGid")]
 fn god_data_set_link_gid(this: &GodData, value: &Il2CppString, method_info: OptionalMethod);
+
+#[unity::from_offset("App", "GodData", "set_MainData")]
+fn god_data_set_main_data(this: &GodData,value: &GodData, method_info: OptionalMethod);
 
 #[unity::from_offset("App", "GodData", "get_LinkGid")]
 fn god_data_get_link_gid(this: &GodData, method_info: OptionalMethod) -> Option<&'static Il2CppString>;
@@ -228,6 +261,9 @@ fn goddata_set_engrave_secure(this: &GodData, value: i8, method_info: OptionalMe
 
 #[unity::from_offset("App","GodData","set_EngraveWeight")]
 fn goddata_set_engrave_weight(this: &GodData, value: i8, method_info: OptionalMethod);
+
+#[unity::from_offset("App","GodData","GetLinkGodData")]
+fn goddata_get_link_god_data(this: &GodData, method_info: OptionalMethod) -> Option<&'static GodData>;
 
 #[unity::from_offset("App","GodData","Load")]
 fn goddata_load(method_info: OptionalMethod);

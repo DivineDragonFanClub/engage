@@ -42,6 +42,11 @@ impl AsMut<ProcInstFields> for ArenaOrderSequence {
     }
 }
 
+impl ArenaOrderSequence {
+    pub fn create_bind<P: Bindable>(parent: &P) { unsafe { arena_order_create_bind(parent, None) } }
+    pub fn start_training(&self) { unsafe { arena_start_training(self, None) } }
+}
+
 impl AsRef<ProcInstFields> for ArenaOrderSequence {
     fn as_ref(&self) -> &ProcInstFields {
         &self.proc
@@ -63,3 +68,11 @@ impl ArenaCombatSequence {
 }
 #[unity::from_offset("Combat", "ArenaCombatSequence", ".ctor")]
 fn combatarena_ctor(this: &ArenaCombatSequence, calc: &BattleCalculator, sim_calc: &BattleCalculator, is_emblem: bool, is_special: bool, bond_exp: i32, method_info: OptionalMethod);
+
+#[unity::from_offset("App","ArenaOrderSequence", "CreateBind")]
+fn arena_order_create_bind<P: Bindable>(parent: &P, method_info: OptionalMethod);
+
+#[unity::from_offset("App", "ArenaOrderSequence", "StartTraining")]
+fn arena_start_training(this: &ArenaOrderSequence,  method_info: OptionalMethod);
+
+

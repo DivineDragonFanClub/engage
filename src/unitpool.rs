@@ -24,6 +24,7 @@ impl UnitPool {
     pub fn get_from_person_force_mask(person: &PersonData, mask: i32) -> Option<&'static mut Unit> {
         unsafe { unit_pool_get_force_mask(person, mask, None)}
     }
+    pub fn get_count(force_mask: i32) -> i32 { unsafe { unit_pool_get_count(force_mask, None) } }
 }
 
 
@@ -38,3 +39,6 @@ fn unit_pool_get(index:i32, method_info: OptionalMethod) -> Option<&'static mut 
 
 #[skyline::from_offset(0x01c55030)]
 fn unit_pool_get_force_mask(person: &PersonData, force_mask: i32, method_info: OptionalMethod) -> Option<&'static mut Unit>;
+
+#[unity::from_offset("App", "UnitPool", "GetCount")]
+fn unit_pool_get_count(force_mask: i32, method_info: OptionalMethod) -> i32;

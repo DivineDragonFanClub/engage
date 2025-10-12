@@ -4,6 +4,23 @@ use unity::system::List;
 use super::{*, JobData, person::{Capability, CapabilitySbyte}};
 // Structs, methods required for PersonData, JobData, SkillArray
 
+#[unity::class("App", "BattleStyles")]
+pub struct BattleStyles{
+    pub parent: StructBaseFields,
+    pub style: &'static Il2CppString,
+    pub name: &'static Il2CppString,
+    pub help: &'static Il2CppString,
+    pub skills: &'static Array<&'static Il2CppString>,
+}
+impl Gamedata for BattleStyles {}
+
+impl BattleStyles{
+    pub fn get_style(name: Option<&Il2CppString>) -> i32 { unsafe { battle_style_get_style(name, None) } }
+    pub fn get_skills(style: i32) -> Option<&'static Array<&'static Il2CppString>>{
+        unsafe { battle_style_get_skills(style, None) }
+    }
+}
+
 #[unity::class("App", "JobDataFlag")]
 pub struct JobDataFlag { 
     pub value: i32,
@@ -84,6 +101,9 @@ fn job_get_high_job2(this: &JobData, method_info: OptionalMethod) -> Option<&Il2
 #[skyline::from_offset(0x2055fe0)]
 fn job_getlowjobs(this: &JobData, method_info: OptionalMethod) -> &List<JobData>;
 
+#[skyline::from_offset(0x2055fe0)]
+fn job_getlowjobs_try(this: &JobData, method_info: OptionalMethod) -> Option<&List<JobData>>;
+
 #[unity::from_offset("App", "JobData", "GetHighJobs")]
 fn job_gethighjobs(this: &JobData, method_info: OptionalMethod) -> &List<JobData>;
 
@@ -127,10 +147,10 @@ fn job_get_weapon_mask2(this: &JobData, method_info: OptionalMethod) -> &'static
 fn job_get_max_weapon_level1(this: &JobData, index: i32, method_info: OptionalMethod) -> i32;
 
 #[unity::from_offset("App","JobData", "get_LunaticSkill")]
-fn job_get_lunatic_skill(this: &JobData, method: OptionalMethod) -> Option<&Il2CppString>;
+fn job_get_lunatic_skill(this: &JobData, method_info: OptionalMethod) -> Option<&Il2CppString>;
 
 #[unity::from_offset("App","JobData", "get_LearningSkill")]
-fn job_get_learn_skill(this: &JobData, method: OptionalMethod) -> Option<&Il2CppString>;
+fn job_get_learn_skill(this: &JobData, method_info: OptionalMethod) -> Option<&Il2CppString>;
 
 #[skyline::from_offset(0x02054c30)]
 fn job_set_lunatic_skill(this: &JobData, sid: &Il2CppString, method_info: OptionalMethod);
@@ -152,3 +172,10 @@ pub fn job_get_selectable_weapon_mask(this: &JobData, select_count: &mut i32, me
 
 #[skyline::from_offset(0x02056300)]
 fn job_get_weapon_mask(this: &JobData, weapon_mask: &WeaponMask, select: &WeaponMask, method: OptionalMethod) -> &'static WeaponMask;
+
+
+#[unity::from_offset("App", "BattleStyle", "GetStyle")]
+fn battle_style_get_style(name: Option<&Il2CppString>, method_info: OptionalMethod) -> i32;
+
+#[unity::from_offset("App", "BattleStyle", "GetSkills")]
+fn battle_style_get_skills(style: i32, method_info: OptionalMethod) -> Option<&'static Array<&'static Il2CppString>>;

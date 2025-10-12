@@ -1,7 +1,7 @@
 use unity::prelude::*;
 
 use super::{BasicDialogItem, BasicDialogItemFields};
-use crate::{menu::BasicMenuResult, proc::Bindable};
+use crate::{mess::Mess, menu::BasicMenuResult, proc::Bindable};
 
 #[repr(C)]
 pub struct YesNoDialog(super::BasicDialog<BasicDialogItem>);
@@ -20,11 +20,20 @@ impl YesNoDialog {
             .get_class_mut()
             .get_virtual_method_mut("ACall")
             .map(|method| method.method_ptr = Methods::on_first_choice as _);
+        first_item
+            .get_class_mut()
+            .get_virtual_method_mut("BCall")
+            .map(|method| method.method_ptr = Methods::bcall_first as _);
 
         second_item
             .get_class_mut()
             .get_virtual_method_mut("ACall")
             .map(|method| method.method_ptr = Methods::on_second_choice as _);
+
+        second_item
+            .get_class_mut()
+            .get_virtual_method_mut("BCall")
+            .map(|method| method.method_ptr = Methods::bcall_second as _);
 
         unsafe {
             yesnodialog_createbind(proc, message.as_ref().into(), first_item, second_item, None);
@@ -39,10 +48,16 @@ pub trait TwoChoiceDialogMethods {
     extern "C" fn on_second_choice(_this: &mut BasicDialogItemNo, _method_info: OptionalMethod) -> BasicMenuResult {
         BasicMenuResult::new().with_close_this(true)
     }
+    extern "C" fn bcall_first(_this: &mut BasicDialogItemYes, _method_info: OptionalMethod) -> BasicMenuResult {
+        BasicMenuResult::new().with_close_this(true).with_se_cancel(true)
+    }
+    extern "C" fn bcall_second(_this: &mut BasicDialogItemNo, _method_info: OptionalMethod) -> BasicMenuResult {
+        BasicMenuResult::new().with_close_this(true).with_se_cancel(true)
+    }
 }
 
 #[unity::from_offset("App", "YesNoDialog", "CreateBind")]
-extern "C" fn yesnodialog_createbind<P: Bindable>(
+pub extern "C" fn yesnodialog_createbind<P: Bindable>(
     proc: &P,
     mess: &Il2CppString,
     yes_item: &BasicDialogItemYes,
@@ -66,10 +81,12 @@ impl BasicDialogItemYes {
     pub fn new(text: impl AsRef<str>) -> &'static mut BasicDialogItemYes {
         let item = BasicDialogItemYes::instantiate().unwrap();
 
-        unsafe {
-            dialog_item_yes_ctor(item, text.into(), None);
-        }
-
+        unsafe { dialog_item_yes_ctor(item, text.into(), None); }
+        item
+    }
+    pub fn new_from_mess(mess: impl AsRef<str>) -> &'static mut BasicDialogItemYes {
+        let item = BasicDialogItemYes::instantiate().unwrap();
+        unsafe { dialog_item_yes_ctor(item, Mess::get(mess), None); }
         item
     }
 }
@@ -83,11 +100,12 @@ pub struct BasicDialogItemNo {
 impl BasicDialogItemNo {
     pub fn new(text: impl AsRef<str>) -> &'static mut BasicDialogItemNo {
         let item = BasicDialogItemNo::instantiate().unwrap();
-
-        unsafe {
-            dialog_item_no_ctor(item, text.into(), None);
-        }
-
+        unsafe { dialog_item_no_ctor(item, text.into(), None); }
+        item
+    }
+    pub fn new_from_mess(mess: impl AsRef<str>) -> &'static mut BasicDialogItemNo {
+        let item = BasicDialogItemNo::instantiate().unwrap();
+        unsafe { dialog_item_no_ctor(item, Mess::get(mess), None); }
         item
     }
 }

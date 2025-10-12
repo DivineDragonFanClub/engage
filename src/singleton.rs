@@ -12,3 +12,11 @@ pub struct SingletonClass { }
 #[repr(C)]
 #[unity::class("App", "SingletonMonoBehaviour`1")]
 pub struct SingletonMonoBehaviour { }
+
+#[repr(C)]
+#[unity::class("App", "SingletonScriptableObject`1")]
+pub struct SingletonScriptableObject {}
+
+#[repr(C)]
+#[unity::class("App", "SingletonPool`1")]
+pub struct SingletonPool{}
