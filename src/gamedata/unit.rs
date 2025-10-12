@@ -131,6 +131,7 @@ pub struct Unit {
     pub ring :Option<&'static UnitRing>,
     pub extra_sight :i32,
     pub move_distance :i32,
+	/// Testing doc comments
     pub mask_skill : Option<&'static SkillArray>,
     pub equip_skill :&'static mut SkillArray,
     pub private_skill :&'static SkillArray,
