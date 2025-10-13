@@ -46,17 +46,17 @@ impl GameVariableManager {
     /// Create an entry in the game variable dictionary. Returns true if the entry was created.
     /// Returns false if the entry already exists.
     /// Sets the value of the entry but then we can just set it to whatever type we want, it seems.
-    pub fn make_entry(key: &str, num: i32) -> bool {
+    pub fn make_entry<'a>(key: impl Into<&'a Il2CppString>, num: i32) -> bool {
         let game_variable = GameUserData::get_variable();
 
         unsafe { entry(game_variable, key.into(), num, None) }
     }
-    pub fn make_entry_str<'a>(key: &str, value: impl Into<&'a Il2CppString>) -> bool {
+    pub fn make_entry_str<'a>(key: impl Into<&'a Il2CppString>, value: impl Into<&'a Il2CppString>) -> bool {
         let game_variable = GameUserData::get_variable();
 
         unsafe { entry_str(game_variable, key.into(), value.into(), None) }
     }
-    pub fn make_entry_norewind(key: &str, num: i32) -> bool {
+    pub fn make_entry_norewind<'a>(key: impl Into<&'a Il2CppString>, num: i32) -> bool {
         let game_variable = GameUserData::get_variable();
 
         unsafe { entry_no_rewind(game_variable, key.into(), num, None) }
