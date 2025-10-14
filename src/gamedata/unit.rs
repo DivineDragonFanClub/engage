@@ -312,6 +312,7 @@ impl Unit {
     pub fn update_weapon_mask(&self) { unsafe { unit_update_weapon_mask(self, None); }}
     pub fn update(&self) { unsafe { unit_update(self, None);}}
     pub fn reset_weapon_mask(&self) { unsafe { unit_reset_weapon_mask(self, None); }}
+    pub fn add_to_equip_skill_pool_sid<'a>(&self, sid: impl Into<&'a Il2CppString>) { unsafe { unit_add_to_equip_skill_pool_sid(self, sid.into(), None); }}
 }
 
 impl UnitEdit {
@@ -376,6 +377,9 @@ extern "C" fn unit_is_engaging(this: &Unit, method_info: OptionalMethod) -> bool
 // App.Unit$$IsEngageOwner	7101a197a0	bool App.Unit$$IsEngageOwner(App_Unit_o * __this, MethodInfo * method)	112
 #[skyline::from_offset(0x1a197a0)]
 extern "C" fn unit_is_engage_owner(this: &Unit, method_info: OptionalMethod) -> bool;
+
+#[unity::from_offset("App", "Unit", "AddToEquipSkillPool")]
+fn unit_add_to_equip_skill_pool_sid(this: &Unit, sid: &Il2CppString, method_info: OptionalMethod);
 
 //triabolical added
 #[unity::from_offset("App", "Unit", "AddSkillPoint")]
