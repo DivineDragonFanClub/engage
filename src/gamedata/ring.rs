@@ -1,4 +1,5 @@
 use unity::prelude::*;
+use unity::il2cpp::object::Array;
 
 use crate::gamedata::{Gamedata, StructBaseFields, skill::SkillArray};
 use crate::gamedata::person::CapabilitySbyte;
@@ -16,6 +17,7 @@ pub struct RingData {
     pub rank: i32,
     pub icon: &'static Il2CppString,
     pub enhance: &'static mut CapabilitySbyte,
+    pub equip_sids: &'static mut Array<&'static mut Il2CppString>,
 }
 
 impl Gamedata for RingData {}
@@ -23,7 +25,9 @@ impl Gamedata for RingData {}
 impl RingData {
     pub fn get_equip_skills(&self) -> &'static SkillArray { unsafe { ringdata_get_skill_array(self, None)} }
     pub fn set_equip_skills(&self, value: &SkillArray) { unsafe { ringdata_set_skill_array(self, value, None); } }
-    pub fn get_pool_ring_stock(&self) -> i32 { unsafe { unit_ring_pool_stock_count(self, None)}}
+    pub fn get_pool_ring_stock(&self) -> i32 { unsafe { unit_ring_pool_stock_count(self, None) } }
+
+    pub fn get_equip_sids(&self) -> &'static mut Array<&'static Il2CppString> { unsafe { ringdata_get_equip_sids(self, None) } }
 }
 
 pub struct UnitRingPool;
@@ -43,6 +47,9 @@ fn ringdata_get_skill_array(this: &RingData, method_info: OptionalMethod) -> &'s
 
 #[skyline::from_offset(0x2424700)]
 fn ringdata_set_skill_array(this: &RingData, value: &SkillArray, method_info: OptionalMethod);
+
+#[unity::from_offset("App", "RingData", "get_EquipSids")]
+fn ringdata_get_equip_sids(this: &RingData, method_info: OptionalMethod) -> &'static mut Array<&'static Il2CppString>;
 
 //UnitRingPool
 #[skyline::from_offset(0x01c5cf40)]
