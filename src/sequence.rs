@@ -3,6 +3,7 @@
 pub mod configsequence;
 pub mod gmap_sequence;
 pub mod hubrefineshopsequence;
+pub mod levelupsequence;
 pub mod mainmenusequence;
 pub mod mainsequence;
 pub mod mapsequence;
