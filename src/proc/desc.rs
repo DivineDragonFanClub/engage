@@ -52,8 +52,8 @@ impl ProcDesc {
         unsafe { proc_wait_while_false(method, None) }
     }
 
-    pub fn jump_true<T>(method: &'static mut ProcBoolMethod<T>) -> &'static mut ProcDesc {
-        unsafe { proc_jump_true(method, None) }
+    pub fn jump_true<T>(method: &'static mut ProcBoolMethod<T>, to_label: i32) -> &'static mut ProcDesc {
+        unsafe { proc_jump_true(method, to_label) }
     }
 
     // pub fn function_call<T>(function: &'static mut ProcVoidFunction<T>) -> Il2CppResult<&'static mut ProcDescCall<T>> {
