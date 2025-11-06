@@ -100,6 +100,12 @@ fn proc_wait_while_false<T>(
     method_info: OptionalMethod,
 ) -> &'static mut ProcDesc;
 
+#[unity::from_offset("App", "Proc", "JumpTrue")]
+fn proc_jump_true<T>(
+    method: &'static mut ProcBoolMethod<T>,
+    method_info: OptionalMethod,
+) -> &'static mut ProcDesc;
+
 #[unity::from_offset("App", "Proc", "End")]
 fn proc_end(
     method_info: OptionalMethod,
