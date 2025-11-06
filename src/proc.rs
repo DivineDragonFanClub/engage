@@ -103,7 +103,7 @@ fn proc_wait_while_false<T>(
 #[unity::from_offset("App", "Proc", "JumpTrue")]
 fn proc_jump_true<T>(
     method: &'static mut ProcBoolMethod<T>,
-    method_info: OptionalMethod,
+    label: i32,
 ) -> &'static mut ProcDesc;
 
 #[unity::from_offset("App", "Proc", "End")]
