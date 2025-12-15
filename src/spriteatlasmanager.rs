@@ -7,7 +7,7 @@ use crate::resourcemanager::ResourceHandle;
 #[unity::class("App", "SpriteAtlasManager")]
 pub struct SpriteAtlasManager {
     pub handle: &'static ResourceHandle,
-    sprite_atlas: *const u8,
+    pub sprite_atlas: *const u8,
     pub cache_table: &'static Dictionary<'static, &'static Il2CppString, &'static Sprite>,
 }
 
