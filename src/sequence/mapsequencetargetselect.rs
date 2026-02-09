@@ -25,7 +25,7 @@ impl MapSequenceTargetSelect {
 #[unity::class("App", "MapTarget")]
 pub struct MapTarget {
   junk: [u8;0x10],
-  pub unit: Option<&'static mut Unit>,
+  pub unit: Option<&'static Unit>,
   pub x: i8,
   pub z: i8,
   pub m_mind: u32,
